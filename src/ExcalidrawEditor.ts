@@ -56,15 +56,18 @@ export class ExcalidrawEditorProvider
 		vscode.commands.executeCommand("setContext", "excalidraw.focused", true);
 		webviewPanel.webview.html = this.getHtmlForWebview(document);
 
+		const refreshTheme = () => {
+			const theme = vscode.workspace
+				.getConfiguration("excalidraw")
+				.get("theme", "auto");
+			webviewPanel.webview.postMessage({
+				type: "refresh-theme",
+				theme: theme,
+			});
+		}
 		vscode.workspace.onDidChangeConfiguration((e) => {
 			if (e.affectsConfiguration("excalidraw.theme")) {
-				const theme = vscode.workspace
-					.getConfiguration("excalidraw")
-					.get("theme", "auto");
-				webviewPanel.webview.postMessage({
-					type: "refresh-theme",
-					theme: theme,
-				});
+				refreshTheme()
 			}
 		});
 
@@ -91,6 +94,7 @@ export class ExcalidrawEditorProvider
 		webviewPanel.onDidChangeViewState((e) => {
 			if (e.webviewPanel.active) {
 				ExcalidrawEditorProvider.exportToIMG = exportToIMG;
+				refreshTheme()
 				vscode.commands.executeCommand(
 					"setContext",
 					"excalidraw.focused",

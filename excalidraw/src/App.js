@@ -29,9 +29,6 @@ let updateTheme = null;
 // Used to stop unecessary updates
 let currentSceneVersion = getSceneVersion(initialElements);
 
-// If the theme change when the editor was in backGround, we need to refresh it
-postMessage({ type: "refresh-theme" });
-
 function getTheme() {
   if (themeConfig != "auto") {
     return themeConfig;
@@ -68,6 +65,8 @@ window.addEventListener("message", (e) => {
       }
       return;
     case "refresh-theme":
+      if (message.theme == themeConfig)
+        return
       themeConfig = message.theme;
       updateTheme();
       if (themeConfig == "auto")
