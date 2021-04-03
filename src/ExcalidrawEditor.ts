@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-var minimatch = require('minimatch')
 const open = require('open');
 
 
@@ -27,10 +26,10 @@ export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider
 			ExcalidrawEditorProvider.openInApplication()
 		})
 		vscode.commands.registerCommand("excalidraw.export.svg", () => {
-			ExcalidrawEditorProvider.exportToSVG()
+			ExcalidrawEditorProvider.exportToIMG("svg")
 		})
 		vscode.commands.registerCommand("excalidraw.export.png", () => {
-			ExcalidrawEditorProvider.exportToPNG()
+			ExcalidrawEditorProvider.exportToIMG("png")
 		})
 		vscode.commands.registerCommand("excalidraw.setTheme.auto", () => {
 			setTheme("auto")
@@ -48,14 +47,11 @@ export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider
 	}
 
 	private static readonly viewType = 'editor.excalidraw';
-	public static exportToSVG: Function = () => {
-		throw Error("Not defined")
+	public static exportToIMG: Function = () => {
+		vscode.window.showErrorMessage("At least one excalidraw editor must be active to use this command!")
 	}
 	public static openInApplication: Function = () => {
-		throw Error("Not defined")
-	}
-	public static exportToPNG: Function = () => {
-		throw Error("Not defined")
+		vscode.window.showErrorMessage("At least one excalidraw editor must be active to use this command!")
 	}
 
 	constructor(
@@ -76,7 +72,9 @@ export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider
 		webviewPanel.webview.options = {
 			enableScripts: true,
 		};
+
 		vscode.commands.executeCommand('setContext', 'excalidraw.focused', true);
+		webviewPanel.webview.html = this.getHtmlForWebview(document);
 
 		vscode.workspace.onDidChangeConfiguration((e) => {
 			if (e.affectsConfiguration('excalidraw.theme')) {
@@ -85,44 +83,29 @@ export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider
 			}
 		})
 
-
-		webviewPanel.webview.html = this.getHtmlForWebview(document);
-
 		const openInApplication = () => {
 			open(document.uri.fsPath)
 		}
 		ExcalidrawEditorProvider.openInApplication = openInApplication
-		const exportToSvg = () => {
-			const exportConfig: any = vscode.workspace.getConfiguration("excalidraw").get("exportConfig")
-			const { globs = {}, ...exportParams } = exportConfig;
-			const dirname = this.getExportDirname(document, globs)
-			webviewPanel.webview.postMessage({ type: "export-to-svg", dirname: dirname, exportParams: exportParams })
-		}
-		ExcalidrawEditorProvider.exportToSVG = exportToSvg
-		const exportToPng = () => {
-			const exportConfig: any = vscode.workspace.getConfiguration("excalidraw").get("exportConfig")
-			const { globs = {}, ...exportParams } = exportConfig;
-			const dirname = this.getExportDirname(document, globs)
-			webviewPanel.webview.postMessage({ type: "export-to-png", dirname: dirname, exportParams: exportParams })
-		}
-		ExcalidrawEditorProvider.exportToPNG = exportToPng
 
+		const exportToIMG = (extension: string) => {
+			const exportConfig: any = vscode.workspace.getConfiguration("excalidraw").get("exportConfig")
+			this.getExportFilename(document, extension).then(uri => {
+				if (uri !== undefined)
+					webviewPanel.webview.postMessage({ type: `export-to-${extension}`, path: uri.fsPath, exportConfig: exportConfig })
+			}
+			)
+		}
+
+		ExcalidrawEditorProvider.exportToIMG = exportToIMG
 		webviewPanel.onDidChangeViewState(e => {
 			if (e.webviewPanel.active) {
-				ExcalidrawEditorProvider.exportToSVG = exportToSvg
-				ExcalidrawEditorProvider.exportToPNG = exportToPng
+				ExcalidrawEditorProvider.exportToIMG = exportToIMG
 				vscode.commands.executeCommand('setContext', 'excalidraw.focused', true);
 			} else {
 				vscode.commands.executeCommand('setContext', 'excalidraw.focused', false);
 			}
 		})
-		// Hook up event handlers so that we can synchronize the webview with the text document.
-		//
-		// The text document acts as our model, so we have to sync change in the document to our
-		// editor and sync changes in the editor back to the document.
-		// 
-		// Remember that a single text document can also be shared between multiple custom
-		// editors (this happens for example when you split a custom editor)
 
 		const updateWebview = () => {
 			const { elements, appState } = this.getInitialData(document)
@@ -144,30 +127,23 @@ export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider
 
 		// Receive message from the webview.
 		webviewPanel.webview.onDidReceiveMessage(e => {
-			let basename
-			let filePath
 			switch (e.type) {
 				case 'update':
 					this.updateTextDocument(document, e.elements, e.appState);
 					return;
 				case 'svg-export':
-					basename = path.basename(document.uri.fsPath, path.extname(document.uri.fsPath))
-					filePath = path.join(e.dirname, basename + ".svg")
-					fs.writeFile(filePath, e.svg, (err) => { if (err) vscode.window.showErrorMessage(err.message) });
+					fs.writeFile(e.path, e.svg, (err) => { if (err) vscode.window.showErrorMessage(err.message) });
 					return;
 				case 'png-export':
-					basename = path.basename(document.uri.fsPath, path.extname(document.uri.fsPath))
-					filePath = path.join(e.dirname, basename + ".png")
-
 					var data = e.png.replace(/^data:image\/png;base64,/, "");
 					var buf = Buffer.from(data, 'base64');
-					fs.writeFile(filePath, buf, (err) => { if (err) vscode.window.showErrorMessage(err.message) });
+					fs.writeFile(e.path, buf, (err) => { if (err) vscode.window.showErrorMessage(err.message) });
 					return;
 				case 'refresh-theme':
 					const theme = vscode.workspace.getConfiguration('excalidraw').get('theme')
 					webviewPanel.webview.postMessage({ type: 'refresh-theme', theme: theme })
 				case 'save':
-					this.saveTextDocument(document, exportToPng, exportToSvg)
+					document.save()
 					return
 				case 'log':
 					console.log(e.msg);
@@ -212,39 +188,18 @@ export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider
 		}
 	}
 
-	private saveTextDocument(document: vscode.TextDocument, exportToPNG: Function, exportToSVG: Function) {
-		document.save()
-
-		const exportOnSaveConfig: any = vscode.workspace.getConfiguration("excalidraw").get("exportOnSave")
-		if (exportOnSaveConfig.enabled) {
-			switch (exportOnSaveConfig.extension) {
-				case "svg":
-					exportToSVG()
-					return;
-				case "png":
-					exportToPNG()
-					return;
-			}
-		}
-	}
-
-	private getExportDirname(document: vscode.TextDocument, globs: any) {
-		const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri)
-		if (workspaceFolder === undefined || globs === undefined)
-			return path.dirname(document.uri.fsPath)
-		for (let [pattern, dirname] of Object.entries(globs)) {
-			if (minimatch(document.uri.fsPath, pattern) && typeof dirname === 'string') {
-				return path.join(workspaceFolder.uri.fsPath, dirname)
-			}
-		}
-		return path.dirname(document.uri.fsPath)
+	private getExportFilename(document: vscode.TextDocument, extension: string): Thenable<vscode.Uri | undefined> {
+		const dirname = path.dirname(document.uri.fsPath)
+		const basename = path.basename(document.uri.fsPath, path.extname(document.uri.fsPath))
+		const filePath = path.join(dirname, `${basename}.${extension}`)
+		return vscode.window.showSaveDialog({ defaultUri: vscode.Uri.file(filePath), filters: { "Images": [extension] } })
 	}
 
 
 	/**
 	 * Write out the json to a given document.
 	 */
-	private updateTextDocument(document: vscode.TextDocument, elements: Record<string, unknown>, appState: Record<string, unknown>) {
+	private updateTextDocument(document: vscode.TextDocument, elements: Record<string, unknown>, appState: Record<string, unknown>): Thenable<boolean> {
 		const newContent = JSON.stringify({
 			"type": "excalidraw",
 			"version": 2,

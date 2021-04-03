@@ -75,15 +75,15 @@ window.addEventListener("message", (e) => {
       break;
 
     case 'export-to-svg':
-      postMessage({ type: "svg-export", svg: toSVG(message.exportParams).outerHTML, dirname: message.dirname })
+      postMessage({ type: "svg-export", svg: toSVG(message.exportConfig).outerHTML, path: message.path })
       return;
     case 'export-to-png':
-      toPNG(message.exportParams).then(blob => {
+      toPNG(message.exportConfig).then(blob => {
         var reader = new FileReader();
         reader.readAsDataURL(blob);
         reader.onloadend = function () {
           var base64data = reader.result;
-          postMessage({ type: "png-export", png: base64data, dirname: message.dirname })
+          postMessage({ type: "png-export", png: base64data, path: message.path })
         }
       })
       return;
