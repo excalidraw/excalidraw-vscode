@@ -23,6 +23,10 @@ body {
   display: none !important;
 }
 
+.ToolIcon_type_button__library {
+  display: none !important;
+}
+
 kbd {
   color: var(--text-primary-color);
 }
