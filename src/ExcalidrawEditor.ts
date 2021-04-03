@@ -177,16 +177,23 @@ export class ExcalidrawEditorProvider
 	 * Get the static html used for the editor webviews.
 	 */
 	private getHtmlForWebview(document: vscode.TextDocument): string {
-		const json = this.getInitialData(document);
+		const initialData = this.getInitialData(document);
 		const htmlFile = vscode.Uri.joinPath(
 			this.context.extensionUri,
 			"media",
 			"index.html"
 		);
 		let content = fs.readFileSync(htmlFile.fsPath, "utf8");
+		if (initialData.readOnly)
+			content = content.replace(/(<style>)(<\/style>)/, `$1
+			.Island {
+				display: none !important;
+			}
+			$2`)
+
 		content = content.replace(
 			/\$\{initialData\}/,
-			`<script>window.initialData = ${JSON.stringify(json)}</script>`
+			`<script>window.initialData = ${JSON.stringify(initialData)}</script>`
 		);
 
 		return content;
