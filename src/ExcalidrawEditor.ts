@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 var minimatch = require('minimatch')
-
+const open = require('open');
 
 
 /**
@@ -23,6 +23,9 @@ export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider
 		const setTheme = (theme: string) => {
 			vscode.workspace.getConfiguration('excalidraw').update('theme', theme)
 		}
+		vscode.commands.registerCommand("excalidraw.openInApplication", () => {
+			ExcalidrawEditorProvider.openInApplication()
+		})
 		vscode.commands.registerCommand("excalidraw.export.svg", () => {
 			ExcalidrawEditorProvider.exportToSVG()
 		})
@@ -46,6 +49,9 @@ export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider
 
 	private static readonly viewType = 'editor.excalidraw';
 	public static exportToSVG: Function = () => {
+		throw Error("Not defined")
+	}
+	public static openInApplication: Function = () => {
 		throw Error("Not defined")
 	}
 	public static exportToPNG: Function = () => {
@@ -82,13 +88,10 @@ export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider
 
 		webviewPanel.webview.html = this.getHtmlForWebview(document);
 
-		const updateWebview = () => {
-			const { elements, appState } = this.getInitialData(document)
-			webviewPanel.webview.postMessage({
-				type: 'update',
-				elements: elements, appState: appState,
-			});
-		};
+		const openInApplication = () => {
+			open(document.uri.fsPath)
+		}
+		ExcalidrawEditorProvider.openInApplication = openInApplication
 		const exportToSvg = () => {
 			const exportConfig: any = vscode.workspace.getConfiguration("excalidraw").get("exportConfig")
 			const { globs = {}, ...exportParams } = exportConfig;
@@ -121,6 +124,13 @@ export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider
 		// Remember that a single text document can also be shared between multiple custom
 		// editors (this happens for example when you split a custom editor)
 
+		const updateWebview = () => {
+			const { elements, appState } = this.getInitialData(document)
+			webviewPanel.webview.postMessage({
+				type: 'update',
+				elements: elements, appState: appState,
+			});
+		};
 		const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(e => {
 			if (e.document.uri.toString() === document.uri.toString() && e.contentChanges.length > 0) {
 				updateWebview();

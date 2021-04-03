@@ -9,7 +9,7 @@ const vscode = window.acquireVsCodeApi();
 // Either the excalidraw file or the previous state
 const previousState = vscode.getState();
 const initialData = previousState ? previousState : window.initialData;
-let { elements: initialElements, appState: intitialAppState, themeConfig } = initialData
+let { elements: initialElements = [], appState: intitialAppState = {}, themeConfig } = initialData
 
 // placeholder for functions
 let updateApp = null
@@ -55,8 +55,10 @@ window.addEventListener("message", (e) => {
   switch (message.type) {
     case 'update':
       const { elements, appState } = message
-      currentSceneVersion = getSceneVersion(elements)
-      updateApp({ elements: elements, appState: appState })
+      if (currentSceneVersion != getSceneVersion(elements)) {
+        currentSceneVersion = getSceneVersion(elements)
+        updateApp({ elements: elements, appState: appState })
+      }
       return;
     case 'refresh-theme':
       themeConfig = message.theme
@@ -155,39 +157,36 @@ export default function App() {
             zoom,
           } = appState;
 
-          const newSceneVersion = getSceneVersion(elements)
-          if (newSceneVersion != currentSceneVersion) {
-            currentSceneVersion = newSceneVersion
-            vscode.setState({
-              elements: elements,
-              themeConfig: themeConfig,
-              appState: {
-                viewBackgroundColor: viewBackgroundColor,
-                zenModeEnabled: zenModeEnabled,
-                viewModeEnabled: viewModeEnabled,
-                gridSize: gridSize,
-                scrollX: scrollX,
-                scrollY: scrollY,
-                theme: theme,
-                exportBackground: exportBackground,
-                exportEmbedScene: exportEmbedScene,
-                exportWithDarkMode: exportWithDarkMode,
-                elementLocked: elementLocked,
-                zoom: zoom,
-              }
+          vscode.setState({
+            elements: elements,
+            themeConfig: themeConfig,
+            appState: {
+              viewBackgroundColor: viewBackgroundColor,
+              zenModeEnabled: zenModeEnabled,
+              viewModeEnabled: viewModeEnabled,
+              gridSize: gridSize,
+              scrollX: scrollX,
+              scrollY: scrollY,
+              theme: theme,
+              exportBackground: exportBackground,
+              exportEmbedScene: exportEmbedScene,
+              exportWithDarkMode: exportWithDarkMode,
+              elementLocked: elementLocked,
+              zoom: zoom,
             }
-            );
-            updateExtensionWithDelay({
-              elements: excalidrawRef.current.getSceneElements(), appState: {
-                viewBackgroundColor: viewBackgroundColor,
-                gridSize: gridSize,
-                scrollX: scrollX,
-                scrollY: scrollY,
-                zoom: zoom
-              }
-            })
           }
-        }}
+          );
+          updateExtensionWithDelay({
+            elements: excalidrawRef.current.getSceneElements(), appState: {
+              viewBackgroundColor: viewBackgroundColor,
+              gridSize: gridSize,
+              scrollX: scrollX,
+              scrollY: scrollY,
+              zoom: zoom
+            }
+          })
+        }
+        }
         name="Custom name of drawing"
       />
     </div>
@@ -212,11 +211,15 @@ function debounce(func, wait, immediate) {
 
 // We used the debounce utility to limit the number of update to Vscode
 function updateExtension({ elements, appState }) {
-  postMessage({
-    type: "update",
-    elements: elements,
-    appState: appState
-  })
+  let newSceneVersion = getSceneVersion(elements)
+  if (newSceneVersion != currentSceneVersion) {
+    currentSceneVersion = newSceneVersion
+    postMessage({
+      type: "update",
+      elements: elements,
+      appState: appState
+    })
+  }
 }
 const updateExtensionWithDelay = debounce(updateExtension, 500, false)
 

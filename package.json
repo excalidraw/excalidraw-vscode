@@ -28,6 +28,10 @@
 				{
 					"command": "excalidraw.export.png",
 					"when": "excalidraw.focused"
+				},
+				{
+					"command": "excalidraw.openInApplication",
+					"when": "excalidraw.focused"
 				}
 			],
 			"editor/title": [
@@ -37,6 +41,10 @@
 				},
 				{
 					"command": "excalidraw.export.png",
+					"when": "excalidraw.focused"
+				},
+				{
+					"command": "excalidraw.openInApplication",
 					"when": "excalidraw.focused"
 				}
 			]
@@ -115,6 +123,10 @@
 				"title": "Excalidraw: Set theme to auto"
 			},
 			{
+				"command": "excalidraw.openInApplication",
+				"title": "Excalidraw: Open in Application"
+			},
+			{
 				"command": "excalidraw.setTheme.dark",
 				"title": "Excalidraw: Set theme to dark"
 			},
@@ -160,6 +172,7 @@
 		"typescript": "^4.2.2"
 	},
 	"dependencies": {
-		"minimatch": "^3.0.4"
+		"minimatch": "^3.0.4",
+		"open": "^8.0.5"
 	}
 }
