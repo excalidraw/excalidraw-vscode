@@ -64,10 +64,10 @@ export class ExcalidrawEditorProvider
 				type: "refresh-theme",
 				theme: theme,
 			});
-		}
+		};
 		vscode.workspace.onDidChangeConfiguration((e) => {
 			if (e.affectsConfiguration("excalidraw.theme")) {
-				refreshTheme()
+				refreshTheme();
 			}
 		});
 
@@ -77,15 +77,17 @@ export class ExcalidrawEditorProvider
 		ExcalidrawEditorProvider.openInApplication = openInApplication;
 
 		const exportToIMG = (extension: string) => {
-			const exportConfig: any = vscode.workspace
-				.getConfiguration("excalidraw")
-				.get("exportConfig", {});
+			const exportConfig = vscode.workspace.getConfiguration("excalidraw.export")
 			this.getExportFilename(document, extension).then((uri) => {
 				if (uri !== undefined)
 					webviewPanel.webview.postMessage({
 						type: `export-to-${extension}`,
 						path: uri.fsPath,
-						exportConfig: exportConfig,
+						exportConfig: {
+							exportBackground: exportConfig.get("exportBackground"),
+							shouldAddWatermark: exportConfig.get("shouldAddWatermark"),
+							exportWithDarkMode: exportConfig.get("exportWithDarkMode"),
+						},
 					});
 			});
 		};
@@ -94,7 +96,7 @@ export class ExcalidrawEditorProvider
 		webviewPanel.onDidChangeViewState((e) => {
 			if (e.webviewPanel.active) {
 				ExcalidrawEditorProvider.exportToIMG = exportToIMG;
-				refreshTheme()
+				refreshTheme();
 				vscode.commands.executeCommand(
 					"setContext",
 					"excalidraw.focused",
@@ -142,6 +144,7 @@ export class ExcalidrawEditorProvider
 				case "svg-export":
 					fs.writeFile(e.path, e.svg, (err) => {
 						if (err) vscode.window.showErrorMessage(err.message);
+						else vscode.window.showInformationMessage("Export Successful!")
 					});
 					return;
 				case "png-export":
@@ -149,6 +152,7 @@ export class ExcalidrawEditorProvider
 					var buf = Buffer.from(data, "base64");
 					fs.writeFile(e.path, buf, (err) => {
 						if (err) vscode.window.showErrorMessage(err.message);
+						else vscode.window.showInformationMessage("Export Successful!")
 					});
 					return;
 				case "refresh-theme":
@@ -204,8 +208,9 @@ export class ExcalidrawEditorProvider
 			const { elements, appState } = json;
 			const initialData = {
 				elements: elements,
-				appState: appState,
+				appState: { ...appState },
 				themeConfig: themeConfig,
+				readOnly: document.uri.scheme === "git"
 			};
 			return initialData;
 		} catch {

@@ -16,6 +16,7 @@ let {
   elements: initialElements = [],
   appState: intitialAppState = {},
   themeConfig,
+  readOnly
 } = initialData;
 
 let { viewBackgroundColor: currentBackgroundColor = "#fff" } = intitialAppState
@@ -159,6 +160,7 @@ export default function App() {
     <div className="excalidraw-wrapper" ref={excalidrawWrapperRef}>
       <Excalidraw
         ref={excalidrawRef}
+        viewModeEnabled={readOnly}
         width={dimensions.width}
         height={dimensions.height}
         theme={theme}
@@ -243,7 +245,7 @@ function updateExtension({ elements, appState }) {
     });
   }
 }
-const updateExtensionWithDelay = debounce(updateExtension, 500, false);
+const updateExtensionWithDelay = debounce(updateExtension, 250, false);
 
 // Remove default save shortcut for excalidraw
 document.addEventListener("keydown", function (e) {

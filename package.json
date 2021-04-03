@@ -13,9 +13,7 @@
 	"activationEvents": [
 		"onCustomEditor:editor.excalidraw",
 		"onCommand:excalidraw.export.config",
-		"onCommand:excalidraw.setTheme.dark",
-		"onCommand:excalidraw.setTheme.light",
-		"onCommand:excalidraw.setTheme.auto"
+		"onCommand:excalidraw.theme.config"
 	],
 	"repository": {
 		"type": "git",
@@ -23,6 +21,12 @@
 	},
 	"main": "./out/extension.js",
 	"contributes": {
+		"submenus": [
+			{
+				"id": "excalidraw.editor.context",
+				"label": "Excalidraw"
+			}
+		],
 		"menus": {
 			"commandPalette": [
 				{
@@ -38,7 +42,7 @@
 					"when": "excalidraw.focused"
 				}
 			],
-			"editor/title": [
+			"excalidraw.editor.context": [
 				{
 					"command": "excalidraw.export.svg",
 					"when": "excalidraw.focused"
@@ -50,6 +54,21 @@
 				{
 					"command": "excalidraw.openInApplication",
 					"when": "excalidraw.focused"
+				},
+				{
+					"command": "excalidraw.theme.config",
+					"when": "excalidraw.focused"
+				},
+				{
+					"command": "excalidraw.export.config",
+					"when": "excalidraw.focused"
+				}
+			],
+			"editor/title": [
+				{
+					"submenu": "excalidraw.editor.context",
+					"group": "excalidraw",
+					"when": "excalidraw.focused"
 				}
 			]
 		},
@@ -57,32 +76,24 @@
 			{
 				"title": "Excalidraw",
 				"properties": {
-					"excalidraw.exportConfig": {
-						"scope": "resource",
-						"type": "object",
-						"additionalProperties": false,
-						"properties": {
-							"exportBackground": {
-								"type": "boolean",
-								"description": "Indicates whether background should be exported"
-							},
-							"shouldAddWatermark": {
-								"type": "boolean",
-								"description": "Indicates whether watermark should be exported"
-							},
-							"exportWithDarkMode": {
-								"type": "boolean",
-								"description": "Indicates whether to export with dark mode"
-							}
-						},
-						"default": {
-							"exportBackground": true,
-							"shouldAddWatermark": false,
-							"exportWithDarkMode": false
-						}
+					"excalidraw.export.exportBackground": {
+						"type": "boolean",
+						"description": "Indicates whether background should be exported",
+						"default": true
+					},
+					"excalidraw.export.shouldAddWatermark": {
+						"type": "boolean",
+						"description": "Indicates whether watermark should be exported",
+						"default": false
+					},
+					"excalidraw.export.exportWithDarkMode": {
+						"type": "boolean",
+						"description": "Indicates whether to export with dark mode",
+						"default": false
 					},
 					"excalidraw.theme": {
 						"scope": "resource",
+						"description": "The theme to use for the Excalidraw editor.",
 						"type": "string",
 						"default": "light",
 						"enum": [
@@ -109,16 +120,8 @@
 				"title": "Excalidraw: Export options"
 			},
 			{
-				"command": "excalidraw.setTheme.auto",
-				"title": "Excalidraw: Set theme to auto"
-			},
-			{
-				"command": "excalidraw.setTheme.dark",
-				"title": "Excalidraw: Set theme to dark"
-			},
-			{
-				"command": "excalidraw.setTheme.light",
-				"title": "Excalidraw: Set theme to light"
+				"command": "excalidraw.theme.config",
+				"title": "Excalidraw: Color Theme"
 			},
 			{
 				"command": "excalidraw.export.svg",
