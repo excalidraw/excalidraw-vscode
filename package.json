@@ -1,0 +1,165 @@
+{
+	"name": "vscode-excalidraw-embed",
+	"displayName": "Vscode Excalidraw",
+	"description": "Excalidraw custom editor for vscode",
+	"version": "1.0.0",
+	"publisher": "pomdtr",
+	"engines": {
+		"vscode": "^1.52.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCustomEditor:editor.excalidraw"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/microsoft/vscode-extension-samples.git"
+	},
+	"main": "./out/extension.js",
+	"contributes": {
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "excalidraw.export.svg",
+					"when": "excalidraw.focused"
+				},
+				{
+					"command": "excalidraw.export.png",
+					"when": "excalidraw.focused"
+				}
+			],
+			"editor/title": [
+				{
+					"command": "excalidraw.export.svg",
+					"when": "excalidraw.focused"
+				},
+				{
+					"command": "excalidraw.export.png",
+					"when": "excalidraw.focused"
+				}
+			]
+		},
+		"configuration": [
+			{
+				"title": "Excalidraw",
+				"properties": {
+					"excalidraw.exportOnSave": {
+						"type": "object",
+						"additionalProperties": false,
+						"default": {
+							"enabled": false
+						},
+						"properties": {
+							"enabled": {
+								"type": "boolean"
+							},
+							"extension": {
+								"type": "string",
+								"enum": [
+									"svg",
+									"png"
+								]
+							}
+						}
+					},
+					"excalidraw.exportConfig": {
+						"scope": "resource",
+						"type": "object",
+						"additionalProperties": false,
+						"properties": {
+							"globs": {
+								"type": "object"
+							},
+							"exportBackground": {
+								"type": "boolean",
+								"description": "Indicates whether background should be exported"
+							},
+							"viewBackgroundColor": {
+								"type": "string",
+								"description": "The default background color"
+							},
+							"shouldAddWatermark": {
+								"type": "boolean",
+								"description": "Indicates whether watermark should be exported"
+							},
+							"exportWithDarkMode": {
+								"type": "boolean",
+								"description": "Indicates whether to export with dark mode"
+							}
+						},
+						"default": {
+							"exportBackground": true,
+							"viewBackgroundColor": "#fff",
+							"shouldAddWatermark": false,
+							"exportWithDarkMode": false
+						}
+					},
+					"excalidraw.theme": {
+						"scope": "resource",
+						"type": "string",
+						"default": "light",
+						"enum": [
+							"dark",
+							"light",
+							"auto"
+						]
+					}
+				}
+			}
+		],
+		"commands": [
+			{
+				"command": "excalidraw.setTheme.auto",
+				"title": "Excalidraw: Set theme to auto"
+			},
+			{
+				"command": "excalidraw.setTheme.dark",
+				"title": "Excalidraw: Set theme to dark"
+			},
+			{
+				"command": "excalidraw.setTheme.light",
+				"title": "Excalidraw: Set theme to light"
+			},
+			{
+				"command": "excalidraw.export.svg",
+				"title": "Excalidraw: Export to svg"
+			},
+			{
+				"command": "excalidraw.export.png",
+				"title": "Excalidraw: Export to png"
+			}
+		],
+		"customEditors": [
+			{
+				"viewType": "editor.excalidraw",
+				"displayName": "Excalidraw Editor",
+				"selector": [
+					{
+						"filenamePattern": "*.excalidraw"
+					}
+				]
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "npm-run-all compile:*",
+		"compile:extension": "tsc",
+		"compile:excalidraw": "cd ./excalidraw && npm run build"
+	},
+	"devDependencies": {
+		"@types/mustache": "^4.1.1",
+		"@types/node": "^12.12.0",
+		"@types/vscode": "^1.52.0",
+		"@typescript-eslint/eslint-plugin": "^4.16.0",
+		"@typescript-eslint/parser": "^4.16.0",
+		"eslint": "^7.21.0",
+		"npm-run-all": "^4.1.5",
+		"typescript": "^4.2.2"
+	},
+	"dependencies": {
+		"minimatch": "^3.0.4"
+	}
+}
