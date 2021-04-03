@@ -1,97 +1,113 @@
 import React, { useEffect, useState, useRef } from "react";
-import Excalidraw, { exportToSvg, exportToBlob, getSceneVersion } from "@excalidraw/excalidraw";
+import Excalidraw, {
+  exportToSvg,
+  exportToBlob,
+  getSceneVersion,
+} from "@excalidraw/excalidraw";
 
-import "./styles.scss";
-
+import "./styles.css";
 
 const vscode = window.acquireVsCodeApi();
 
 // Either the excalidraw file or the previous state
 const previousState = vscode.getState();
 const initialData = previousState ? previousState : window.initialData;
-let { elements: initialElements = [], appState: intitialAppState = {}, themeConfig } = initialData
+let {
+  elements: initialElements = [],
+  appState: intitialAppState = {},
+  themeConfig,
+} = initialData;
+
+let { viewBackgroundColor: currentBackgroundColor = "#fff" } = intitialAppState
 
 // placeholder for functions
-let updateApp = null
-let toSVG = null
-let toPNG = null
-let updateTheme = null
+let updateApp = null;
+let toSVG = null;
+let toPNG = null;
+let updateTheme = null;
 
 // Used to stop unecessary updates
-let currentSceneVersion = getSceneVersion(initialElements)
+let currentSceneVersion = getSceneVersion(initialElements);
 
 // If the theme change when the editor was in backGround, we need to refresh it
-postMessage({ type: 'refresh-theme' })
+postMessage({ type: "refresh-theme" });
 
 function getTheme() {
   if (themeConfig != "auto") {
-    return themeConfig
+    return themeConfig;
   }
-  let newTheme = document.body.className
-  var prefix = 'vscode-';
+  let newTheme = document.body.className;
+  var prefix = "vscode-";
   if (newTheme.startsWith(prefix)) {
     // strip prefix
     newTheme = newTheme.substr(prefix.length);
   }
 
-  if (newTheme === 'high-contrast') {
-    newTheme = 'dark'; // the high-contrast theme seems to be an extreme case of the dark theme
+  if (newTheme === "high-contrast") {
+    newTheme = "dark"; // the high-contrast theme seems to be an extreme case of the dark theme
   }
 
-  return newTheme
-
+  return newTheme;
 }
 
 // Used by the automatic theme
 var observer = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutationRecord) {
-    updateTheme()
+    updateTheme();
   });
 });
 
-
 window.addEventListener("message", (e) => {
-  const message = e.data
+  const message = e.data;
   switch (message.type) {
-    case 'update':
-      const { elements, appState } = message
+    case "update":
+      const { elements, appState } = message;
       if (currentSceneVersion != getSceneVersion(elements)) {
-        currentSceneVersion = getSceneVersion(elements)
-        updateApp({ elements: elements, appState: appState })
+        currentSceneVersion = getSceneVersion(elements);
+        updateApp({ elements: elements, appState: appState });
       }
       return;
-    case 'refresh-theme':
-      themeConfig = message.theme
-      updateTheme()
+    case "refresh-theme":
+      themeConfig = message.theme;
+      updateTheme();
       if (themeConfig == "auto")
-        observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-      else
-        observer.disconnect()
+        observer.observe(document.body, {
+          attributes: true,
+          attributeFilter: ["class"],
+        });
+      else observer.disconnect();
       vscode.setState({
         elements: initialElements,
         appState: intitialAppState,
         themeConfig: themeConfig,
-      })
+      });
       break;
 
-    case 'export-to-svg':
-      postMessage({ type: "svg-export", svg: toSVG(message.exportConfig).outerHTML, path: message.path })
+    case "export-to-svg":
+      postMessage({
+        type: "svg-export",
+        svg: toSVG(message.exportConfig).outerHTML,
+        path: message.path,
+      });
       return;
-    case 'export-to-png':
-      toPNG(message.exportConfig).then(blob => {
+    case "export-to-png":
+      toPNG(message.exportConfig).then((blob) => {
         var reader = new FileReader();
         reader.readAsDataURL(blob);
         reader.onloadend = function () {
           var base64data = reader.result;
-          postMessage({ type: "png-export", png: base64data, path: message.path })
-        }
-      })
+          postMessage({
+            type: "png-export",
+            png: base64data,
+            path: message.path,
+          });
+        };
+      });
       return;
   }
 });
 
 export default function App() {
-
   const excalidrawRef = useRef(null);
   const [theme, setTheme] = useState(getTheme());
   const excalidrawWrapperRef = useRef(null);
@@ -101,19 +117,27 @@ export default function App() {
   });
 
   updateTheme = () => {
-    setTheme(getTheme())
-  }
+    setTheme(getTheme());
+  };
 
   updateApp = ({ elements, appState }) => {
-    excalidrawRef.current.updateScene({ elements: elements, appState: appState });
-  }
+    excalidrawRef.current.updateScene({
+      elements: elements,
+      appState: appState,
+    });
+  };
   toSVG = (exportParams) => {
-    return exportToSvg({ elements: excalidrawRef.current.getSceneElements(), appState: { ...excalidrawRef.current.getAppState(), ...exportParams } })
-  }
+    return exportToSvg({
+      elements: excalidrawRef.current.getSceneElements(),
+      appState: { ...excalidrawRef.current.getAppState(), ...exportParams },
+    });
+  };
   toPNG = (exportParams) => {
-    return exportToBlob({ elements: excalidrawRef.current.getSceneElements(), appState: { ...excalidrawRef.current.getAppState(), ...exportParams } })
-  }
-
+    return exportToBlob({
+      elements: excalidrawRef.current.getSceneElements(),
+      appState: { ...excalidrawRef.current.getAppState(), ...exportParams },
+    });
+  };
 
   useEffect(() => {
     setDimensions({
@@ -132,7 +156,6 @@ export default function App() {
     return () => window.removeEventListener("resize", onResize);
   }, [excalidrawWrapperRef]);
 
-
   return (
     <div className="excalidraw-wrapper" ref={excalidrawWrapperRef}>
       <Excalidraw
@@ -141,63 +164,24 @@ export default function App() {
         height={dimensions.height}
         theme={theme}
         initialData={{ elements: initialElements, appState: intitialAppState }}
-        onChange={(elements, appState) => {
-          const {
-            viewBackgroundColor,
-            zenModeEnabled,
-            viewModeEnabled,
-            gridSize,
-            scrollX,
-            scrollY,
-            theme,
-            exportBackground,
-            exportEmbedScene,
-            exportWithDarkMode,
-            elementLocked,
-            zoom,
-          } = appState;
+        onChange={(_, appState) => {
 
-          vscode.setState({
-            elements: elements,
-            themeConfig: themeConfig,
-            appState: {
-              viewBackgroundColor: viewBackgroundColor,
-              zenModeEnabled: zenModeEnabled,
-              viewModeEnabled: viewModeEnabled,
-              gridSize: gridSize,
-              scrollX: scrollX,
-              scrollY: scrollY,
-              theme: theme,
-              exportBackground: exportBackground,
-              exportEmbedScene: exportEmbedScene,
-              exportWithDarkMode: exportWithDarkMode,
-              elementLocked: elementLocked,
-              zoom: zoom,
-            }
-          }
-          );
           updateExtensionWithDelay({
-            elements: excalidrawRef.current.getSceneElements(), appState: {
-              viewBackgroundColor: viewBackgroundColor,
-              gridSize: gridSize,
-              scrollX: scrollX,
-              scrollY: scrollY,
-              zoom: zoom
-            }
-          })
-        }
-        }
+            elements: excalidrawRef.current.getSceneElements(),
+            appState: appState,
+          });
+        }}
         name="Custom name of drawing"
       />
     </div>
   );
 }
 
-
 function debounce(func, wait, immediate) {
   var timeout;
   return function () {
-    var context = this, args = arguments;
+    var context = this,
+      args = arguments;
     var later = function () {
       timeout = null;
       if (!immediate) func.apply(context, args);
@@ -207,36 +191,74 @@ function debounce(func, wait, immediate) {
     timeout = setTimeout(later, wait);
     if (callNow) func.apply(context, args);
   };
-};
+}
 
 // We used the debounce utility to limit the number of update to Vscode
 function updateExtension({ elements, appState }) {
-  let newSceneVersion = getSceneVersion(elements)
-  if (newSceneVersion != currentSceneVersion) {
-    currentSceneVersion = newSceneVersion
+  const {
+    viewBackgroundColor,
+    zenModeEnabled,
+    viewModeEnabled,
+    gridSize,
+    scrollX,
+    scrollY,
+    theme,
+    exportBackground,
+    exportEmbedScene,
+    exportWithDarkMode,
+    elementLocked,
+    zoom,
+  } = appState;
+  vscode.setState({
+    elements: elements,
+    themeConfig: themeConfig,
+    appState: {
+      viewBackgroundColor: viewBackgroundColor,
+      zenModeEnabled: zenModeEnabled,
+      viewModeEnabled: viewModeEnabled,
+      gridSize: gridSize,
+      scrollX: scrollX,
+      scrollY: scrollY,
+      theme: theme,
+      exportBackground: exportBackground,
+      exportEmbedScene: exportEmbedScene,
+      exportWithDarkMode: exportWithDarkMode,
+      elementLocked: elementLocked,
+      zoom: zoom,
+    },
+  });
+  let newSceneVersion = getSceneVersion(elements);
+  if (newSceneVersion != currentSceneVersion || currentBackgroundColor != appState.viewBackgroundColor) {
+    currentSceneVersion = newSceneVersion;
+    currentBackgroundColor = appState.viewBackgroundColor
     postMessage({
       type: "update",
       elements: elements,
-      appState: appState
-    })
+      appState: {
+        viewBackgroundColor: viewBackgroundColor,
+        gridSize: gridSize,
+        scrollX: scrollX,
+        scrollY: scrollY,
+        zoom: zoom,
+      },
+    });
   }
 }
-const updateExtensionWithDelay = debounce(updateExtension, 500, false)
+const updateExtensionWithDelay = debounce(updateExtension, 500, false);
 
 // Remove default save shortcut for excalidraw
-document.addEventListener('keydown', function (e) {
+document.addEventListener("keydown", function (e) {
   if ((e.metaKey || e.ctrlKey) && e.key == "s") {
     e.cancelBubble = true;
     e.stopImmediatePropagation();
-    postMessage({ type: 'save' })
+    postMessage({ type: "save" });
   }
   return false;
 });
 
 function postMessage(msg) {
-  vscode.postMessage(msg)
-
+  vscode.postMessage(msg);
 }
 function log(msg) {
-  vscode.postMessage({ type: 'log', msg: msg })
+  vscode.postMessage({ type: "log", msg: msg });
 }

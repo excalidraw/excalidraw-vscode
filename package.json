@@ -66,10 +66,6 @@
 								"type": "boolean",
 								"description": "Indicates whether background should be exported"
 							},
-							"viewBackgroundColor": {
-								"type": "string",
-								"description": "The default background color"
-							},
 							"shouldAddWatermark": {
 								"type": "boolean",
 								"description": "Indicates whether watermark should be exported"
@@ -81,7 +77,6 @@
 						},
 						"default": {
 							"exportBackground": true,
-							"viewBackgroundColor": "#fff",
 							"shouldAddWatermark": false,
 							"exportWithDarkMode": false
 						}
@@ -94,6 +89,11 @@
 							"dark",
 							"light",
 							"auto"
+						],
+						"enumDescriptions": [
+							"Always use dark theme",
+							"Always use light theme",
+							"Sync theme with vscode"
 						]
 					}
 				}
