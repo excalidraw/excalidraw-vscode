@@ -11,7 +11,11 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCustomEditor:editor.excalidraw"
+		"onCustomEditor:editor.excalidraw",
+		"onCommand:excalidraw.export.config",
+		"onCommand:excalidraw.setTheme.dark",
+		"onCommand:excalidraw.setTheme.light",
+		"onCommand:excalidraw.setTheme.auto"
 	],
 	"repository": {
 		"type": "git",
@@ -97,12 +101,16 @@
 		],
 		"commands": [
 			{
-				"command": "excalidraw.setTheme.auto",
-				"title": "Excalidraw: Set theme to auto"
+				"command": "excalidraw.openInApplication",
+				"title": "Excalidraw: Open in application"
 			},
 			{
-				"command": "excalidraw.openInApplication",
-				"title": "Excalidraw: Open in Application"
+				"command": "excalidraw.export.config",
+				"title": "Excalidraw: Export options"
+			},
+			{
+				"command": "excalidraw.setTheme.auto",
+				"title": "Excalidraw: Set theme to auto"
 			},
 			{
 				"command": "excalidraw.setTheme.dark",

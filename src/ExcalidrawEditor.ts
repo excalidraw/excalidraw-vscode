@@ -4,24 +4,9 @@ import * as path from 'path';
 const open = require('open');
 
 
-/**
- * Provider for cat scratch editors.
- * 
- * Cat scratch editors are used for `.cscratch` files, which are just json files.
- * To get started, run this extension and open an empty `.cscratch` file in VS Code.
- * 
- * This provider demonstrates:
- * 
- * - Setting up the initial webview for a custom editor.
- * - Loading scripts and styles in a custom editor.
- * - Synchronizing changes between a text document and a custom editor.
- */
 export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider {
 
 	public static register(context: vscode.ExtensionContext): vscode.Disposable {
-		const setTheme = (theme: string) => {
-			vscode.workspace.getConfiguration('excalidraw').update('theme', theme)
-		}
 		vscode.commands.registerCommand("excalidraw.openInApplication", () => {
 			ExcalidrawEditorProvider.openInApplication()
 		})
@@ -30,15 +15,6 @@ export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider
 		})
 		vscode.commands.registerCommand("excalidraw.export.png", () => {
 			ExcalidrawEditorProvider.exportToIMG("png")
-		})
-		vscode.commands.registerCommand("excalidraw.setTheme.auto", () => {
-			setTheme("auto")
-		})
-		vscode.commands.registerCommand("excalidraw.setTheme.light", () => {
-			setTheme("light")
-		})
-		vscode.commands.registerCommand("excalidraw.setTheme.dark", () => {
-			setTheme("dark")
 		})
 
 		const provider = new ExcalidrawEditorProvider(context);
@@ -210,8 +186,6 @@ export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider
 
 		const edit = new vscode.WorkspaceEdit();
 
-		// Just replace the entire document every time for this example extension.
-		// A more complete extension should compute minimal edits instead.
 		edit.replace(
 			document.uri,
 			new vscode.Range(0, 0, document.lineCount, 0),
