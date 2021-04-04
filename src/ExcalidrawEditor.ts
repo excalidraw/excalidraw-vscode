@@ -94,6 +94,8 @@ export class ExcalidrawEditorProvider
 
 		ExcalidrawEditorProvider.exportToIMG = exportToIMG;
 		webviewPanel.onDidChangeViewState((e) => {
+			if (document.uri.scheme === 'git')
+				return
 			if (e.webviewPanel.active) {
 				ExcalidrawEditorProvider.exportToIMG = exportToIMG;
 				refreshTheme();
