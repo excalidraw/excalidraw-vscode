@@ -4,6 +4,18 @@ This unofficial extension integrates Excalidraw into VS Code.
 
 ![](doc/home.jpg)
 
+- [Excalidraw VS Code Embed](#excalidraw-vs-code-embed)
+	- [Features](#features)
+		- [Browse and edit your schemas directly in VS Code](#browse-and-edit-your-schemas-directly-in-vs-code)
+		- [Two way sync between editors](#two-way-sync-between-editors)
+		- [Export to png/svg](#export-to-pngsvg)
+		- [Integration with Git](#integration-with-git)
+		- [Automatic Dark/Light Theme](#automatic-darklight-theme)
+		- [Switch between VS Code and Excalidraw PWA](#switch-between-vs-code-and-excalidraw-pwa)
+	- [Missing Features](#missing-features)
+	- [See Also / Credits](#see-also--credits)
+	- [Similar Extensions](#similar-extensions)
+
 ## Features
 
 ### Browse and edit your schemas directly in VS Code
@@ -52,8 +64,7 @@ Instruction to install Excalidraw as a PWA :
 ## See Also / Credits
 
 - [Excalidraw project](https://github.com/excalidraw/excalidraw): My favorite open source drawing app <3
-- Excalidraw Embed: Excalidraw exported as a component to directly embed in your projects
-- Draw.io VS Code integration: Huge source of inspiration, go checkout @hediet work !
+- [Draw.io VS Code integration](https://marketplace.visualstudio.com/items?itemName=hediet.vscode-drawio): Huge source of inspiration, go checkout @hediet work !
 - [Roam Excalidraw](https://roam-excalidraw.com/): Existing integration in Roam Research, another source of inspiration
 - [Marp](https://marketplace.visualstudio.com/items?itemName=marp-team.marp-vscode): this extension was built to be able to easily integrate schemas to my marp slides
 
