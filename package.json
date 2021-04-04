@@ -1,15 +1,27 @@
 {
-	"name": "vscode-excalidraw-embed",
-	"displayName": "Vscode Excalidraw",
-	"description": "Excalidraw custom editor for vscode",
+	"name": "excalidraw-editor",
+	"icon": "logo.png",
+	"displayName": "Excalidraw Editor",
+	"description": "Excalidraw embedded in VSCode !",
 	"version": "1.0.0",
 	"publisher": "pomdtr",
 	"engines": {
 		"vscode": "^1.52.0"
 	},
 	"categories": [
-		"Other"
+		"Visualization"
 	],
+	"keywords": [
+		"draw",
+		"schemas",
+		"graphics",
+		"paint"
+	],
+	"author": {
+		"name": "pomdtr",
+		"email": "achille.lacoin@gmail.com",
+		"url": "https://github.com/pomdtr"
+	},
 	"activationEvents": [
 		"onCustomEditor:editor.excalidraw",
 		"onCommand:excalidraw.export.config",
@@ -17,7 +29,7 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/microsoft/vscode-extension-samples.git"
+		"url": "https://github.com/pomdtr/vscode-excalidraw-embed"
 	},
 	"main": "./out/extension.js",
 	"contributes": {
@@ -151,7 +163,6 @@
 		"compile:excalidraw": "cd ./excalidraw && npm run build"
 	},
 	"devDependencies": {
-		"@types/mustache": "^4.1.1",
 		"@types/node": "^12.12.0",
 		"@types/vscode": "^1.52.0",
 		"@typescript-eslint/eslint-plugin": "^4.16.0",

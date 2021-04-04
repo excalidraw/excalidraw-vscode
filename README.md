@@ -1,20 +1,19 @@
-# Excalidraw VS Code Embed
+# Excalidraw Editor
 
 This unofficial extension integrates Excalidraw into VS Code.
 
-![](doc/home.jpg)
+- [Features](#features)
+	- [Browse and edit your schemas directly in VS Code](#browse-and-edit-your-schemas-directly-in-vs-code)
+	- [Two way sync between editors](#two-way-sync-between-editors)
+	- [Export to png/svg](#export-to-pngsvg)
+	- [Integration with Git](#integration-with-git)
+	- [Automatic Dark/Light Theme](#automatic-darklight-theme)
+	- [Switch between VS Code and Excalidraw Progressive Web App](#switch-between-vs-code-and-excalidraw-progressive-web-app)
+- [Missing Features](#missing-features)
+- [See Also / Credits](#see-also--credits)
+- [Similar Extensions](#similar-extensions)
 
-- [Excalidraw VS Code Embed](#excalidraw-vs-code-embed)
-	- [Features](#features)
-		- [Browse and edit your schemas directly in VS Code](#browse-and-edit-your-schemas-directly-in-vs-code)
-		- [Two way sync between editors](#two-way-sync-between-editors)
-		- [Export to png/svg](#export-to-pngsvg)
-		- [Integration with Git](#integration-with-git)
-		- [Automatic Dark/Light Theme](#automatic-darklight-theme)
-		- [Switch between VS Code and Excalidraw PWA](#switch-between-vs-code-and-excalidraw-pwa)
-	- [Missing Features](#missing-features)
-	- [See Also / Credits](#see-also--credits)
-	- [Similar Extensions](#similar-extensions)
+![](doc/home.jpg)
 
 ## Features
 
@@ -45,9 +44,9 @@ Quickly preview change between commits.
 
 ![](doc/theme.gif)
 
-`Exalidraw: Color Theme`
+Use the `Exalidraw: Color Theme` command to switch theme.
 
-### Switch between VS Code and Excalidraw PWA
+### Switch between VS Code and Excalidraw Progressive Web App
 
 Use the `Excalidraw: Open in Application` command to edit your schema in Excalidraw PWA.
 
@@ -59,7 +58,10 @@ Instruction to install Excalidraw as a PWA :
 
 - Collaboration: The extension should work in Live Share, but the native excalidraw collaboration is not supported
 - Export as Link: This requires a connexion to Excalidraw servers, this extension run locally
-- Library support: I did not find a way to integrate it
+- Library support: I did not find a way to integrate it.
+  An issue has been created in the upstream project: https://github.com/excalidraw/excalidraw/issues/3400
+
+However, you can gain acces to all of these features by [switching to the pwa](#switch-between-vs-code-and-excalidraw-pwa)
 
 ## See Also / Credits
 
