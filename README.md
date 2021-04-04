@@ -1,25 +1,66 @@
-# Cat Customs - Custom Editor API Samples
+# Excalidraw VS Code Embed
 
-![Paw draw editor ](documentation/example.png)
+This unofficial extension integrates Excalidraw into VS Code.
 
-Demonstrates VS Code's [custom editor API](https://code.visualstudio.com/api/extension-guides/custom-editors) using two custom editors:
+![](doc/home.jpg)
 
-- Cat Scratch — Uses the finalized custom text editor api to provide a custom editor for `.cscratch` files (which are just json files)
-- Paw Draw - Uses the binary custom editor api to provide a custom editor for `.pawdraw` files (which are just png files with a different file extension).
+## Features
 
-## VS Code API
+### Browse and edit your schemas directly in VS Code
 
-### `vscode` module
+![](doc/browse.gif)
 
-- [`window.registerCustomEditorProvider`](https://code.visualstudio.com/api/references/vscode-api#window.registerCustomEditorProvider)
-- [`CustomTextEditor`](https://code.visualstudio.com/api/references/vscode-api#CustomTextEditor)
-- [`CustomEditor`](https://code.visualstudio.com/api/references/vscode-api#CustomEditor)
+### Two way sync between editors
 
-## Running the example
+![](doc/sync.gif)
 
-- Open this example in VS Code 1.46+
-- `npm install`
-- `npm run watch` or `npm run compile`
-- `F5` to start debugging
+### Export to png/svg
 
-Open the example files from the `exampleFiles` directory.
+![](doc/export.gif)
+
+Excalidraw Commands:
+- `Excalidraw: Export to svg`
+- `Excalidraw: Export to png`
+- `Excalidraw: Export Options`
+
+### Integration with Git
+
+![](doc/scm.jpg)
+
+Quickly preview change between commits.
+
+### Automatic Dark/Light Theme
+
+![](doc/theme.gif)
+
+`Exalidraw: Color Theme`
+
+### Switch between VS Code and Excalidraw PWA
+
+Use the `Excalidraw: Open in Application` command to edit your schema in Excalidraw PWA.
+
+Instruction to install Excalidraw as a PWA :
+
+![](doc/pwa.gif)
+
+## Missing Features
+
+- Collaboration: The extension should work in Live Share, but the native excalidraw collaboration is not supported
+- Export as Link: This requires a connexion to Excalidraw servers, this extension run locally
+- Library support: I did not find a way to integrate it
+
+## See Also / Credits
+
+- [Excalidraw project](https://github.com/excalidraw/excalidraw): My favorite open source drawing app <3
+- Excalidraw Embed: Excalidraw exported as a component to directly embed in your projects
+- Draw.io VS Code integration: Huge source of inspiration, go checkout @hediet work !
+- [Roam Excalidraw](https://roam-excalidraw.com/): Existing integration in Roam Research, another source of inspiration
+- [Marp](https://marketplace.visualstudio.com/items?itemName=marp-team.marp-vscode): this extension was built to be able to easily integrate schemas to my marp slides
+
+## Similar Extensions
+
+There are already excalidraw extensions in vscode, but none of them use the excalidraw npm package.
+It should be quicker to integrate new features using the officialy provided component !
+
+- [Excalidraw Integration](https://marketplace.visualstudio.com/items?itemName=brijeshb42.vscode-excalidraw)
+- [Excalidraw VSCode Plugin](https://marketplace.visualstudio.com/items?itemName=jkchao.vscode-excalidraw-plugin)
