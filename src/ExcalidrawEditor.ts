@@ -65,7 +65,7 @@ export class ExcalidrawEditorProvider
 				theme: theme,
 			});
 		};
-		vscode.workspace.onDidChangeConfiguration((e) => {
+		const changeConfigurationSubscription = vscode.workspace.onDidChangeConfiguration((e) => {
 			if (e.affectsConfiguration("excalidraw.theme")) {
 				refreshTheme();
 			}
@@ -133,6 +133,7 @@ export class ExcalidrawEditorProvider
 		// Make sure we get rid of the listener when our editor is closed.
 		webviewPanel.onDidDispose(() => {
 			changeDocumentSubscription.dispose();
+			changeConfigurationSubscription.dispose()
 		});
 
 		// Receive message from the webview.

@@ -60,8 +60,9 @@ window.addEventListener("message", (e) => {
   switch (message.type) {
     case "update":
       const { elements, appState } = message;
-      if (currentSceneVersion != getSceneVersion(elements)) {
+      if (currentSceneVersion != getSceneVersion(elements) || appState.viewBackgroundColor != currentBackgroundColor) {
         currentSceneVersion = getSceneVersion(elements);
+        currentBackgroundColor = appState.viewBackgroundColor;
         updateApp({ elements: elements, appState: appState });
       }
       return;
@@ -172,7 +173,6 @@ export default function App() {
             appState: appState,
           });
         }}
-        name="Custom name of drawing"
       />
     </div>
   );
