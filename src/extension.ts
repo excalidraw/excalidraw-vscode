@@ -5,36 +5,26 @@ export function activate(context: vscode.ExtensionContext) {
 	// Register our custom editor providers
 	context.subscriptions.push(ExcalidrawEditorProvider.register(context));
 	context.subscriptions.push(
-		vscode.commands.registerCommand("excalidraw.theme.config", () => {
-			const config = vscode.workspace.getConfiguration("excalidraw");
-			const originalTheme = config.get("theme");
-			vscode.window
-				.showQuickPick([
-					{ label: "auto", description: "Sync theme with vscode" },
-					{ label: "light", description: "Always use light theme" },
-					{ label: "dark", description: "Always use dark theme" },
-				], {
-					onDidSelectItem: item => {
-						config.update("theme", typeof item === 'string' ? item : item.label)
-					}
-				})
-				.then((theme) => {
-					if (theme !== undefined)
-						vscode.workspace
-							.getConfiguration("excalidraw")
-							.update("theme", theme.label);
-					else
-						config.update("theme", originalTheme)
-				}, () => {
-					config.update("theme", originalTheme)
-				});
-		})
+		vscode.commands.registerCommand("excalidraw.export.config", updateExportConfig)
 	);
 	context.subscriptions.push(
-		vscode.commands.registerCommand("excalidraw.export.config", () => {
-			updateExportConfig();
-		})
-	);
+		vscode.commands.registerCommand("excalidraw.theme.config", updateThemeConfig)
+	)
+}
+
+function updateThemeConfig() {
+	vscode.window
+		.showQuickPick([
+			{ label: "auto", description: "Sync theme with vscode" },
+			{ label: "light", description: "Always use light theme" },
+			{ label: "dark", description: "Always use dark theme" },
+		])
+		.then((theme) => {
+			if (theme !== undefined)
+				vscode.workspace
+					.getConfiguration("excalidraw")
+					.update("theme", theme.label);
+		});
 }
 
 function updateExportConfig() {
