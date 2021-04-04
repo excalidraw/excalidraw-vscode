@@ -1,6 +1,7 @@
 # Excalidraw Editor
 
 This unofficial extension integrates Excalidraw into VS Code.
+To use it, create an empty file with an .excalidraw extension and open it in VSCode.
 
 - [Features](#features)
 	- [Browse and edit your schemas directly in VS Code](#browse-and-edit-your-schemas-directly-in-vs-code)
