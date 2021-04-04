@@ -112,10 +112,6 @@ export default function App() {
   const excalidrawRef = useRef(null);
   const [theme, setTheme] = useState(getTheme());
   const excalidrawWrapperRef = useRef(null);
-  const [dimensions, setDimensions] = useState({
-    width: undefined,
-    height: undefined,
-  });
 
   updateTheme = () => {
     setTheme(getTheme());
@@ -127,12 +123,14 @@ export default function App() {
       appState: appState,
     });
   };
+
   toSVG = (exportParams) => {
     return exportToSvg({
       elements: excalidrawRef.current.getSceneElements(),
       appState: { ...excalidrawRef.current.getAppState(), ...exportParams },
     });
   };
+
   toPNG = (exportParams) => {
     return exportToBlob({
       elements: excalidrawRef.current.getSceneElements(),
@@ -140,30 +138,12 @@ export default function App() {
     });
   };
 
-  useEffect(() => {
-    setDimensions({
-      width: excalidrawWrapperRef.current.getBoundingClientRect().width,
-      height: excalidrawWrapperRef.current.getBoundingClientRect().height,
-    });
-    const onResize = () => {
-      setDimensions({
-        width: excalidrawWrapperRef.current.getBoundingClientRect().width,
-        height: excalidrawWrapperRef.current.getBoundingClientRect().height,
-      });
-    };
-
-    window.addEventListener("resize", onResize);
-
-    return () => window.removeEventListener("resize", onResize);
-  }, [excalidrawWrapperRef]);
-
   return (
     <div className="excalidraw-wrapper" ref={excalidrawWrapperRef}>
       <Excalidraw
         ref={excalidrawRef}
+        UIOptions={{ canvasActions: { clearCanvas: false, export: false, loadScene: false, saveAsScene: false, saveScene: false } }}
         viewModeEnabled={readOnly}
-        width={dimensions.width}
-        height={dimensions.height}
         theme={theme}
         initialData={{ elements: initialElements, appState: intitialAppState }}
         onChange={(_, appState) => {
@@ -246,16 +226,6 @@ function updateExtension({ elements, appState }) {
   }
 }
 const updateExtensionWithDelay = debounce(updateExtension, 250, false);
-
-// Remove default save shortcut for excalidraw
-document.addEventListener("keydown", function (e) {
-  if ((e.metaKey || e.ctrlKey) && e.key == "s") {
-    e.cancelBubble = true;
-    e.stopImmediatePropagation();
-    postMessage({ type: "save" });
-  }
-  return false;
-});
 
 function postMessage(msg) {
   vscode.postMessage(msg);
