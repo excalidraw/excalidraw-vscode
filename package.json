@@ -2,8 +2,8 @@
 	"name": "excalidraw-editor",
 	"icon": "logo.png",
 	"displayName": "Excalidraw Editor",
-	"description": "Excalidraw embedded in VSCode !",
-	"version": "1.0.0",
+	"description": "Draw schemas in vscode using Excalidraw!",
+	"version": "1.0.1",
 	"publisher": "pomdtr",
 	"engines": {
 		"vscode": "^1.52.0"
