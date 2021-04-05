@@ -3,28 +3,21 @@
 This unofficial extension integrates Excalidraw into VS Code.
 To use it, create an empty file with an .excalidraw extension and open it in VSCode.
 
+Try the official web version at : https://excalidraw.com/
+
+![](doc/home.jpg)
+
 - [Features](#features)
-	- [Browse and edit your schemas directly in VS Code](#browse-and-edit-your-schemas-directly-in-vs-code)
-	- [Two way sync between editors](#two-way-sync-between-editors)
 	- [Export to png/svg](#export-to-pngsvg)
 	- [Integration with Git](#integration-with-git)
+	- [Two-way sync between editors](#two-way-sync-between-editors)
 	- [Automatic Dark/Light Theme](#automatic-darklight-theme)
 	- [Switch between VS Code and Excalidraw Progressive Web App](#switch-between-vs-code-and-excalidraw-progressive-web-app)
 - [Missing Features](#missing-features)
 - [See Also / Credits](#see-also--credits)
 - [Similar Extensions](#similar-extensions)
 
-![](doc/home.jpg)
-
 ## Features
-
-### Browse and edit your schemas directly in VS Code
-
-![](doc/browse.gif)
-
-### Two way sync between editors
-
-![](doc/sync.gif)
 
 ### Export to png/svg
 
@@ -40,6 +33,10 @@ Excalidraw Commands:
 ![](doc/scm.jpg)
 
 Quickly preview change between commits.
+
+### Two-way sync between editors
+
+![](doc/sync.gif)
 
 ### Automatic Dark/Light Theme
 

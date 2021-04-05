@@ -52,8 +52,6 @@ export class ExcalidrawEditorProvider
 		webviewPanel.webview.options = {
 			enableScripts: true,
 		};
-
-		vscode.commands.executeCommand("setContext", "excalidraw.focused", true);
 		webviewPanel.webview.html = this.getHtmlForWebview(document);
 
 		const refreshTheme = () => {
@@ -141,6 +139,13 @@ export class ExcalidrawEditorProvider
 		// Receive message from the webview.
 		webviewPanel.webview.onDidReceiveMessage((e) => {
 			switch (e.type) {
+				case "init":
+					vscode.commands.executeCommand(
+						"setContext",
+						"excalidraw.focused",
+						true
+					);
+					return
 				case "update":
 					this.updateTextDocument(document, e.elements, e.appState);
 					return;

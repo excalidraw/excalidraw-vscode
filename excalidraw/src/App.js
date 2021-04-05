@@ -113,6 +113,10 @@ export default function App() {
   const [theme, setTheme] = useState(getTheme());
   const excalidrawWrapperRef = useRef(null);
 
+  useEffect(() => {
+    vscode.postMessage({ type: 'init' })
+  })
+
   updateTheme = () => {
     setTheme(getTheme());
   };
