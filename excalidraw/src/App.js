@@ -15,6 +15,7 @@ const initialData = previousState ? previousState : window.initialData;
 let {
   elements: initialElements = [],
   appState: intitialAppState = {},
+  libraryItems,
   themeConfig,
   readOnly
 } = initialData;
@@ -149,7 +150,12 @@ export default function App() {
         UIOptions={{ canvasActions: { clearCanvas: false, export: false, loadScene: false, saveAsScene: false, saveScene: false } }}
         viewModeEnabled={readOnly}
         theme={theme}
-        initialData={{ elements: initialElements, appState: intitialAppState }}
+        initialData={{ elements: initialElements, appState: intitialAppState, libraryItems: libraryItems }}
+        onLibraryChange={
+          (items) => {
+            vscode.postMessage({type: 'library', items: items})
+          }
+        }
         onChange={(_, appState) => {
 
           updateExtensionWithDelay({

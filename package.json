@@ -3,7 +3,7 @@
 	"icon": "logo.png",
 	"displayName": "Excalidraw Schema Editor",
 	"description": "Draw schemas in VSCode using Excalidraw (Unofficial)",
-	"version": "1.0.4",
+	"version": "1.1.0",
 	"publisher": "pomdtr",
 	"engines": {
 		"vscode": "^1.52.0"
@@ -93,6 +93,16 @@
 						"description": "Indicates whether background should be exported",
 						"default": true
 					},
+					"excalidraw.export.globs": {
+						"type": "object",
+						"patternProperties": {
+							".+": {
+								"type": "string"
+							}
+						},
+						"default": {},
+						"description": "A glob -> dir dict. All excalidraw file matching the glob will automatically export to dir."
+					},
 					"excalidraw.export.shouldAddWatermark": {
 						"type": "boolean",
 						"description": "Indicates whether watermark should be exported",
@@ -172,6 +182,7 @@
 		"typescript": "^4.2.2"
 	},
 	"dependencies": {
+		"minimatch": "^3.0.4",
 		"open": "^8.0.5"
 	}
 }
