@@ -203,6 +203,7 @@ function updateExtension({ elements, appState }) {
   vscode.setState({
     elements: elements,
     themeConfig: themeConfig,
+    libraryItems: libraryItems,
     appState: {
       viewBackgroundColor: viewBackgroundColor,
       zenModeEnabled: zenModeEnabled,

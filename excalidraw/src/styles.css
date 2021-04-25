@@ -11,21 +11,21 @@ body {
   display: none !important;
 }
 
-.github-corner {
-  display: none !important;
-}
-
 .App-bottom-bar .Stack.Stack_vertical > button {
   display: none !important;
 }
 
-.encrypted-icon {
+a[target="_excalidraw_libraries"] {
   display: none !important;
 }
 
-/* .ToolIcon_type_button__library {
+button[title="Reset library"] {
   display: none !important;
-} */
+}
+
+.ToolIcon_type_button__library {
+  display: none !important;
+}
 
 kbd {
   color: var(--text-primary-color);

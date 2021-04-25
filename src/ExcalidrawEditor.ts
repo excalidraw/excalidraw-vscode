@@ -151,7 +151,6 @@ export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider
 					);
 					return;
 				case "library":
-					console.log(`received items: ${e.items}`)
 					this.context.globalState.update("libraryItems", e.items)
 					break;
 				case "update":
@@ -234,7 +233,6 @@ export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider
 		const config = vscode.workspace.getConfiguration("excalidraw");
 		const themeConfig = config.get("theme", "auto");
 		const libraryItems = this.context.globalState.get("libraryItems", [])
-		console.log(`libraryItems: ${libraryItems}`)
 
 		if (text.trim().length === 0) {
 			return { elements: [], appState: {}, themeConfig: themeConfig, libraryItems: libraryItems };

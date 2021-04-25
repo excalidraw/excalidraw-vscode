@@ -56,8 +56,6 @@ Instruction to install Excalidraw as a PWA :
 
 - Collaboration: The extension should work in Live Share, but the native excalidraw collaboration is not supported
 - Export as Link: This requires a connexion to Excalidraw servers, this extension run locally
-- Library support: I did not find a way to integrate it.
-  An issue has been created in the upstream project: https://github.com/excalidraw/excalidraw/issues/3400
 
 However, you can gain acces to all of these features by [switching to the pwa](#switch-between-vs-code-and-excalidraw-pwa)
 
