@@ -147,7 +147,7 @@ export default function App() {
     <div className="excalidraw-wrapper" ref={excalidrawWrapperRef}>
       <Excalidraw
         ref={excalidrawRef}
-        UIOptions={{ canvasActions: { clearCanvas: false, export: false, loadScene: false, saveAsScene: false, saveScene: false } }}
+        UIOptions={{ canvasActions: { clearCanvas: false, export: false, loadScene: false, saveScene: false } }}
         viewModeEnabled={readOnly}
         theme={theme}
         initialData={{ elements: initialElements, appState: intitialAppState, libraryItems: libraryItems }}
