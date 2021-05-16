@@ -15,15 +15,7 @@ body {
   display: none !important;
 }
 
-a[target="_excalidraw_libraries"] {
-  display: none !important;
-}
-
-button[title="Reset library"] {
-  display: none !important;
-}
-
-.ToolIcon_type_button__library {
+.layer-ui__library-header {
   display: none !important;
 }
 
