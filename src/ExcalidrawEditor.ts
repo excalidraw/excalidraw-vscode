@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
-const open = require("open");
-const minimatch = require("minimatch");
+import * as open from "open";
+import * as minimatch from "minimatch";
 
 export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider {
 	public static register(context: vscode.ExtensionContext): vscode.Disposable {
