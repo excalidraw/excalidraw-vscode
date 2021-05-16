@@ -5,6 +5,8 @@
 ### New Features
 
 - Upgrade excalidraw to 0.8.0
+- Add autoSave feature (See `excalidraw.save` setting)
+- Add support for workspace trust API
 
 ### Fixes
 
