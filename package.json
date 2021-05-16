@@ -1,189 +1,199 @@
 {
-	"name": "excalidraw-editor",
-	"icon": "logo.png",
-	"displayName": "Excalidraw Schema Editor",
-	"description": "Draw schemas in VSCode using Excalidraw (Unofficial)",
-	"version": "1.2.0",
-	"publisher": "pomdtr",
-	"engines": {
-		"vscode": "^1.52.0"
-	},
-	"categories": [
-		"Visualization"
-	],
-	"keywords": [
-		"draw",
-		"schemas",
-		"graphics",
-		"paint"
-	],
-	"author": {
-		"name": "pomdtr",
-		"email": "achille.lacoin@gmail.com",
-		"url": "https://github.com/pomdtr"
-	},
-	"activationEvents": [
-		"onCustomEditor:editor.excalidraw",
-		"onCommand:excalidraw.export.config",
-		"onCommand:excalidraw.theme.config"
-	],
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/pomdtr/vscode-excalidraw-embed"
-	},
-	"main": "./out/extension.js",
-	"contributes": {
-		"submenus": [
-			{
-				"id": "excalidraw.editor.context",
-				"label": "Excalidraw"
-			}
-		],
-		"menus": {
-			"commandPalette": [
-				{
-					"command": "excalidraw.export.svg",
-					"when": "excalidraw.focused"
-				},
-				{
-					"command": "excalidraw.export.png",
-					"when": "excalidraw.focused"
-				},
-				{
-					"command": "excalidraw.openInApplication",
-					"when": "excalidraw.focused"
-				}
-			],
-			"excalidraw.editor.context": [
-				{
-					"command": "excalidraw.export.svg",
-					"when": "excalidraw.focused"
-				},
-				{
-					"command": "excalidraw.export.png",
-					"when": "excalidraw.focused"
-				},
-				{
-					"command": "excalidraw.openInApplication",
-					"when": "excalidraw.focused"
-				},
-				{
-					"command": "excalidraw.theme.config",
-					"when": "excalidraw.focused"
-				},
-				{
-					"command": "excalidraw.export.config",
-					"when": "excalidraw.focused"
-				}
-			],
-			"editor/title": [
-				{
-					"submenu": "excalidraw.editor.context",
-					"group": "excalidraw",
-					"when": "excalidraw.focused"
-				}
-			]
-		},
-		"configuration": [
-			{
-				"title": "Excalidraw",
-				"properties": {
-					"excalidraw.export.exportBackground": {
-						"type": "boolean",
-						"description": "Indicates whether background should be exported",
-						"default": true
-					},
-					"excalidraw.export.globs": {
-						"type": "object",
-						"patternProperties": {
-							".+": {
-								"type": "string"
-							}
-						},
-						"default": {},
-						"description": "A glob -> dir dict. All excalidraw file matching the glob will automatically export to dir."
-					},
-					"excalidraw.export.shouldAddWatermark": {
-						"type": "boolean",
-						"description": "Indicates whether watermark should be exported",
-						"default": false
-					},
-					"excalidraw.export.exportWithDarkMode": {
-						"type": "boolean",
-						"description": "Indicates whether to export with dark mode",
-						"default": false
-					},
-					"excalidraw.theme": {
-						"scope": "resource",
-						"description": "The theme to use for the Excalidraw editor.",
-						"type": "string",
-						"default": "light",
-						"enum": [
-							"dark",
-							"light",
-							"auto"
-						],
-						"enumDescriptions": [
-							"Always use dark theme",
-							"Always use light theme",
-							"Sync theme with vscode"
-						]
-					}
-				}
-			}
-		],
-		"commands": [
-			{
-				"command": "excalidraw.openInApplication",
-				"title": "Excalidraw: Open in application"
-			},
-			{
-				"command": "excalidraw.export.config",
-				"title": "Excalidraw: Export options"
-			},
-			{
-				"command": "excalidraw.theme.config",
-				"title": "Excalidraw: Color Theme"
-			},
-			{
-				"command": "excalidraw.export.svg",
-				"title": "Excalidraw: Export to svg"
-			},
-			{
-				"command": "excalidraw.export.png",
-				"title": "Excalidraw: Export to png"
-			}
-		],
-		"customEditors": [
-			{
-				"viewType": "editor.excalidraw",
-				"displayName": "Excalidraw Editor",
-				"selector": [
-					{
-						"filenamePattern": "*.excalidraw"
-					}
-				]
-			}
-		]
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "npm-run-all compile:*",
-		"compile:extension": "tsc",
-		"compile:excalidraw": "cd ./excalidraw && npm run build"
-	},
-	"devDependencies": {
-		"@types/minimatch": "^3.0.4",
-		"@types/node": "^15.3.0",
-		"@types/vscode": "^1.56.0",
-		"@typescript-eslint/eslint-plugin": "^4.23.0",
-		"@typescript-eslint/parser": "^4.23.0",
-		"eslint": "^7.26.0",
-		"npm-run-all": "^4.1.5",
-		"typescript": "^4.2.4"
-	},
-	"dependencies": {
-		"minimatch": "^3.0.4",
-		"open": "^8.0.8"
-	}
+    "name": "excalidraw-editor",
+    "icon": "logo.png",
+    "displayName": "Excalidraw Schema Editor",
+    "description": "Draw schemas in VSCode using Excalidraw (Unofficial)",
+    "version": "1.2.0",
+    "publisher": "pomdtr",
+    "engines": {
+        "vscode": "^1.56.0"
+    },
+    "categories": [
+        "Visualization"
+    ],
+    "keywords": [
+        "draw",
+        "schemas",
+        "graphics",
+        "paint"
+    ],
+    "author": {
+        "name": "pomdtr",
+        "email": "achille.lacoin@gmail.com",
+        "url": "https://github.com/pomdtr"
+    },
+    "activationEvents": [
+        "onCustomEditor:editor.excalidraw",
+        "onCommand:excalidraw.export.config",
+        "onCommand:excalidraw.theme.config"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/pomdtr/vscode-excalidraw-embed"
+    },
+    "main": "./out/extension.js",
+    "contributes": {
+        "submenus": [
+            {
+                "id": "excalidraw.editor.context",
+                "label": "Excalidraw"
+            }
+        ],
+        "menus": {
+            "commandPalette": [
+                {
+                    "command": "excalidraw.export.svg",
+                    "when": "excalidraw.focused"
+                },
+                {
+                    "command": "excalidraw.export.png",
+                    "when": "excalidraw.focused"
+                },
+                {
+                    "command": "excalidraw.openInApplication",
+                    "when": "excalidraw.focused"
+                }
+            ],
+            "excalidraw.editor.context": [
+                {
+                    "command": "excalidraw.export.svg",
+                    "when": "excalidraw.focused"
+                },
+                {
+                    "command": "excalidraw.export.png",
+                    "when": "excalidraw.focused"
+                },
+                {
+                    "command": "excalidraw.openInApplication",
+                    "when": "excalidraw.focused"
+                },
+                {
+                    "command": "excalidraw.theme.config",
+                    "when": "excalidraw.focused"
+                },
+                {
+                    "command": "excalidraw.export.config",
+                    "when": "excalidraw.focused"
+                }
+            ],
+            "editor/title": [
+                {
+                    "submenu": "excalidraw.editor.context",
+                    "group": "excalidraw",
+                    "when": "excalidraw.focused"
+                }
+            ]
+        },
+        "configuration": [
+            {
+                "title": "Excalidraw",
+                "properties": {
+                    "excalidraw.export.exportBackground": {
+                        "type": "boolean",
+                        "description": "Indicates whether background should be exported",
+                        "default": true
+                    },
+                    "excalidraw.export.globs": {
+                        "type": "object",
+                        "patternProperties": {
+                            ".+": {
+                                "type": "string"
+                            }
+                        },
+                        "default": {},
+                        "description": "A glob -> dir dict. All excalidraw file matching the glob will automatically export to dir."
+                    },
+                    "excalidraw.export.shouldAddWatermark": {
+                        "type": "boolean",
+                        "description": "Indicates whether watermark should be exported",
+                        "default": false
+                    },
+                    "excalidraw.export.exportWithDarkMode": {
+                        "type": "boolean",
+                        "description": "Indicates whether to export with dark mode",
+                        "default": false
+                    },
+                    "excalidraw.autoSave": {
+                        "type": "boolean",
+                        "description": "Controls auto save of excalidraw editors. This is only necessary if you don't want to set the ",
+                        "default": false
+                    },
+                    "excalidraw.theme": {
+                        "scope": "resource",
+                        "description": "The theme to use for the Excalidraw editor.",
+                        "type": "string",
+                        "default": "light",
+                        "enum": [
+                            "dark",
+                            "light",
+                            "auto"
+                        ],
+                        "enumDescriptions": [
+                            "Always use dark theme",
+                            "Always use light theme",
+                            "Sync theme with vscode"
+                        ]
+                    }
+                }
+            }
+        ],
+        "commands": [
+            {
+                "command": "excalidraw.openInApplication",
+                "title": "Excalidraw: Open in application"
+            },
+            {
+                "command": "excalidraw.export.config",
+                "title": "Excalidraw: Export options"
+            },
+            {
+                "command": "excalidraw.theme.config",
+                "title": "Excalidraw: Color Theme"
+            },
+            {
+                "command": "excalidraw.export.svg",
+                "title": "Excalidraw: Export to svg"
+            },
+            {
+                "command": "excalidraw.export.png",
+                "title": "Excalidraw: Export to png"
+            }
+        ],
+        "customEditors": [
+            {
+                "viewType": "editor.excalidraw",
+                "displayName": "Excalidraw Editor",
+                "selector": [
+                    {
+                        "filenamePattern": "*.excalidraw"
+                    }
+                ]
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "npm-run-all compile:*",
+        "compile:extension": "tsc",
+        "compile:excalidraw": "cd ./excalidraw && npm run build"
+    },
+    "capabilities": {
+        "untrustedWorkspaces": {
+            "supported": true
+        }
+    },
+    "devDependencies": {
+        "@types/minimatch": "^3.0.4",
+        "@types/node": "^15.3.0",
+        "@types/vscode": "^1.56.0",
+        "@typescript-eslint/eslint-plugin": "^4.23.0",
+        "@typescript-eslint/parser": "^4.23.0",
+        "eslint": "^7.26.0",
+        "npm-run-all": "^4.1.5",
+        "typescript": "^4.2.4"
+    },
+    "dependencies": {
+        "minimatch": "^3.0.4",
+        "open": "^8.0.8"
+    }
 }
