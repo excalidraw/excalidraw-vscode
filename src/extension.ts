@@ -45,6 +45,11 @@ function updateExportConfig() {
 			picked: !!exportConfig.get("exportWithDarkMode"),
 			description: "Indicates whether to export with dark mode",
 		},
+		{
+			label: "exportEmbedScene",
+			picked: !!exportConfig.get("exportEmbedScene"),
+			description: "Indicates whether scene data should be embedded in svg.",
+		},
 	];
 	vscode.window.showQuickPick(items, { canPickMany: true }).then((choices) => {
 		if (choices === undefined) return;
@@ -52,5 +57,6 @@ function updateExportConfig() {
 		exportConfig.update("exportBackground", selected.includes("exportBackground"))
 		exportConfig.update("shouldAddWatermark", selected.includes("shouldAddWatermark"))
 		exportConfig.update("exportWithDarkMode", selected.includes("exportWithDarkMode"))
+		exportConfig.update("exportEmbedScene", selected.includes("exportEmbedScene"))
 	});
 }

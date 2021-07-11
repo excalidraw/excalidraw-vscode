@@ -86,11 +86,13 @@ window.addEventListener("message", (e) => {
       break;
 
     case "export-to-svg":
-      postMessage({
-        type: "svg-export",
-        svg: toSVG(message.exportConfig).outerHTML,
-        path: message.path,
-      });
+      toSVG(message.exportConfig).then((svg) => {
+        postMessage({
+          type: "svg-export",
+          svg: svg.outerHTML,
+          path: message.path,
+        });
+      })
       return;
     case "export-to-png":
       toPNG(message.exportConfig).then((blob) => {

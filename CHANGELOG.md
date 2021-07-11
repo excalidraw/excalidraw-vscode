@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.0
+
+### New features
+
+- Upgrade excalidraw to 0.9.0
+- Add ability to embed scene during export to svg
+
 ## 1.2.0
 
 ### New Features

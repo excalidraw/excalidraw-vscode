@@ -103,6 +103,11 @@
                         "default": {},
                         "description": "A glob -> dir dict. All excalidraw file matching the glob will automatically export to dir."
                     },
+                    "excalidraw.export.exportEmbedScene": {
+                        "type": "boolean",
+                        "description": "Indicates whether scene data should be embedded in svg. This will increase the svg size.",
+                        "default": false
+                    },
                     "excalidraw.export.shouldAddWatermark": {
                         "type": "boolean",
                         "description": "Indicates whether watermark should be exported",
@@ -166,6 +171,9 @@
                 "selector": [
                     {
                         "filenamePattern": "*.excalidraw"
+                    },
+                    {
+                        "filenamePattern": "*.excalidraw.svg"
                     }
                 ]
             }

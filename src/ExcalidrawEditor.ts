@@ -90,6 +90,7 @@ export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider
 							exportBackground: exportConfig.get("exportBackground"),
 							shouldAddWatermark: exportConfig.get("shouldAddWatermark"),
 							exportWithDarkMode: exportConfig.get("exportWithDarkMode"),
+							exportEmbedScene: exportConfig.get("exportEmbedScene"),
 						},
 					});
 			});
@@ -163,6 +164,7 @@ export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider
 					return;
 				case "svg-export":
 					createDirIfNeeded(e.path)
+					console.log(e)
 					fs.writeFile(e.path, e.svg, (err) => {
 						if (err) vscode.window.showErrorMessage(err.message);
 						else vscode.window.showInformationMessage(`Export Successful`, "Open").then(msg => {
