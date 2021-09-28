@@ -1,14 +1,9 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
-import * as open from "open";
-import * as minimatch from "minimatch";
 
 export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider {
 	public static register(context: vscode.ExtensionContext): vscode.Disposable {
-		vscode.commands.registerCommand("excalidraw.openInApplication", () => {
-			ExcalidrawEditorProvider.openInApplication();
-		});
 		vscode.commands.registerCommand("excalidraw.export.svg", () => {
 			ExcalidrawEditorProvider.exportToIMG("svg");
 		});
@@ -26,11 +21,6 @@ export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider
 
 	private static readonly viewType = "editor.excalidraw";
 	public static exportToIMG: Function = () => {
-		vscode.window.showErrorMessage(
-			"At least one excalidraw editor must be active to use this command!"
-		);
-	};
-	public static openInApplication: Function = () => {
 		vscode.window.showErrorMessage(
 			"At least one excalidraw editor must be active to use this command!"
 		);
@@ -71,11 +61,6 @@ export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider
 				}
 			}
 		);
-
-		const openInApplication = () => {
-			open(document.uri.fsPath);
-		};
-		ExcalidrawEditorProvider.openInApplication = openInApplication;
 
 		const exportToIMG = (extension: string) => {
 			const exportConfig = vscode.workspace.getConfiguration(
@@ -266,25 +251,6 @@ export class ExcalidrawEditorProvider implements vscode.CustomTextEditorProvider
 			document.uri.fsPath,
 			path.extname(document.uri.fsPath)
 		);
-		const globs: any = vscode.workspace
-			.getConfiguration("excalidraw.export")
-			.get("globs");
-		const worskspaceFolder = vscode.workspace.workspaceFolders?.[0];
-		for (const [glob, outputDir] of Object.entries(globs)) {
-			if (minimatch(document.uri.fsPath, glob))
-				return new Promise((resolve) => {
-					if (worskspaceFolder === undefined || typeof outputDir != "string")
-						resolve(undefined);
-					else {
-						const outputPath = path.join(
-							worskspaceFolder.uri.fsPath,
-							outputDir,
-							`${basename}.${extension}`
-						);
-						resolve(vscode.Uri.parse(outputPath));
-					}
-				});
-		}
 		const filePath = path.join(dirname, `${basename}.${extension}`);
 		return vscode.window.showSaveDialog({
 			defaultUri: vscode.Uri.file(filePath),
