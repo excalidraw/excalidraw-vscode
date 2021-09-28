@@ -31,7 +31,7 @@
         "type": "git",
         "url": "https://github.com/pomdtr/vscode-excalidraw-embed"
     },
-    "main": "./out/extension.js",
+    "main": "./out/src/extension.js",
     "contributes": {
         "submenus": [
             {
@@ -48,10 +48,6 @@
                 {
                     "command": "excalidraw.export.png",
                     "when": "excalidraw.focused"
-                },
-                {
-                    "command": "excalidraw.openInApplication",
-                    "when": "excalidraw.focused"
                 }
             ],
             "excalidraw.editor.context": [
@@ -61,10 +57,6 @@
                 },
                 {
                     "command": "excalidraw.export.png",
-                    "when": "excalidraw.focused"
-                },
-                {
-                    "command": "excalidraw.openInApplication",
                     "when": "excalidraw.focused"
                 },
                 {
@@ -144,10 +136,6 @@
         ],
         "commands": [
             {
-                "command": "excalidraw.openInApplication",
-                "title": "Excalidraw: Open in application"
-            },
-            {
                 "command": "excalidraw.export.config",
                 "title": "Excalidraw: Export options"
             },
@@ -201,7 +189,6 @@
         "typescript": "^4.2.4"
     },
     "dependencies": {
-        "minimatch": "^3.0.4",
-        "open": "^8.0.8"
+        "minimatch": "^3.0.4"
     }
 }
