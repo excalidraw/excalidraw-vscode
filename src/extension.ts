@@ -1,21 +1,24 @@
 import * as vscode from "vscode";
 import { ExcalidrawEditorProvider } from "./ExcalidrawEditor";
+import { registerProtocolHander } from "./uriHandler";
 
 export function activate(context: vscode.ExtensionContext) {
 	// Register our custom editor providers
-	context.subscriptions.push(ExcalidrawEditorProvider.register(context));
+	ExcalidrawEditorProvider.register(context);
+
 	context.subscriptions.push(
 		vscode.commands.registerCommand("excalidraw.export.config", updateExportConfig)
 	);
+	registerProtocolHander()
 	context.subscriptions.push(
-		vscode.commands.registerCommand("excalidraw.theme.config", updateThemeConfig)
+		vscode.commands.registerCommand("excalidraw.selectTheme", updateThemeConfig)
 	)
 }
 
 function updateThemeConfig() {
 	vscode.window
 		.showQuickPick([
-			{ label: "auto", description: "Sync theme with vscode" },
+			// { label: "auto", description: "Sync theme with vscode" },
 			{ label: "light", description: "Always use light theme" },
 			{ label: "dark", description: "Always use dark theme" },
 		])

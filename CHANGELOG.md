@@ -5,7 +5,9 @@
 ### New features
 
 - Upgrade excalidraw to 0.9.0
-- Add ability to embed scene during export to svg
+- Add ability to embed scene during export to SVG
+- Add ability to directly embed pngs
+- scrollToContent when opening a file
 
 ## 1.2.0
 

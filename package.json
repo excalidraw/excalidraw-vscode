@@ -33,46 +33,15 @@
     },
     "main": "./out/src/extension.js",
     "contributes": {
-        "submenus": [
-            {
-                "id": "excalidraw.editor.context",
-                "label": "Excalidraw"
-            }
-        ],
         "menus": {
-            "commandPalette": [
+            "file/newFile": [
                 {
-                    "command": "excalidraw.export.svg",
-                    "when": "excalidraw.focused"
+                    "command": "markdown.marp.newExcalidraw",
+                    "group": "file"
                 },
                 {
-                    "command": "excalidraw.export.png",
-                    "when": "excalidraw.focused"
-                }
-            ],
-            "excalidraw.editor.context": [
-                {
-                    "command": "excalidraw.export.svg",
-                    "when": "excalidraw.focused"
-                },
-                {
-                    "command": "excalidraw.export.png",
-                    "when": "excalidraw.focused"
-                },
-                {
-                    "command": "excalidraw.theme.config",
-                    "when": "excalidraw.focused"
-                },
-                {
-                    "command": "excalidraw.export.config",
-                    "when": "excalidraw.focused"
-                }
-            ],
-            "editor/title": [
-                {
-                    "submenu": "excalidraw.editor.context",
-                    "group": "excalidraw",
-                    "when": "excalidraw.focused"
+                    "command": "markdown.marp.newSVGExcalidraw",
+                    "group": "file"
                 }
             ]
         },
@@ -84,16 +53,6 @@
                         "type": "boolean",
                         "description": "Indicates whether background should be exported",
                         "default": true
-                    },
-                    "excalidraw.export.globs": {
-                        "type": "object",
-                        "patternProperties": {
-                            ".+": {
-                                "type": "string"
-                            }
-                        },
-                        "default": {},
-                        "description": "A glob -> dir dict. All excalidraw file matching the glob will automatically export to dir."
                     },
                     "excalidraw.export.exportEmbedScene": {
                         "type": "boolean",
@@ -115,7 +74,7 @@
                         "description": "Controls auto save of excalidraw editors. This is only necessary if you don't want to set the ",
                         "default": false
                     },
-                    "excalidraw.theme": {
+                    "excalidraw.view.theme": {
                         "scope": "resource",
                         "description": "The theme to use for the Excalidraw editor.",
                         "type": "string",
@@ -136,12 +95,16 @@
         ],
         "commands": [
             {
-                "command": "excalidraw.export.config",
-                "title": "Excalidraw: Export options"
+                "command": "excalidraw.selectTheme",
+                "title": "Excalidraw: Color Theme"
             },
             {
-                "command": "excalidraw.theme.config",
-                "title": "Excalidraw: Color Theme"
+                "command": "excalidraw.import.libraryUrl",
+                "title": "Excalidraw: Import Library Url"
+            },
+            {
+                "command": "excalidraw.export.config",
+                "title": "Excalidraw: Export options"
             },
             {
                 "command": "excalidraw.export.svg",

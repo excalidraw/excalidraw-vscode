@@ -15,7 +15,7 @@ body {
   display: none !important;
 }
 
-.layer-ui__library-header {
+.layer-ui__library-header > .ToolIcon {
   display: none !important;
 }
 
