@@ -1,5 +1,27 @@
 # Changelog
 
+## Planned
+
+- Support for `github.dev`
+- Image Support in drawings (see [excalidraw/excalidraw#4011](https://github.com/excalidraw/excalidraw/pull/4011))
+
+### Breaking Changes
+
+- remove glob in settings. This use-case can now be fulfilled by editing SVG files directly
+- remove 2-way sync (caused issue related to editing history sync)
+- remove addWatermark option. This is no longer available in the excalidraw lib
+
+### New features
+
+- Import libraries from [Excalidraw Libraries](https://libraries.excalidraw.com/?theme=light&sort=default)
+- Add ability to edit `SVG` files directly from VSCode. Just create a file with an `.excalidraw.svg` extension
+- Use native export for json files
+
+### Fixes/Chore
+
+- Scroll to content on new drawings
+- Adopt typescript, clean react logic
+
 ## 1.3.0
 
 ### New features

@@ -3,7 +3,7 @@
     "icon": "logo.png",
     "displayName": "Excalidraw Schema Editor",
     "description": "Draw schemas in VSCode using Excalidraw (Unofficial)",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "publisher": "pomdtr",
     "engines": {
         "vscode": "^1.56.0"
@@ -23,9 +23,7 @@
         "url": "https://github.com/pomdtr"
     },
     "activationEvents": [
-        "onCustomEditor:editor.excalidraw",
-        "onCommand:excalidraw.export.config",
-        "onCommand:excalidraw.theme.config"
+        "onCustomEditor:editor.excalidraw"
     ],
     "repository": {
         "type": "git",
@@ -33,18 +31,6 @@
     },
     "main": "./out/src/extension.js",
     "contributes": {
-        "menus": {
-            "file/newFile": [
-                {
-                    "command": "markdown.marp.newExcalidraw",
-                    "group": "file"
-                },
-                {
-                    "command": "markdown.marp.newSVGExcalidraw",
-                    "group": "file"
-                }
-            ]
-        },
         "configuration": [
             {
                 "title": "Excalidraw",
@@ -59,11 +45,6 @@
                         "description": "Indicates whether scene data should be embedded in svg. This will increase the svg size.",
                         "default": false
                     },
-                    "excalidraw.export.shouldAddWatermark": {
-                        "type": "boolean",
-                        "description": "Indicates whether watermark should be exported",
-                        "default": false
-                    },
                     "excalidraw.export.exportWithDarkMode": {
                         "type": "boolean",
                         "description": "Indicates whether to export with dark mode",
@@ -71,11 +52,10 @@
                     },
                     "excalidraw.autoSave": {
                         "type": "boolean",
-                        "description": "Controls auto save of excalidraw editors. This is only necessary if you don't want to set the ",
+                        "description": "Controls autoSave of excalidraw editors.",
                         "default": false
                     },
-                    "excalidraw.view.theme": {
-                        "scope": "resource",
+                    "excalidraw.theme": {
                         "description": "The theme to use for the Excalidraw editor.",
                         "type": "string",
                         "default": "light",
@@ -99,26 +79,27 @@
                 "title": "Excalidraw: Color Theme"
             },
             {
-                "command": "excalidraw.import.libraryUrl",
-                "title": "Excalidraw: Import Library Url"
+                "command": "excalidraw.openInApp",
+                "title": "Excalidraw: Open in Application"
             },
             {
-                "command": "excalidraw.export.config",
-                "title": "Excalidraw: Export options"
+                "command": "excalidraw.exportConfig",
+                "title": "Excalidraw: Export Config"
             },
             {
-                "command": "excalidraw.export.svg",
-                "title": "Excalidraw: Export to svg"
+                "command": "excalidraw.exportSvg",
+                "title": "Excalidraw: Export to Svg"
             },
             {
-                "command": "excalidraw.export.png",
-                "title": "Excalidraw: Export to png"
+                "command": "excalidraw.exportPng",
+                "title": "Excalidraw: Export to Png"
             }
         ],
         "customEditors": [
             {
                 "viewType": "editor.excalidraw",
                 "displayName": "Excalidraw Editor",
+                "priority": "default",
                 "selector": [
                     {
                         "filenamePattern": "*.excalidraw"
@@ -152,6 +133,6 @@
         "typescript": "^4.2.4"
     },
     "dependencies": {
-        "minimatch": "^3.0.4"
+        "open": "^8.2.1"
     }
 }

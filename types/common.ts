@@ -1,17 +1,10 @@
-export interface VSCodeMessage {
-	type: string
-	payload: any
-}
-export interface ExportMessage extends VSCodeMessage {
-	type: "export"
-	payload: {
-		type: "png" | "svg"
-		destinationUri: string
-	}
-}
+type ExcalidrawType = "application/json" | "image/svg+xml"
+type ExcalidrawTheme = "light" | "dark" | "auto"
 
-export interface UpdateMessage extends VSCodeMessage {
-	type: "update"
-
+type ExcalidrawConfig = {
+	libraryItems: any,
+	documentUri: string,
+	viewModeEnabled: boolean
+	documentType: ExcalidrawType,
+	theme: ExcalidrawTheme
 }
-

@@ -5,42 +5,51 @@ import Excalidraw, {
   getSceneVersion,
   serializeAsJSON,
   loadFromBlob,
-  loadLibraryFromBlob,
 } from "@excalidraw/excalidraw";
 
 import "./styles.css";
 import {
+  AppState,
   ExcalidrawImperativeAPI,
+  LibraryItems,
 } from "@excalidraw/excalidraw/types/types";
 import { ExcalidrawElement } from "@excalidraw/excalidraw/types/element/types";
-import { error, info, log } from "./utils";
+import { error, log } from "./utils";
 
-// function getTheme() {
-//   if (themeConfig != "auto") {
-//     return themeConfig;
-//   }
-//   let newTheme = document.body.className;
-//   var prefix = "vscode-";
-//   if (newTheme.startsWith(prefix)) {
-//     // strip prefix
-//     newTheme = newTheme.substr(prefix.length);
-//   }
+export type VscodeAPI = {
+  postMessage: (msg: Record<string, any>) => void;
+  getState: () => ExcalidrawState | undefined;
+  setState: (state: ExcalidrawState) => void;
+};
 
-//   if (newTheme === "high-contrast") {
-//     newTheme = "dark"; // the high-contrast theme seems to be an extreme case of the dark theme
-//   }
+export type ExcalidrawInitialData = {
+  elements: ExcalidrawElement[];
+  appState: any;
+  scrollToContent: boolean;
+  libraryItems: LibraryItems;
+};
 
-//   return newTheme;
-// }
+export type ExcalidrawState = {
+  initialData: ExcalidrawInitialData;
+  documentType: "application/json" | "image/svg+xml";
+  viewModeEnabled: boolean;
+  theme: ExcalidrawTheme;
+};
 
-// Used by the automatic theme
-// var observer = new MutationObserver(function (mutations) {
-//   mutations.forEach(function (mutationRecord) {
-//     updateTheme();
-//   });
-// });
+function findAutomaticTheme(vscodeTheme: string): "light" | "dark" {
+  switch (vscodeTheme) {
+    case "vscode-light":
+      return "light";
+    case "vscode-dark":
+      return "dark";
+    case "vscode-high-contrast":
+      return "dark";
+    default:
+      return "light";
+  }
+}
 
-const storableProperties: string[] = [
+const storableProperties = [
   "theme",
   "currentChartType",
   "currentItemBackgroundColor",
@@ -80,51 +89,63 @@ const storableProperties: string[] = [
   "viewBackgroundColor",
   "zenModeEnabled",
   "zoom",
-]
+];
 
-export default function App(props: {
-  "api": any;
-  initialData: any,
-  documentType: string;
-  config: {
-    zenModeEnabled?: boolean,
-    viewModeEnabled?: boolean,
-    theme: "dark" | "light"
-  }
+function useTheme(
+  initialExcalidrawTheme: ExcalidrawTheme,
+  initialVscodeTheme: string
+) {
+  const [excalidrawTheme, setExcalidrawTheme] = useState(
+    initialExcalidrawTheme
+  );
+  const [vscodeTheme, setVSCodeTheme] = useState(initialVscodeTheme);
+
+  if (excalidrawTheme != "auto")
+    return { theme: excalidrawTheme, setExcalidrawTheme, setVSCodeTheme };
+  return {
+    theme: findAutomaticTheme(vscodeTheme),
+    setExcalidrawTheme,
+    setVSCodeTheme,
+  };
+}
+
+export function App(props: {
+  api: VscodeAPI;
+  initialData: ExcalidrawInitialData;
+  documentType: ExcalidrawType;
+  viewModeEnabled: boolean;
+  theme: ExcalidrawTheme;
 }) {
-  const { api, initialData, documentType,  } = props;
+  const { api, initialData, documentType, viewModeEnabled } = props;
   const excalidrawRef = useRef<ExcalidrawImperativeAPI>(null);
   const sceneVersion = useRef(getSceneVersion(initialData.elements));
-  const [config, setConfig] = useState(props.config)
+  const viewBackgroundColor = useRef<string>(
+    initialData.appState.viewBackgroundColor
+  );
+  const libraryItems = useRef<LibraryItems>(initialData.libraryItems)
+  const { theme, setExcalidrawTheme, setVSCodeTheme } = useTheme(
+    props.theme,
+    document.body.className
+  );
 
   const handlers: Record<string, any> = {
-    update: async (message: any) => {
-      const { json } = message.payload;
-      const blob = new Blob(json, { type: "application/json" });
-      const { appState, elements } = await loadFromBlob(blob, null, null);
-      if (sceneVersion.current != getSceneVersion(elements)) {
-        sceneVersion.current = getSceneVersion(elements);
-        excalidrawRef.current!.updateScene({
-          elements: elements,
-          appState: appState,
-        });
-      }
-    },
-    "set-config": async (message: any) => {
-      const newConfig = message.config
-      setConfig({config, ...newConfig})
+    "set-theme": async (message: any) => {
+      setExcalidrawTheme(message.theme);
     },
     "import-library-url": async (message: any) => {
       try {
-        excalidrawRef.current!.importLibrary(message.url, message.token)
+        excalidrawRef.current!.importLibrary(message.url, message.token);
       } catch (e: any) {
-        error(api, e.toString())
+        error(api, e.toString());
       }
     },
     "export-to-svg": async (message: any) => {
       const svg = await exportToSvg({
         elements: excalidrawRef.current!.getSceneElements(),
-        appState: { ...excalidrawRef.current!.getAppState(), ...message.exportConfig },
+        appState: {
+          ...excalidrawRef.current!.getAppState(),
+          ...message.exportConfig,
+        },
       });
       api.postMessage({
         type: "svg-export",
@@ -137,7 +158,10 @@ export default function App(props: {
     "export-to-png": async (message: any) => {
       const blob = await exportToBlob({
         elements: excalidrawRef.current!.getSceneElements(),
-        appState: {...excalidrawRef.current!.getAppState(), ...message.exportConfig},
+        appState: {
+          ...excalidrawRef.current!.getAppState(),
+          ...message.exportConfig,
+        },
       });
       var reader = new FileReader();
       if (!blob) return;
@@ -157,7 +181,7 @@ export default function App(props: {
 
   useEffect(() => {
     const eventListener = (e: any) => {
-      const msg = e.data
+      const msg = e.data;
       const handler = handlers[msg.type];
       handler(msg);
     };
@@ -167,26 +191,29 @@ export default function App(props: {
     };
   }, []);
 
-  const sendUpdate = debounce(
-    async (elements: ExcalidrawElement[], appState: Record<string, any>) => {
-      const cleanedAppState: Record<string, any> = {}
-      for (const property of storableProperties) {
-        cleanedAppState[property] = appState[property]
-      }
-      api.setState({
-        initialData: {
-          elements,
-          appState: cleanedAppState,
-        },
-        documentType,
-        config
+  useEffect(() => {
+    var observer = new MutationObserver(function (mutations) {
+      mutations.forEach(function (_) {
+        setVSCodeTheme(document.body.className);
       });
+    });
+
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  const sendUpdate = async (elements: any, appState: any) => {
       let content: string | undefined;
-      let svg: SVGSVGElement | undefined;
-      if (documentType == "application/json") {
+      if (documentType == "application/json")
         content = serializeAsJSON(elements, appState);
-      } else {
-        svg = await exportToSvg({
+      else {
+        const svg = await exportToSvg({
           elements,
           appState: {
             ...appState,
@@ -197,15 +224,43 @@ export default function App(props: {
         content = svg.outerHTML;
       }
       api.postMessage({ type: "update", json: content });
+
+  }
+
+  const onChange = debounce(
+    async (elements: readonly ExcalidrawElement[], appState: AppState) => {
+      const cleanedAppState: Record<string, any> = {};
+      for (const property of storableProperties) {
+        cleanedAppState[property] = appState[property as keyof AppState];
+      }
+      api.setState({
+        initialData: {
+          elements: elements as ExcalidrawElement[],
+          appState: cleanedAppState,
+          scrollToContent: false,
+          libraryItems: libraryItems.current,
+        },
+        viewModeEnabled: viewModeEnabled,
+        documentType,
+        theme,
+      });
+
+      if (
+        getSceneVersion(elements) != sceneVersion.current ||
+        appState.viewBackgroundColor != viewBackgroundColor.current
+      ) {
+        sceneVersion.current = getSceneVersion(elements);
+        viewBackgroundColor.current = appState.viewBackgroundColor;
+        sendUpdate(elements, appState);
+      }
     },
-    200
+    500
   );
 
   return (
     <div className="excalidraw-wrapper">
       <Excalidraw
         ref={excalidrawRef}
-        zenModeEnabled={config.zenModeEnabled}
         autoFocus={true}
         libraryReturnUrl={"vscode://pomdtr.excalidraw-editor/importLib"}
         UIOptions={{
@@ -216,21 +271,17 @@ export default function App(props: {
             saveToActiveFile: false,
           },
         }}
-        viewModeEnabled={config.viewModeEnabled}
-        theme={config.theme}
+        theme={theme}
+        viewModeEnabled={viewModeEnabled}
         initialData={initialData}
         onLibraryChange={(items) => {
+          libraryItems.current = items
           api.postMessage({
-            type: "library",
-            payload: { items: items },
+            type: "library-update",
+            items,
           });
         }}
-        onChange={(elements, appState) => {
-          if (getSceneVersion(elements) != sceneVersion.current) {
-            sceneVersion.current = getSceneVersion(elements);
-            sendUpdate(elements as ExcalidrawElement[], appState);
-          }
-        }}
+        onChange={onChange}
       />
     </div>
   );

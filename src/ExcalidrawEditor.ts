@@ -1,13 +1,14 @@
 import * as vscode from "vscode";
-import {writeFile} from "fs"
-import {editDoc, getWebviewContent} from "./fs";
+import { writeFile } from "fs";
+import path = require("path");
+import { TextDecoder } from "util";
 
 export class ExcalidrawEditorProvider
   implements vscode.CustomTextEditorProvider
 {
   public static register(context: vscode.ExtensionContext) {
     const svgExportCommand = vscode.commands.registerCommand(
-      "excalidraw.export.svg",
+      "excalidraw.exportSvg",
       () => {
         const excalidrawEditor = ExcalidrawEditorProvider.lastActiveEditor;
         if (typeof excalidrawEditor === "undefined" || !excalidrawEditor.active)
@@ -19,7 +20,7 @@ export class ExcalidrawEditorProvider
     );
 
     const pngExportCommand = vscode.commands.registerCommand(
-      "excalidraw.export.png",
+      "excalidraw.exportPng",
       () => {
         const excalidrawEditor = ExcalidrawEditorProvider.lastActiveEditor;
         if (typeof excalidrawEditor === "undefined" || !excalidrawEditor.active)
@@ -63,11 +64,8 @@ export class ExcalidrawEditorProvider
     const postMessage = (message: any) => {
       console.log(`Extension -> Webview`, message);
       webviewPanel.webview.postMessage(message);
-    }
-    const editor = new ExcalidrawEditor(
-      postMessage,
-      document
-    );
+    };
+    const editor = new ExcalidrawEditor(postMessage, document, this.context);
     ExcalidrawEditorProvider.lastActiveEditor = editor;
 
     webviewPanel.webview.onDidReceiveMessage((msg: { type: string }) => {
@@ -76,57 +74,45 @@ export class ExcalidrawEditorProvider
       handler(msg);
     });
 
+    const webviewUri = webviewPanel.webview.asWebviewUri(document.uri);
+    const extName = path.extname(webviewUri.fsPath);
     webviewPanel.webview.html = await getWebviewContent(
       vscode.Uri.joinPath(this.context.extensionUri, "media", "index.html"),
-      webviewPanel.webview.asWebviewUri(document.uri),
       {
-        theme: vscode.workspace.getConfiguration("excalidraw").get("theme") || "light"
+        documentType: extName === ".svg" ? "image/svg+xml" : "application/json",
+        viewModeEnabled: document.uri.scheme == "git",
+        theme:
+          vscode.workspace.getConfiguration("excalidraw").get("theme") ||
+          "light",
+        documentUri: webviewUri.toString(true),
+        libraryItems: this.context.globalState.get("libraryItems", []),
       }
     );
 
     webviewPanel.onDidChangeViewState((e) => {
       if (document.uri.scheme === "git") return;
       if (e.webviewPanel.active) {
-        udpateConfig()
+        udpateTheme();
+        ExcalidrawEditorProvider.lastActiveEditor = editor
         editor.active = true;
       } else {
         editor.active = false;
       }
     });
 
-    // const changeDocumentSubscription = vscode.workspace.onDidChangeTextDocument(
-    //   async (e) => {
-    //     // Not the right doc
-    //     if (e === undefined) return;
-    //     if (e.document.uri.toString() !== document.uri.toString()) return;
-    //     // No change
-    //     if (e.contentChanges.length == 0) return;
-    //     // Change is coming from us
-    //     if (this.isEditing) return;
+    const udpateTheme = () => {
+      const theme = vscode.workspace
+        .getConfiguration("excalidraw")
+        .get("theme");
+      if (theme) postMessage({ type: "set-theme", theme });
+    };
 
-    //     const raw = await vscode.workspace.fs.readFile(document.uri);
-    //     const content = await new TextDecoder().decode(raw);
-
-    //     webviewPanel.webview.postMessage({
-    //       type: "update",
-    //       payload: {
-    //         json: content,
-    //       },
-    //     });
-    //   }
-    // );
-    const udpateConfig = () => {
-        const config = vscode.workspace.getConfiguration("excalidraw").get("config")
-        if (config) postMessage({"type": "set-config", "config": "config"})
-    }
-
-    const changeConfigurationSubscription = vscode.workspace.onDidChangeConfiguration(
-			(e) => {
-				if (e.affectsConfiguration("excalidraw.theme")) {
-          udpateConfig()
-				}
-			}
-		);
+    const changeConfigurationSubscription =
+      vscode.workspace.onDidChangeConfiguration((e) => {
+        if (e.affectsConfiguration("excalidraw.theme")) {
+          udpateTheme();
+        }
+      });
 
     // Make sure we get rid of the listener when our editor is closed.
     webviewPanel.onDidDispose(() => {
@@ -152,11 +138,12 @@ class ExcalidrawEditor {
   postMessage: (message: any) => void;
   document: vscode.TextDocument;
   public active: boolean = false;
+  context: vscode.ExtensionContext;
 
   handlers: Record<string, (msg: any) => void> = {
-    // library: (msg: any) => {
-    //   this.context.globalState.update("libraryItems", msg.payload.items);
-    // },
+    "library-update": (msg: any) => {
+      this.context.globalState.update("libraryItems", msg.items);
+    },
     update: async (msg: any) => {
       const drawing: string = msg.json;
       await this.updateDocument(drawing);
@@ -174,48 +161,88 @@ class ExcalidrawEditor {
       console.log(msg.text);
     },
     error: (msg: any) => {
-      console.error(msg.text)
-      vscode.window.showErrorMessage(msg.text)
+      console.error(msg.text);
+      vscode.window.showErrorMessage(msg.text);
     },
     info: (msg: any) => {
       console.info(msg.text);
-      vscode.window.showInformationMessage(msg.text)
-    }
+      vscode.window.showInformationMessage(msg.text);
+    },
   };
 
   constructor(
     postMessage: (message: any) => void,
-    document: vscode.TextDocument
+    document: vscode.TextDocument,
+    context: vscode.ExtensionContext
   ) {
     this.postMessage = postMessage;
     this.document = document;
+    this.context = context;
   }
 
   async updateDocument(text: string) {
-    const success = await editDoc(this.document, text);
-    console.log(success);
-    // if (success && excalidrawConfig.get("autoSave", true)) document.save();
+    const edit = new vscode.WorkspaceEdit();
+    edit.replace(
+      this.document.uri,
+      new vscode.Range(0, 0, this.document.lineCount, 0),
+      text
+    );
+    const success = await vscode.workspace.applyEdit(edit);
+    if (
+      success &&
+      vscode.workspace.getConfiguration("excalidraw").get("autoSave", true)
+    )
+      this.document.save();
   }
 
   async importLibraryUrl(url: string, token: string) {
-    this.postMessage({type: "import-library-url", url, token})
+    this.postMessage({ type: "import-library-url", url, token });
   }
 
   async exportImg(extension: string) {
-    const uri = await vscode.window.showSaveDialog({
-      filters: { Images: [extension] },
-    });
+    const uri = await getExportFilename(this.document, extension);
+    if (!uri) return;
+
     const exportConfig = vscode.workspace.getConfiguration("excalidraw.export");
-    if (uri !== undefined)
-      this.postMessage({
-        type: `export-to-${extension}`,
-        path: uri.path,
-        exportConfig: {
-          exportBackground: exportConfig.get("exportBackground"),
-          shouldAddWatermark: exportConfig.get("shouldAddWatermark"),
-          exportWithDarkMode: exportConfig.get("exportWithDarkMode"),
-          exportEmbedScene: exportConfig.get("exportEmbedScene"),
-        },
-      });
+    this.postMessage({
+      type: `export-to-${extension}`,
+      path: uri.path,
+      exportConfig: {
+        exportBackground: exportConfig.get("exportBackground"),
+        exportWithDarkMode: exportConfig.get("exportWithDarkMode"),
+        exportEmbedScene: exportConfig.get("exportEmbedScene"),
+      },
+    });
   }
+}
+
+async function getWebviewContent(
+  templateUri: vscode.Uri,
+  excalidrawConfig: ExcalidrawConfig
+): Promise<string> {
+  const jsonConfig = JSON.stringify(excalidrawConfig);
+  const bufferConfig = Buffer.from(jsonConfig, "utf-8");
+  const base64Config = bufferConfig.toString("base64");
+
+  let TemplateRaw = await vscode.workspace.fs.readFile(templateUri);
+  return new TextDecoder()
+    .decode(TemplateRaw)
+    .replace("{{data-config}}", base64Config)
+}
+
+export function getExportFilename(
+  document: vscode.TextDocument,
+  extension: string
+): Thenable<vscode.Uri | undefined> {
+  const dirname = path.dirname(document.uri.fsPath);
+  const basename = path.basename(
+    document.uri.fsPath,
+    path.extname(document.uri.fsPath)
+  );
+
+  const filePath = path.join(dirname, `${basename}.${extension}`);
+  return vscode.window.showSaveDialog({
+    defaultUri: vscode.Uri.file(filePath),
+    filters: { Images: [extension] },
+  });
 }
