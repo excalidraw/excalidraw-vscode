@@ -1,62 +1,29 @@
 import * as vscode from "vscode";
-import { ExcalidrawEditorProvider } from "./ExcalidrawEditor";
+import { URLSearchParams } from "url";
+import { ExcalidrawTextEditorProvider } from "./ExcalidrawEditor";
 
 export function activate(context: vscode.ExtensionContext) {
 	// Register our custom editor providers
-	context.subscriptions.push(ExcalidrawEditorProvider.register(context));
-	context.subscriptions.push(
-		vscode.commands.registerCommand("excalidraw.export.config", updateExportConfig)
-	);
-	context.subscriptions.push(
-		vscode.commands.registerCommand("excalidraw.theme.config", updateThemeConfig)
-	)
+	context.subscriptions.push(ExcalidrawTextEditorProvider.register(context), ExcalidrawUriHandler.register());
 }
 
-function updateThemeConfig() {
-	vscode.window
-		.showQuickPick([
-			{ label: "auto", description: "Sync theme with vscode" },
-			{ label: "light", description: "Always use light theme" },
-			{ label: "dark", description: "Always use dark theme" },
-		])
-		.then((theme) => {
-			if (theme !== undefined)
-				vscode.workspace
-					.getConfiguration("excalidraw")
-					.update("theme", theme.label);
-		});
+
+class ExcalidrawUriHandler implements vscode.UriHandler {
+	public static register() {
+		const provider = new ExcalidrawUriHandler();
+		const providerRegistration = vscode.window.registerUriHandler(provider);
+		return providerRegistration;
+	}
+
+	public async handleUri(uri: vscode.Uri) {
+		console.log(`Handling uri ${uri.toString()}`)
+		const hash = new URLSearchParams(uri.fragment);
+		const libraryUrl = hash.get("addLibrary");
+		const csrfToken = hash.get("token")
+		if (libraryUrl && csrfToken && ExcalidrawTextEditorProvider.activeEditor) {
+			ExcalidrawTextEditorProvider.activeEditor.importLibrary(libraryUrl, csrfToken)
+			vscode.window.showInformationMessage("Library added successfully!")
+		}
+	}
 }
 
-function updateExportConfig() {
-	const exportConfig = vscode.workspace.getConfiguration("excalidraw.export")
-	const items = [
-		{
-			label: "exportBackground",
-			picked: !!exportConfig.get("exportBackground"),
-			description: "Indicates whether background should be exported",
-		},
-		{
-			label: "shouldAddWatermark",
-			picked: !!exportConfig.get("shouldAddWatermark"),
-			description: "Indicates whether watermark should be exported",
-		},
-		{
-			label: "exportWithDarkMode",
-			picked: !!exportConfig.get("exportWithDarkMode"),
-			description: "Indicates whether to export with dark mode",
-		},
-		{
-			label: "exportEmbedScene",
-			picked: !!exportConfig.get("exportEmbedScene"),
-			description: "Indicates whether scene data should be embedded in svg.",
-		},
-	];
-	vscode.window.showQuickPick(items, { canPickMany: true }).then((choices) => {
-		if (choices === undefined) return;
-		const selected = choices.map((choice) => choice.label);
-		exportConfig.update("exportBackground", selected.includes("exportBackground"))
-		exportConfig.update("shouldAddWatermark", selected.includes("shouldAddWatermark"))
-		exportConfig.update("exportWithDarkMode", selected.includes("exportWithDarkMode"))
-		exportConfig.update("exportEmbedScene", selected.includes("exportEmbedScene"))
-	});
-}

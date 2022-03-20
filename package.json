@@ -23,9 +23,7 @@
         "url": "https://github.com/pomdtr"
     },
     "activationEvents": [
-        "onCustomEditor:editor.excalidraw",
-        "onCommand:excalidraw.export.config",
-        "onCommand:excalidraw.theme.config"
+        "onCustomEditor:editor.excalidraw"
     ],
     "repository": {
         "type": "git",
@@ -33,113 +31,16 @@
     },
     "main": "./out/extension.js",
     "contributes": {
-        "submenus": [
-            {
-                "id": "excalidraw.editor.context",
-                "label": "Excalidraw"
-            }
-        ],
-        "menus": {
-            "commandPalette": [
-                {
-                    "command": "excalidraw.export.svg",
-                    "when": "excalidraw.focused"
-                },
-                {
-                    "command": "excalidraw.export.png",
-                    "when": "excalidraw.focused"
-                }
-            ],
-            "excalidraw.editor.context": [
-                {
-                    "command": "excalidraw.export.svg",
-                    "when": "excalidraw.focused"
-                },
-                {
-                    "command": "excalidraw.export.png",
-                    "when": "excalidraw.focused"
-                },
-                {
-                    "command": "excalidraw.theme.config",
-                    "when": "excalidraw.focused"
-                },
-                {
-                    "command": "excalidraw.export.config",
-                    "when": "excalidraw.focused"
-                }
-            ],
-            "editor/title": [
-                {
-                    "submenu": "excalidraw.editor.context",
-                    "group": "excalidraw",
-                    "when": "excalidraw.focused"
-                }
-            ]
-        },
         "configuration": [
             {
                 "title": "Excalidraw",
                 "properties": {
-                    "excalidraw.export.exportBackground": {
-                        "type": "boolean",
-                        "description": "Indicates whether background should be exported",
-                        "default": true
-                    },
-                    "excalidraw.export.exportEmbedScene": {
-                        "type": "boolean",
-                        "description": "Indicates whether scene data should be embedded in svg. This will increase the svg size.",
-                        "default": false
-                    },
-                    "excalidraw.export.shouldAddWatermark": {
-                        "type": "boolean",
-                        "description": "Indicates whether watermark should be exported",
-                        "default": false
-                    },
-                    "excalidraw.export.exportWithDarkMode": {
-                        "type": "boolean",
-                        "description": "Indicates whether to export with dark mode",
-                        "default": false
-                    },
                     "excalidraw.autoSave": {
                         "type": "boolean",
-                        "description": "Controls auto save of excalidraw editors. This is only necessary if you don't want to set the ",
+                        "description": "Controls autoSave of excalidraw editors.",
                         "default": false
-                    },
-                    "excalidraw.theme": {
-                        "scope": "resource",
-                        "description": "The theme to use for the Excalidraw editor.",
-                        "type": "string",
-                        "default": "light",
-                        "enum": [
-                            "dark",
-                            "light",
-                            "auto"
-                        ],
-                        "enumDescriptions": [
-                            "Always use dark theme",
-                            "Always use light theme",
-                            "Sync theme with vscode"
-                        ]
                     }
                 }
-            }
-        ],
-        "commands": [
-            {
-                "command": "excalidraw.export.config",
-                "title": "Excalidraw: Export options"
-            },
-            {
-                "command": "excalidraw.theme.config",
-                "title": "Excalidraw: Color Theme"
-            },
-            {
-                "command": "excalidraw.export.svg",
-                "title": "Excalidraw: Export to svg"
-            },
-            {
-                "command": "excalidraw.export.png",
-                "title": "Excalidraw: Export to png"
             }
         ],
         "customEditors": [
