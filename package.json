@@ -158,10 +158,10 @@
         ]
     },
     "scripts": {
-        "vscode:prepublish": "npm run compile",
-        "compile": "npm-run-all compile:*",
-        "compile:extension": "tsc",
-        "compile:excalidraw": "cd ./excalidraw && npm run build"
+        "vscode:prepublish": "npm run build",
+        "build": "npm run build-excalidraw && npm run build-extension",
+        "build-extension": "tsc",
+        "build-excalidraw": "rm -rf media && cd ./excalidraw && npm run build && mv build ../media"
     },
     "capabilities": {
         "untrustedWorkspaces": {
@@ -175,7 +175,6 @@
         "@typescript-eslint/eslint-plugin": "^4.23.0",
         "@typescript-eslint/parser": "^4.23.0",
         "eslint": "^7.26.0",
-        "npm-run-all": "^4.1.5",
         "typescript": "^4.2.4"
     }
 }
