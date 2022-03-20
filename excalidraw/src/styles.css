@@ -2,21 +2,10 @@ body {
   padding: 0;
   margin: 0;
 }
+
 .excalidraw-wrapper {
   width: 100vw;
   height: 100vh;
-}
-
-.App-menu_top > :first-child .Stack.Stack_horizontal {
-  display: none !important;
-}
-
-.App-bottom-bar .Stack.Stack_vertical > button {
-  display: none !important;
-}
-
-.layer-ui__library-header {
-  display: none !important;
 }
 
 kbd {

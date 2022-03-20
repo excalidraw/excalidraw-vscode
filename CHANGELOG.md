@@ -1,13 +1,20 @@
 # Changelog
 
-## 1.4.0
+## 2.0.0
 
 ### New Features
+
+- Upgrade Excalidraw to `0.11.0`
+- Add Support for embedding png and svg images images the current file
+- Add Support for directly editing svg files (Use the extension `.excalidraw.svg`)
+- Add support for links in drawings
 
 ### Breaking Changes
 
 - Deprecate `open in application` command. Please use [Open in External App](https://marketplace.visualstudio.com/items?itemName=YuTengjing.open-in-external-app) instead.
 - Deprecate `excalidraw.export.globs`. Since the extension support editing SVGs directly, this is no longer necessary.
+- Deprecate all svg export using the command palette. Please use the UI button instead.
+- Deprecate theme related options
 
 ## 1.3.0
 
