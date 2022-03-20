@@ -21,22 +21,6 @@ export default function App(props) {
   const libraryItemsRef = useRef(libraryItems);
 
   useEffect(() => {
-    var observer = new MutationObserver(function (mutations) {
-      mutations.forEach(function (_) {
-        setTheme(detectTheme());
-      });
-    });
-    observer.observe(document.body, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
     window.addEventListener("message", (e) => {
       const message = e.data;
       vscode.postMessage({ type: "log", msg: message });
