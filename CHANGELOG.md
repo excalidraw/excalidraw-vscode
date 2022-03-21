@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.0.6
+
+### New Features
+
+- Fix Assets Path
 
 ## 2.0.5
 
