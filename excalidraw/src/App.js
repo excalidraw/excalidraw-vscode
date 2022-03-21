@@ -24,6 +24,7 @@ export default function App(props) {
   const {
     elements = [],
     appState = {},
+    scrollToContent,
     libraryItems = [],
     files = [],
   } = initialData;
@@ -134,6 +135,7 @@ export default function App(props) {
         theme={theme}
         initialData={{
           elements,
+          scrollToContent,
           appState: { ...appState },
           libraryItems,
           files,
