@@ -1,8 +1,8 @@
 # Excalidraw Editor
 
 This unofficial extension integrates Excalidraw into VS Code.
-To use it, create an empty file with an `.excalidraw` or `.excalidraw.svg` extension and open it in VSCode.
+To use it, create an empty file with a `.excalidraw` or `.excalidraw.svg` extension and open it in VSCode.
 
 Try the official web version at : <https://excalidraw.com/>
 
-![Screenshot](doc/home.jpg)
+![Screenshot](./assets/screenshot.png)

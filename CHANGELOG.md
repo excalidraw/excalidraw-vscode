@@ -1,6 +1,14 @@
 # Changelog
 
-## 2.0.3
+
+## 2.0.5
+
+### New Features
+
+- Editor with a git URL Scheme are now read only
+- Limit theme options to `excalidraw.syncTheme`
+
+## 2.0.4
 
 ### New Features
 

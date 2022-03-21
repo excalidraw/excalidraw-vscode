@@ -20,7 +20,7 @@ function detectTheme() {
 }
 
 export default function App(props) {
-  const { initialData, vscode, contentType, defaultTheme } = props;
+  const { initialData, vscode, contentType, syncTheme, viewModeEnabled } = props;
   const {
     elements = [],
     appState = {},
@@ -33,11 +33,11 @@ export default function App(props) {
   const sceneVersion = useRef(getSceneVersion(elements));
   const libraryItemsRef = useRef(libraryItems);
   const [theme, setTheme] = useState(
-    defaultTheme == "auto" ? detectTheme() : defaultTheme
+    syncTheme ? detectTheme() : undefined
   );
 
   useEffect(() => {
-    if (defaultTheme !== "auto") {
+    if (!syncTheme) {
       return;
     }
     var observer = new MutationObserver(function (mutations) {
@@ -133,6 +133,7 @@ export default function App(props) {
           },
         }}
         theme={theme}
+        viewModeEnabled={viewModeEnabled}
         initialData={{
           elements,
           scrollToContent,

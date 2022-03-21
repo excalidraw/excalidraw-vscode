@@ -49,7 +49,8 @@ async function main() {
           initialData={{ libraryItems: config.libraryItems, ...initialData }}
           vscode={vscode}
           contentType={config.contentType}
-          defaultTheme={config.theme}
+          viewModeEnabled={config.viewModeEnabled}
+          syncTheme={config.syncTheme}
         />
       </React.StrictMode>,
       rootElement
