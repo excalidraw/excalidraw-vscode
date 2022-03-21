@@ -48,6 +48,7 @@ async function main() {
         <App
           initialData={{ libraryItems: config.libraryItems, ...initialData }}
           vscode={vscode}
+          name={config.name}
           contentType={config.contentType}
           viewModeEnabled={config.viewModeEnabled}
           syncTheme={config.syncTheme}

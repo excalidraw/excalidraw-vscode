@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
-import { resolve } from "path";
+import { parse, resolve } from "path";
 
 export class ExcalidrawTextEditorProvider
   implements vscode.CustomTextEditorProvider {
@@ -75,10 +75,11 @@ class ExcalidrawEditor {
     this.webviewPanel.webview.html = this.getHtmlForWebview(
       {
         content: document.getText(),
-        contentType: document.fileName.endsWith(".svg") ? "image/svg+xml" : "application/json",
+        contentType: parse(document.uri.fsPath).ext == ".excalidraw" ?  "application/json": "image/svg+xml",
         libraryItems: this.context.globalState.get("libraryItems") || [],
         viewModeEnabled: document.uri.scheme === "git" ? true : undefined,
         syncTheme: this.config.get("syncTheme", false),
+        name: parse(document.uri.fsPath).name,
       }
     );
 

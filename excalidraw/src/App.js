@@ -20,7 +20,8 @@ function detectTheme() {
 }
 
 export default function App(props) {
-  const { initialData, vscode, contentType, syncTheme, viewModeEnabled } = props;
+  const { initialData, vscode, contentType, syncTheme, viewModeEnabled, name } =
+    props;
   const {
     elements = [],
     appState = {},
@@ -32,9 +33,7 @@ export default function App(props) {
   const excalidrawRef = useRef(null);
   const sceneVersion = useRef(getSceneVersion(elements));
   const libraryItemsRef = useRef(libraryItems);
-  const [theme, setTheme] = useState(
-    syncTheme ? detectTheme() : undefined
-  );
+  const [theme, setTheme] = useState(syncTheme ? detectTheme() : undefined);
 
   useEffect(() => {
     if (!syncTheme) {
@@ -132,6 +131,7 @@ export default function App(props) {
             saveToActiveFile: false,
           },
         }}
+        name={name}
         theme={theme}
         viewModeEnabled={viewModeEnabled}
         initialData={{
