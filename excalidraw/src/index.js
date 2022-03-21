@@ -49,7 +49,7 @@ async function main() {
           initialData={{ libraryItems: config.libraryItems, ...initialData }}
           vscode={vscode}
           contentType={config.contentType}
-          theme={config.theme}
+          defaultTheme={config.theme}
         />
       </React.StrictMode>,
       rootElement

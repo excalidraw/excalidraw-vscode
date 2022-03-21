@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.0.2
+
+### New Features
+
+- Re-enable `excalidraw.theme`
+
 ## 2.0.0
 
 ### New Features

@@ -1,14 +1,26 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Excalidraw, {
   exportToSvg,
   getSceneVersion,
   serializeAsJSON,
+  THEME,
 } from "@excalidraw/excalidraw";
 
 import "./styles.css";
 
+function detectTheme() {
+  switch (document.body.className) {
+    case "vscode-dark":
+      return THEME.DARK;
+    case "vscode-light":
+      return THEME.LIGHT;
+    default:
+      return THEME.LIGHT;
+  }
+}
+
 export default function App(props) {
-  const { initialData, vscode, contentType } = props;
+  const { initialData, vscode, contentType, defaultTheme } = props;
   const {
     elements = [],
     appState = {},
@@ -19,6 +31,28 @@ export default function App(props) {
   const excalidrawRef = useRef(null);
   const sceneVersion = useRef(getSceneVersion(elements));
   const libraryItemsRef = useRef(libraryItems);
+  const [theme, setTheme] = useState(
+    defaultTheme == "auto" ? detectTheme() : defaultTheme
+  );
+
+  useEffect(() => {
+    if (defaultTheme !== "auto") {
+      return;
+    }
+    var observer = new MutationObserver(function (mutations) {
+      mutations.forEach(function (_) {
+        setTheme(detectTheme());
+      });
+    });
+    observer.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     window.addEventListener("message", (e) => {
@@ -44,7 +78,6 @@ export default function App(props) {
       "scrollX",
       "scrollY",
       "zenModeEnabled",
-      "theme",
       "viewModeEnabled",
       "gridModeEnable",
       "zoom",
@@ -98,6 +131,7 @@ export default function App(props) {
             saveToActiveFile: false,
           },
         }}
+        theme={theme}
         initialData={{
           elements,
           appState: { ...appState },

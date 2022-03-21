@@ -3,7 +3,7 @@
     "icon": "logo.png",
     "displayName": "Excalidraw Schema Editor",
     "description": "Draw schemas in VSCode using Excalidraw (Unofficial)",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "publisher": "pomdtr",
     "engines": {
         "vscode": "^1.56.0"
@@ -39,6 +39,22 @@
                         "type": "boolean",
                         "description": "Controls autoSave of excalidraw editors.",
                         "default": false
+                    },
+                    "excalidraw.theme": {
+                        "scope": "resource",
+                        "description": "The theme to use for the Excalidraw editor.",
+                        "type": "string",
+                        "default": "light",
+                        "enum": [
+                            "dark",
+                            "light",
+                            "auto"
+                        ],
+                        "enumDescriptions": [
+                            "Use dark theme by default",
+                            "Use light theme by default",
+                            "Sync theme with vscode"
+                        ]
                     }
                 }
             }

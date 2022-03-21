@@ -77,6 +77,7 @@ class ExcalidrawEditor {
         content: document.getText(),
         contentType: document.fileName.endsWith(".svg") ? "image/svg+xml" : "application/json",
         libraryItems: this.context.globalState.get("libraryItems") || [],
+        theme: this.config.get("theme", "light"),
       }
     );
 
