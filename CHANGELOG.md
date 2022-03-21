@@ -4,6 +4,12 @@
 
 ### New Features
 
+- Change Display Name to `Excalidraw Editor`
+
+## 2.0.3
+
+### New Features
+
 - Scroll to content in new editors
 
 ## 2.0.2
