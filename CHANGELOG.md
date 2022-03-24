@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.8
+
+Webpack support
+
 ## 2.0.6
 
 ### New Features
