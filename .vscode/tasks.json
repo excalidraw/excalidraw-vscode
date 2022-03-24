@@ -3,10 +3,21 @@
 	"tasks": [
 		{
 			"type": "npm",
-			"script": "build",
-			"group": "build",
-			"problemMatcher": [],
+			"script": "build-excalidraw",
+			"label": "build-excalidraw"
+		},
+		{
+			"type": "npm",
+			"script": "webpack",
+			"label": "webpack"
+		},
+		{
+			"dependsOn": [
+				"webpack",
+				"build-excalidraw"
+			],
 			"label": "build",
+			"problemMatcher": []
 		}
 	]
 }

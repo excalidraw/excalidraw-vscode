@@ -19,20 +19,7 @@ function detectTheme() {
   }
 }
 
-export default function App(props) {
-  const { initialData, vscode, contentType, syncTheme, viewModeEnabled, name } =
-    props;
-  const {
-    elements = [],
-    appState = {},
-    scrollToContent,
-    libraryItems = [],
-    files = [],
-  } = initialData;
-
-  const excalidrawRef = useRef(null);
-  const sceneVersion = useRef(getSceneVersion(elements));
-  const libraryItemsRef = useRef(libraryItems);
+function useTheme(syncTheme) {
   const [theme, setTheme] = useState(syncTheme ? detectTheme() : undefined);
 
   useEffect(() => {
@@ -53,6 +40,25 @@ export default function App(props) {
       observer.disconnect();
     };
   }, []);
+
+  return theme;
+}
+
+export default function App(props) {
+  const { initialData, vscode, contentType, syncTheme, viewModeEnabled, name } =
+    props;
+  const {
+    elements = [],
+    appState = {},
+    scrollToContent,
+    libraryItems = [],
+    files = [],
+  } = initialData;
+
+  const excalidrawRef = useRef(null);
+  const sceneVersion = useRef(getSceneVersion(elements));
+  const libraryItemsRef = useRef(libraryItems);
+  const theme = useTheme(syncTheme);
 
   useEffect(() => {
     window.addEventListener("message", (e) => {

@@ -4,3 +4,4 @@ out
 **/*.vsix
 media
 demo
+dist

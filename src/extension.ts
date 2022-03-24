@@ -4,7 +4,8 @@ import { ExcalidrawTextEditorProvider } from "./ExcalidrawEditor";
 
 export function activate(context: vscode.ExtensionContext) {
 	// Register our custom editor providers
-	context.subscriptions.push(ExcalidrawTextEditorProvider.register(context), ExcalidrawUriHandler.register());
+	context.subscriptions.push(ExcalidrawTextEditorProvider.register(context));
+	context.subscriptions.push(ExcalidrawUriHandler.register());
 }
 
 

@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
-import * as fs from "fs";
-import { parse, resolve } from "path";
+import {parse} from "path";
 
 export class ExcalidrawTextEditorProvider
   implements vscode.CustomTextEditorProvider {
@@ -27,7 +26,8 @@ export class ExcalidrawTextEditorProvider
   ): Promise<void> {
 
     const editor = new ExcalidrawEditor(webviewPanel, this.context);
-    editor.edit(document);
+    await editor.edit(document);
+    ExcalidrawTextEditorProvider.activeEditor = editor;
 
     const onDidChangeViewState = webviewPanel.onDidChangeViewState((e) => {
       ExcalidrawTextEditorProvider.activeEditor = e.webviewPanel.active ? editor : undefined;
@@ -36,8 +36,6 @@ export class ExcalidrawTextEditorProvider
     webviewPanel.onDidDispose(
       onDidChangeViewState.dispose
     )
-
-    ExcalidrawTextEditorProvider.activeEditor = editor;
   }
 }
 
@@ -53,7 +51,7 @@ class ExcalidrawEditor {
     this.config = vscode.workspace.getConfiguration("excalidraw");
   }
 
-  public edit(document: vscode.TextDocument) {
+  public async edit(document: vscode.TextDocument) {
     // Setup initial content for the webview
     // Receive message from the webview.
     const onDidReceiveMessage = this.webviewPanel.webview.onDidReceiveMessage((msg) => {
@@ -72,10 +70,10 @@ class ExcalidrawEditor {
       }
     });
 
-    this.webviewPanel.webview.html = this.getHtmlForWebview(
+    this.webviewPanel.webview.html = await this.getHtmlForWebview(
       {
         content: document.getText(),
-        contentType: parse(document.uri.fsPath).ext == ".excalidraw" ?  "application/json": "image/svg+xml",
+        contentType: parse(document.uri.path).ext == 'excalidraw' ? "application/json" : "image/svg+xml",
         libraryItems: this.context.globalState.get("libraryItems") || [],
         viewModeEnabled: document.uri.scheme === "git" ? true : undefined,
         syncTheme: this.config.get("syncTheme", false),
@@ -110,16 +108,16 @@ class ExcalidrawEditor {
     this.webviewPanel.webview.postMessage({ type: "import-library", libraryUrl, csrfToken });
   }
 
-  private getHtmlForWebview(
+  private async getHtmlForWebview(
     data: Record<string, unknown>
-  ): string {
-    const htmlFile = vscode.Uri.file(resolve(this.context.extensionPath, "media", "index.html"));
-    let html = fs.readFileSync(htmlFile.fsPath, "utf8");
+  ): Promise<string> {
+    const htmlFile = vscode.Uri.joinPath(this.context.extensionUri, "media/index.html")
+    let html = await vscode.workspace.fs.readFile(htmlFile).then((data) => data.toString());
 
     // Fix resources path
     html = html.replace(
       /(<link.+?href="|<script.+?src="|<img.+?src="|url\(")(.+?)"/g,
-      (m, $1, $2) => {
+      (m: string, $1: string, $2: string) => {
         const resourcePath = `${this.context.extensionPath}/media${$2}`;
         return (
           $1 +
