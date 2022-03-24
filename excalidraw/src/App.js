@@ -96,7 +96,7 @@ export default function App(props) {
     return Object.fromEntries(filtered);
   }
 
-  async function onChangeWithDelay(elements, appState, files) {
+  async function onChange(elements, appState, files) {
     vscode.setState({
       elements,
       appState: cleanAppState(appState),
@@ -148,7 +148,7 @@ export default function App(props) {
           files,
         }}
         libraryReturnUrl={"vscode://pomdtr.excalidraw-editor/importLib"}
-        onChange={debounce(onChangeWithDelay, 250)}
+        onChange={debounce(onChange, 250)}
         onLibraryChange={(libraryItems) => {
           libraryItemsRef.current = libraryItems;
           vscode.postMessage({

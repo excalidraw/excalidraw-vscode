@@ -73,7 +73,7 @@ class ExcalidrawEditor {
     this.webviewPanel.webview.html = await this.getHtmlForWebview(
       {
         content: document.getText(),
-        contentType: parse(document.uri.path).ext == 'excalidraw' ? "application/json" : "image/svg+xml",
+        contentType: parse(document.uri.path).ext == '.excalidraw' ? "application/json" : "image/svg+xml",
         libraryItems: this.context.globalState.get("libraryItems") || [],
         viewModeEnabled: document.uri.scheme === "git" ? true : undefined,
         syncTheme: this.config.get("syncTheme", false),
