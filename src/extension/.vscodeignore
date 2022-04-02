@@ -5,6 +5,4 @@ out/
 src/
 tsconfig.json
 webpack.config.js
-
-excalidraw
-examples
+gulpfile.js
