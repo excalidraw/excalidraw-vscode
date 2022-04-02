@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.10
+
+- Allow to `Excalidraw` to be used as a web extension !
+
 ## 2.0.9
 
 - Fix `contentType` incorrectly detected ([#15](https://github.com/pomdtr/vscode-excalidraw-editor/issues/15))

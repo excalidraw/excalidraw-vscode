@@ -9,7 +9,8 @@
 		{
 			"type": "npm",
 			"script": "webpack",
-			"label": "webpack"
+			"label": "webpack",
+			"problemMatcher": []
 		},
 		{
 			"dependsOn": [

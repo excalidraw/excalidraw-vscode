@@ -3,7 +3,7 @@
     "icon": "assets/logo.png",
     "displayName": "Excalidraw Editor",
     "description": "Draw schemas in VSCode using Excalidraw (Unofficial)",
-    "version": "2.0.9",
+    "version": "2.0.10",
     "publisher": "pomdtr",
     "engines": {
         "vscode": "^1.56.0"
@@ -29,7 +29,7 @@
         "type": "git",
         "url": "https://github.com/pomdtr/vscode-excalidraw-editor"
     },
-    "main": "./dist/extension.js",
+    "browser": "./dist/extension.js",
     "contributes": {
         "configuration": [
             {
@@ -88,5 +88,9 @@
         "typescript": "^4.2.4",
         "webpack": "^5.70.0",
         "webpack-cli": "^4.9.2"
+    },
+    "dependencies": {
+        "js-base64": "^3.7.2",
+        "path-browserify": "^1.0.1"
     }
 }

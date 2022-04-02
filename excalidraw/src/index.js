@@ -1,6 +1,7 @@
 import { loadFromBlob } from "@excalidraw/excalidraw";
 import React from "react";
 import ReactDOM from "react-dom";
+import { Base64 } from "js-base64";
 
 import App from "./App";
 const vscode = window.acquireVsCodeApi();
@@ -22,7 +23,7 @@ async function getInitialData(content, contentType) {
 
 function getExcalidrawConfig(rootElement) {
   const b64Config = rootElement.getAttribute("data-excalidraw");
-  const strConfig = Buffer.from(b64Config, "base64").toString("utf-8");
+  const strConfig = Base64.decode(b64Config);
   return JSON.parse(strConfig);
 }
 
