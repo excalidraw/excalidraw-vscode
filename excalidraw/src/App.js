@@ -6,7 +6,7 @@ import Excalidraw, {
   THEME,
 } from "@excalidraw/excalidraw";
 
-import *  as Mousetrap from "mousetrap";
+import * as Mousetrap from "mousetrap";
 
 import "./styles.css";
 
@@ -20,14 +20,6 @@ function detectTheme() {
       return THEME.LIGHT;
   }
 }
-
-// map multiple combinations to the same callback
-Mousetrap.bind(['command+s', 'ctrl+s'], function() {
-  // return false to prevent default browser behavior
-  // and stop event from bubbling
-  return false;
-});
-
 
 function useTheme(syncTheme) {
   const [theme, setTheme] = useState(syncTheme ? detectTheme() : undefined);
@@ -88,6 +80,22 @@ export default function App(props) {
       window.removeEventListener("message");
     };
   }, []);
+
+  useEffect(
+    // map multiple combinations to the same callback
+    () => {
+      const trap = Mousetrap.bind(["command+s", "ctrl+s"], function () {
+        // return false to prevent default browser behavior
+        // and stop event from bubbling
+        vscode.postMessage({ type: "save" });
+        return false;
+      });
+      return () => {
+        trap.unbind();
+      }
+    },
+    []
+  );
 
   function cleanAppState(appState) {
     const validKeys = [

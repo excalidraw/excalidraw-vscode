@@ -55,15 +55,18 @@ class ExcalidrawEditor {
   public async edit(document: vscode.TextDocument) {
     // Setup initial content for the webview
     // Receive message from the webview.
-    const onDidReceiveMessage = this.webviewPanel.webview.onDidReceiveMessage((msg) => {
+    const onDidReceiveMessage = this.webviewPanel.webview.onDidReceiveMessage(async (msg) => {
       switch (msg.type) {
         case "library-change":
-          this.context.globalState.update("libraryItems", msg.libraryItems);
-          break;
+          await this.context.globalState.update("libraryItems", msg.libraryItems);
+          return
         case "change":
-          this.updateTextDocument(document, msg.content).then(() => {
+          await  this.updateTextDocument(document, msg.content).then(() => {
             if (this.config.get("autoSave")) document.save();
           });
+          return
+        case "save":
+          await document.save();
           return;
         case "log":
           console.log(msg.msg);
