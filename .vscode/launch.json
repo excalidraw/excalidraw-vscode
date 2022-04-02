@@ -20,8 +20,8 @@
             "request": "launch",
             "args": [
                 "--extensionDevelopmentPath=${workspaceFolder}",
-                "${workspaceFolder}/examples",
-                "--extensionDevelopmentKind=web"
+                "--extensionDevelopmentKind=web",
+                "${workspaceFolder}/examples"
             ],
             "preLaunchTask": "build"
         }
