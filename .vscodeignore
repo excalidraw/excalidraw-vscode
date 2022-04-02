@@ -1,4 +1,5 @@
 .vscode
+.vscode-test-web
 node_modules
 out/
 src/

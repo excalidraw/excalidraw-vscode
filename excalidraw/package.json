@@ -8,8 +8,7 @@
     "@excalidraw/excalidraw": "0.11.0",
     "js-base64": "^3.7.2",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-scripts": "4.0.1"
+    "react-dom": "^17.0.2"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -22,5 +21,8 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "react-scripts": "4.0.1"
+  }
 }

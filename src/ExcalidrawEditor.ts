@@ -116,20 +116,6 @@ class ExcalidrawEditor {
     let uint8Array = await vscode.workspace.fs.readFile(htmlFile)
     let html =  Uint8ArrayToStr(uint8Array);
 
-    // Fix resources path
-    html = html.replace(
-      /(<link.+?href="|<script.+?src="|<img.+?src="|url\(")(.+?)"/g,
-      (m: string, $1: string, $2: string) => {
-        const resourcePath = `${this.context.extensionPath}/media${$2}`;
-        return (
-          $1 +
-          vscode.Uri.from({ path: resourcePath, scheme: "vscode-resource" })
-            .toString() +
-          '"'
-        );
-      }
-    );
-
     const base64Config = Base64.encode(JSON.stringify(data));
 
     // Pass document uri to the webview
