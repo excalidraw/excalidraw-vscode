@@ -115,7 +115,7 @@ class ExcalidrawEditor {
   private async getHtmlForWebview(
     data: Record<string, unknown>
   ): Promise<string> {
-    const htmlFile = vscode.Uri.joinPath(this.context.extensionUri, "media/index.html")
+    const htmlFile = vscode.Uri.joinPath(this.context.extensionUri, "public", "index.html")
     let uint8Array = await vscode.workspace.fs.readFile(htmlFile)
     let html =  Uint8ArrayToStr(uint8Array);
 

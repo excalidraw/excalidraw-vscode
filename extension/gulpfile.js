@@ -3,11 +3,11 @@ const inlinesource = require('gulp-inline-source')
 const replace = require('gulp-replace')
 
 gulp.task('default', () => {
-    return gulp.src('../editor/build/index.html')
+    return gulp.src('../webview/build/index.html')
         .pipe(replace('.js"></script>', '.js" inline></script>'))
         .pipe(replace('rel="stylesheet">', 'rel="stylesheet" inline>'))
         .pipe(inlinesource({
             compress: false,
         }))
-        .pipe(gulp.dest('./media/'))
+        .pipe(gulp.dest('./public/'))
 });

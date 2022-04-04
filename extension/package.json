@@ -1,8 +1,8 @@
 {
     "name": "excalidraw-editor",
     "icon": "assets/logo.png",
-    "displayName": "Excalidraw Editor",
-    "description": "Draw schemas in VSCode using Excalidraw (Unofficial)",
+    "displayName": "Excalidraw",
+    "description": "Draw schemas in VSCode using Excalidraw",
     "version": "2.0.15",
     "publisher": "pomdtr",
     "engines": {
@@ -65,13 +65,12 @@
         ]
     },
     "scripts": {
+        "install": "cd ../webview && npm install",
         "vscode:prepublish": "npm run package",
-        "package": "npm run build-excalidraw && gulp && webpack --mode production --devtool hidden-source-map",
-        "build-excalidraw": "cd ../editor && npm run build",
-        "webpack": "webpack --mode development",
-        "open-in-browser": "vscode-test-web --extensionDevelopmentPath=. .",
-        "webpack-dev": "webpack --mode development --watch",
-        "test-compile": "tsc -p ./"
+        "package": "npm run build-webview && gulp && webpack --mode production --devtool hidden-source-map",
+        "build": "npm run build-webview && gulp && webpack --mode development",
+        "build-webview": "cd ../webview && npm run build",
+        "open-in-browser": "vscode-test-web --extensionDevelopmentPath=. ."
     },
     "capabilities": {
         "untrustedWorkspaces": {

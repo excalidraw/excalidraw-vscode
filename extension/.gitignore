@@ -2,7 +2,7 @@ node_modules
 out
 **/.eslintcache
 **/*.vsix
-media
+public
 demo
 dist
 .vscode-test-web
