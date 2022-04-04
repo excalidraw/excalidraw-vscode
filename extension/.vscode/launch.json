@@ -10,7 +10,7 @@
             "request": "launch",
             "args": [
                 "--extensionDevelopmentPath=${workspaceFolder}",
-                "${workspaceFolder}/examples"
+                "${workspaceFolder}/../examples"
             ],
             "preLaunchTask": "build"
         },
@@ -21,7 +21,7 @@
             "args": [
                 "--extensionDevelopmentPath=${workspaceFolder}",
                 "--extensionDevelopmentKind=web",
-                "${workspaceFolder}/examples"
+                "${workspaceFolder}/../examples"
             ],
             "preLaunchTask": "build"
         }
