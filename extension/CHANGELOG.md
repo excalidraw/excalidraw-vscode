@@ -1,8 +1,12 @@
 # Changelog
 
+## 2.0.16
+
+- The extension is now part of the excalidraw organization !
+
 ## 2.0.10
 
-- Allow to `Excalidraw` to be used as a web extension !
+- Allow `Excalidraw` to be used as a web extension !
 
 ## 2.0.9
 
