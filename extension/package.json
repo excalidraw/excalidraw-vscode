@@ -27,7 +27,7 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/pomdtr/vscode-excalidraw-editor"
+        "url": "https://github.com/excalidraw/excalidraw-vscode"
     },
     "browser": "./dist/extension.js",
     "contributes": {
