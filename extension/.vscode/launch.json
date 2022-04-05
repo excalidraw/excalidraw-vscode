@@ -5,17 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch extension: Desktop",
-            "type": "extensionHost",
-            "request": "launch",
-            "args": [
-                "--extensionDevelopmentPath=${workspaceFolder}",
-                "${workspaceFolder}/../examples"
-            ],
-            "preLaunchTask": "build"
-        },
-        {
-            "name": "Launch extension: Browser",
+            "name": "Launch extension",
             "type": "extensionHost",
             "request": "launch",
             "args": [
