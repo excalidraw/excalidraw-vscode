@@ -23,7 +23,8 @@
         "url": "https://github.com/pomdtr"
     },
     "activationEvents": [
-        "onCustomEditor:editor.excalidraw"
+        "onCustomEditor:editor.excalidraw",
+        "onCommand:excalidraw.file.new"
     ],
     "repository": {
         "type": "git",
@@ -31,6 +32,14 @@
     },
     "browser": "./dist/extension.js",
     "contributes": {
+        "commands": [
+            {
+                "command": "excalidraw.file.new",
+                "title": "New Excalidraw File",
+                "shortTitle": "Excalidraw File",
+                "category": "Excalidraw"
+            }
+        ],
         "configuration": [
             {
                 "title": "Excalidraw",
@@ -62,7 +71,15 @@
                     }
                 ]
             }
-        ]
+        ],
+        "menus": {
+            "file/newFile": [
+                {
+                    "description": "Create an new Excalidraw file (.excalidraw)",
+                    "command": "excalidraw.file.new"
+                }
+            ]
+        }
     },
     "scripts": {
         "install": "cd ../webview && npm install",

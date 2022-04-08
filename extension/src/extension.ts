@@ -5,6 +5,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// Register our custom editor providers
 	context.subscriptions.push(ExcalidrawTextEditorProvider.register(context));
 	context.subscriptions.push(ExcalidrawUriHandler.register());
+	context.subscriptions.push(ExcalidrawCommands.register());
 }
 
 
@@ -32,3 +33,16 @@ class ExcalidrawUriHandler implements vscode.UriHandler {
 	}
 }
 
+class ExcalidrawCommands {
+	private static _untitledFileHandle = 1;
+	public static register() {
+		return vscode.commands.registerCommand('excalidraw.file.new', () => {
+			const fileName = `Excalidraw-${ExcalidrawCommands._untitledFileHandle++}.excalidraw`;
+			vscode.commands.executeCommand(
+				'vscode.openWith',
+				vscode.Uri.parse(fileName).with({ scheme: 'untitled' }),
+				'editor.excalidraw'
+			);
+		});
+	}
+}
