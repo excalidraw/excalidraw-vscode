@@ -3,6 +3,7 @@
 ## Unreleased
 
 - add the ability to store the library in an `excalidrawlib` file using the `excalidraw.libraryPath` pref.
+- Add `excalidraw.theme` preference, supporting `auto`, `dark` and `light` variant
 
 ## 2.0.16
 

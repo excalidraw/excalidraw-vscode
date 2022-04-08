@@ -60,7 +60,7 @@ async function main() {
           name={config.name}
           contentType={config.contentType}
           viewModeEnabled={config.viewModeEnabled}
-          syncTheme={config.syncTheme}
+          theme={config.theme}
         />
       </React.StrictMode>,
       rootElement

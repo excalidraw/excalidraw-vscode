@@ -40,11 +40,16 @@
                         "description": "Controls autoSave of excalidraw editors.",
                         "default": false
                     },
-                    "excalidraw.syncTheme": {
+                    "excalidraw.theme": {
                         "scope": "resource",
                         "description": "Sync Excalidraw theme with VSCode color theme.",
-                        "type": "boolean",
-                        "default": false
+                        "type": "string",
+                        "default": "auto",
+                        "enum": [
+                            "auto",
+                            "light",
+                            "dark"
+                        ]
                     },
                     "excalidraw.libraryPath": {
                         "scope": "resource",

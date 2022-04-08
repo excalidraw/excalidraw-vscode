@@ -95,7 +95,7 @@ class ExcalidrawEditor {
         contentType: parse(this.document.uri.path).ext == '.excalidraw' ? "application/json" : "image/svg+xml",
         library: await this.loadLibrary(),
         viewModeEnabled: this.document.uri.scheme === "git" ? true : undefined,
-        syncTheme: excalidrawConfig.get<boolean>("syncTheme", false),
+        theme: excalidrawConfig.get("theme", "auto"),
         name: parse(this.document.uri.fsPath).name,
       }
     );

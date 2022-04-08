@@ -21,11 +21,11 @@ function detectTheme() {
   }
 }
 
-function useTheme(syncTheme) {
-  const [theme, setTheme] = useState(syncTheme ? detectTheme() : undefined);
+function useTheme(themeVariant) {
+  const [theme, setTheme] = useState(themeVariant == "auto" ? detectTheme() : themeVariant);
 
   useEffect(() => {
-    if (!syncTheme) {
+    if (themeVariant != "auto") {
       return;
     }
     var observer = new MutationObserver(function (mutations) {
@@ -47,20 +47,18 @@ function useTheme(syncTheme) {
 }
 
 export default function App(props) {
-  const { initialData, vscode, contentType, syncTheme, viewModeEnabled, name } =
-    props;
   const {
     elements = [],
     appState = {},
     scrollToContent,
     libraryItems = [],
     files = [],
-  } = initialData;
+  } = props.initialData;
 
   const excalidrawRef = useRef(null);
   const sceneVersion = useRef(getSceneVersion(elements));
   const libraryItemsRef = useRef(libraryItems);
-  const theme = useTheme(syncTheme);
+  const theme = useTheme(props.theme);
 
   useEffect(() => {
     window.addEventListener("message", async (e) => {
@@ -119,7 +117,7 @@ export default function App(props) {
   }
 
   async function onChange(elements, appState, files) {
-    vscode.setState({
+    props.vscode.setState({
       elements,
       appState: cleanAppState(appState),
       libraryItems: libraryItemsRef.current,
@@ -128,8 +126,8 @@ export default function App(props) {
 
     if (sceneVersion.current != getSceneVersion(elements)) {
       sceneVersion.current = getSceneVersion(elements);
-      if (contentType == "application/json") {
-        vscode.postMessage({
+      if (props.contentType == "application/json") {
+        props.vscode.postMessage({
           type: "change",
           content: serializeAsJSON(elements, appState, files, "local"),
         });
@@ -143,7 +141,7 @@ export default function App(props) {
           },
           files,
         });
-        vscode.postMessage({ type: "change", content: svg.outerHTML });
+        props.vscode.postMessage({ type: "change", content: svg.outerHTML });
       }
     }
   }
@@ -159,9 +157,9 @@ export default function App(props) {
             saveToActiveFile: false,
           },
         }}
-        name={name}
+        name={props.name}
         theme={theme}
-        viewModeEnabled={viewModeEnabled}
+        viewModeEnabled={props.viewModeEnabled}
         initialData={{
           elements,
           scrollToContent,
@@ -179,7 +177,7 @@ export default function App(props) {
             return;
           }
           libraryItemsRef.current = libraryItems;
-          vscode.postMessage({
+          props.vscode.postMessage({
             type: "library-change",
             library: serializeLibraryAsJSON(libraryItems),
           });
