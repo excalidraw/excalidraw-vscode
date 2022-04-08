@@ -13,6 +13,10 @@
                 "--extensionDevelopmentKind=web",
                 "${workspaceFolder}/../examples"
             ],
+            "outFiles": [
+				"${workspaceFolder}/dist/**/*.js"
+			],
+            "debugWebWorkerHost": true,
             "preLaunchTask": "build"
         }
     ]
