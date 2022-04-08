@@ -34,13 +34,23 @@ class ExcalidrawUriHandler implements vscode.UriHandler {
 }
 
 class ExcalidrawCommands {
-	private static _untitledFileHandle = 1;
 	public static register() {
 		return vscode.commands.registerCommand('excalidraw.file.new', () => {
-			const fileName = `Excalidraw-${ExcalidrawCommands._untitledFileHandle++}.excalidraw`;
+            const resourceSet = new Set<string>();
+            vscode.workspace.textDocuments.forEach(document => {
+                resourceSet.add(document.uri.toString());
+            });
+
+            let counter = 1;
+            let untitledResource: vscode.Uri;
+            do {
+				untitledResource = vscode.Uri.from({ scheme: 'untitled', path: `Excalidraw-${counter}.excalidraw` });
+                counter++;
+            } while (resourceSet.has(untitledResource.toString()));
+            
 			vscode.commands.executeCommand(
 				'vscode.openWith',
-				vscode.Uri.parse(fileName).with({ scheme: 'untitled' }),
+				untitledResource,
 				'editor.excalidraw'
 			);
 		});
