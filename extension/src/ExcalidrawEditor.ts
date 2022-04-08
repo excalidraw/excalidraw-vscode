@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { parse } from "path";
-const {Base64} = require('js-base64');
+const { Base64 } = require('js-base64');
 
 export class ExcalidrawTextEditorProvider
   implements vscode.CustomTextEditorProvider {
@@ -58,12 +58,10 @@ class ExcalidrawEditor {
     const onDidReceiveMessage = this.webviewPanel.webview.onDidReceiveMessage(async (msg) => {
       switch (msg.type) {
         case "library-change":
-          await this.context.globalState.update("libraryItems", msg.libraryItems);
+          await this.context.globalState.update("library", msg.library);
           return
         case "change":
-          await  this.updateTextDocument(document, msg.content).then(() => {
-            if (this.config.get("autoSave")) document.save();
-          });
+          await this.updateTextDocument(document, msg.contenta);
           return
         case "save":
           await document.save();
@@ -78,7 +76,7 @@ class ExcalidrawEditor {
       {
         content: document.getText(),
         contentType: parse(document.uri.path).ext == '.excalidraw' ? "application/json" : "image/svg+xml",
-        libraryItems: this.context.globalState.get("libraryItems") || [],
+        library: this.context.globalState.get("library"),
         viewModeEnabled: document.uri.scheme === "git" ? true : undefined,
         syncTheme: this.config.get("syncTheme", false),
         name: parse(document.uri.fsPath).name,
@@ -116,8 +114,8 @@ class ExcalidrawEditor {
     data: Record<string, unknown>
   ): Promise<string> {
     const htmlFile = vscode.Uri.joinPath(this.context.extensionUri, "public", "index.html")
-    let uint8Array = await vscode.workspace.fs.readFile(htmlFile)
-    let html =  Uint8ArrayToStr(uint8Array);
+    let document = await vscode.workspace.openTextDocument(htmlFile);
+    let html = document.getText();
 
     const base64Config = Base64.encode(JSON.stringify(data));
 
@@ -129,48 +127,4 @@ class ExcalidrawEditor {
 
     return html;
   }
-}
-
-// http://www.onicos.com/staff/iz/amuse/javascript/expert/utf.txt
-
-/* utf.js - UTF-8 <=> UTF-16 convertion
- *
- * Copyright (C) 1999 Masanao Izumo <iz@onicos.co.jp>
- * Version: 1.0
- * LastModified: Dec 25 1999
- * This library is free.  You can redistribute it and/or modify it.
- */
-
-function Uint8ArrayToStr(array: Uint8Array) {
-  var out, i, len, c;
-  var char2, char3;
-
-  out = "";
-  len = array.length;
-  i = 0;
-  while(i < len) {
-  c = array[i++];
-  switch(c >> 4)
-  {
-    case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
-      // 0xxxxxxx
-      out += String.fromCharCode(c);
-      break;
-    case 12: case 13:
-      // 110x xxxx   10xx xxxx
-      char2 = array[i++];
-      out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
-      break;
-    case 14:
-      // 1110 xxxx  10xx xxxx  10xx xxxx
-      char2 = array[i++];
-      char3 = array[i++];
-      out += String.fromCharCode(((c & 0x0F) << 12) |
-                     ((char2 & 0x3F) << 6) |
-                     ((char3 & 0x3F) << 0));
-      break;
-  }
-  }
-
-  return out;
 }

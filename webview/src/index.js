@@ -1,4 +1,4 @@
-import { loadFromBlob } from "@excalidraw/excalidraw";
+import { loadFromBlob, loadLibraryFromBlob } from "@excalidraw/excalidraw-next";
 import React from "react";
 import ReactDOM from "react-dom";
 import { Base64 } from "js-base64";
@@ -29,7 +29,6 @@ function getExcalidrawConfig(rootElement) {
 
 async function main() {
   try {
-    vscode.postMessage({ type: "log", msg: "Hello from the client side" });
     const rootElement = document.getElementById("root");
 
     const previousState = vscode.getState();
@@ -39,15 +38,16 @@ async function main() {
       ? previousState
       : await getInitialData(config.content, config.contentType);
 
-    vscode.postMessage({
-      type: "log",
-      msg: `Initial Data: ${JSON.stringify(initialData, null, 2)}`,
-    });
+    const library = config.library
+      ? await loadLibraryFromBlob(
+          new Blob([config.library], { type: "application/json" })
+        )
+      : {};
 
     ReactDOM.render(
       <React.StrictMode>
         <App
-          initialData={{ libraryItems: config.libraryItems, ...initialData }}
+          initialData={{ libraryItems: library.libraryItems || [], ...initialData }}
           vscode={vscode}
           name={config.name}
           contentType={config.contentType}

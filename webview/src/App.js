@@ -3,8 +3,9 @@ import Excalidraw, {
   exportToSvg,
   getSceneVersion,
   serializeAsJSON,
+  serializeLibraryAsJSON,
   THEME,
-} from "@excalidraw/excalidraw";
+} from "@excalidraw/excalidraw-next";
 
 import * as Mousetrap from "mousetrap";
 
@@ -171,7 +172,7 @@ export default function App(props) {
           libraryItemsRef.current = libraryItems;
           vscode.postMessage({
             type: "library-change",
-            libraryItems: libraryItems,
+            library: serializeLibraryAsJSON(libraryItems),
           });
         }}
       />
