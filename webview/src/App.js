@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import Excalidraw, {
   exportToSvg,
   getSceneVersion,
+  loadFromBlob,
   serializeAsJSON,
   THEME,
 } from "@excalidraw/excalidraw";
@@ -59,19 +60,43 @@ export default function App(props) {
 
   const excalidrawRef = useRef(null);
   const sceneVersion = useRef(getSceneVersion(elements));
+  const viewBackgroundColor = useRef(appState.viewBackgroundColor);
+  const gridSize = useRef(appState.gridSize);
   const libraryItemsRef = useRef(libraryItems);
   const theme = useTheme(syncTheme);
 
   useEffect(() => {
-    window.addEventListener("message", (e) => {
-      const message = e.data;
-      vscode.postMessage({ type: "log", msg: message });
+    window.addEventListener("message", async (evt) => {
+      const message = evt.data;
       switch (message.type) {
         case "import-library":
           excalidrawRef.current.importLibrary(
             message.libraryUrl,
             message.csrfToken
           );
+          break;
+        case "change":
+          try {
+            const blob = new Blob([message.content], {
+              type: message.contentType,
+            });
+
+            const { elements, appState, files } = await loadFromBlob(
+              blob,
+              null
+            );
+            sceneVersion.current = getSceneVersion(elements);
+            viewBackgroundColor.current = appState.viewBackgroundColor;
+            gridSize.current = appState.gridSize;
+
+            excalidrawRef.current.updateScene({
+              elements,
+              // appState: { ...excalidrawRef.current.getAppState(), ...appState },
+              files,
+            });
+          } catch (error) {
+            vscode.postMessage({ type: "log", msg: error.message });
+          }
           break;
       }
     });
@@ -92,7 +117,7 @@ export default function App(props) {
       });
       return () => {
         trap.unbind();
-      }
+      };
     },
     []
   );
@@ -122,8 +147,15 @@ export default function App(props) {
       files,
     });
 
-    if (sceneVersion.current != getSceneVersion(elements)) {
+    if (
+      sceneVersion.current != getSceneVersion(elements) ||
+      viewBackgroundColor.current !== appState.viewBackgroundColor ||
+      gridSize.current !== appState.gridSize
+    ) {
       sceneVersion.current = getSceneVersion(elements);
+      viewBackgroundColor.current = appState.viewBackgroundColor;
+      gridSize.current = appState.gridSize;
+
       if (contentType == "application/json") {
         vscode.postMessage({
           type: "change",

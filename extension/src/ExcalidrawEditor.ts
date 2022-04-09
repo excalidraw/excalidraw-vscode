@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { parse } from "path";
-const {Base64} = require('js-base64');
+const { Base64 } = require('js-base64');
 
 export class ExcalidrawTextEditorProvider
   implements vscode.CustomTextEditorProvider {
@@ -42,6 +42,8 @@ export class ExcalidrawTextEditorProvider
 
 class ExcalidrawEditor {
   private config: vscode.WorkspaceConfiguration;
+  private content: string = "";
+
   constructor(
     readonly webviewPanel: vscode.WebviewPanel, private readonly context: vscode.ExtensionContext) {
 
@@ -61,10 +63,9 @@ class ExcalidrawEditor {
           await this.context.globalState.update("libraryItems", msg.libraryItems);
           return
         case "change":
-          await  this.updateTextDocument(document, msg.content).then(() => {
-            if (this.config.get("autoSave")) document.save();
-          });
-          return
+          this.content = msg.content;
+          await this.updateTextDocument(document, msg.content)
+          return;
         case "save":
           await document.save();
           return;
@@ -74,9 +75,10 @@ class ExcalidrawEditor {
       }
     });
 
+    this.content = document.getText();
     this.webviewPanel.webview.html = await this.getHtmlForWebview(
       {
-        content: document.getText(),
+        content: this.content,
         contentType: parse(document.uri.path).ext == '.excalidraw' ? "application/json" : "image/svg+xml",
         libraryItems: this.context.globalState.get("libraryItems") || [],
         viewModeEnabled: document.uri.scheme === "git" ? true : undefined,
@@ -85,10 +87,27 @@ class ExcalidrawEditor {
       }
     );
 
+    const onDidChangeTextDocument = vscode.workspace.onDidChangeTextDocument(this.documentChangeHandler(document));
+
     this.webviewPanel.onDidDispose(
-      onDidReceiveMessage.dispose
+      () => {
+        onDidReceiveMessage.dispose();
+        onDidChangeTextDocument.dispose();
+      }
     )
 
+  }
+
+  private documentChangeHandler(document: vscode.TextDocument) {
+    return (evt: vscode.TextDocumentChangeEvent) => {
+      if (evt.document != document) return;
+
+      const newContent = evt.document.getText();
+      if (newContent.trim() === this.content.trim()) return;
+
+      this.content = newContent;
+      this.webviewPanel.webview.postMessage({ type: "change", content: newContent, contentType: parse(document.uri.path).ext == '.excalidraw' ? "application/json" : "image/svg+xml" });
+    }
   }
   /**
 * Apply Edit on Document
@@ -117,7 +136,7 @@ class ExcalidrawEditor {
   ): Promise<string> {
     const htmlFile = vscode.Uri.joinPath(this.context.extensionUri, "public", "index.html")
     let uint8Array = await vscode.workspace.fs.readFile(htmlFile)
-    let html =  Uint8ArrayToStr(uint8Array);
+    let html = Uint8ArrayToStr(uint8Array);
 
     const base64Config = Base64.encode(JSON.stringify(data));
 
@@ -148,28 +167,27 @@ function Uint8ArrayToStr(array: Uint8Array) {
   out = "";
   len = array.length;
   i = 0;
-  while(i < len) {
-  c = array[i++];
-  switch(c >> 4)
-  {
-    case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
-      // 0xxxxxxx
-      out += String.fromCharCode(c);
-      break;
-    case 12: case 13:
-      // 110x xxxx   10xx xxxx
-      char2 = array[i++];
-      out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
-      break;
-    case 14:
-      // 1110 xxxx  10xx xxxx  10xx xxxx
-      char2 = array[i++];
-      char3 = array[i++];
-      out += String.fromCharCode(((c & 0x0F) << 12) |
-                     ((char2 & 0x3F) << 6) |
-                     ((char3 & 0x3F) << 0));
-      break;
-  }
+  while (i < len) {
+    c = array[i++];
+    switch (c >> 4) {
+      case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+        // 0xxxxxxx
+        out += String.fromCharCode(c);
+        break;
+      case 12: case 13:
+        // 110x xxxx   10xx xxxx
+        char2 = array[i++];
+        out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
+        break;
+      case 14:
+        // 1110 xxxx  10xx xxxx  10xx xxxx
+        char2 = array[i++];
+        char3 = array[i++];
+        out += String.fromCharCode(((c & 0x0F) << 12) |
+          ((char2 & 0x3F) << 6) |
+          ((char3 & 0x3F) << 0));
+        break;
+    }
   }
 
   return out;
