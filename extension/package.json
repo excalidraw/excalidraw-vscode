@@ -38,6 +38,14 @@
                     "excalidraw.autoSave": {
                         "type": "boolean",
                         "description": "Controls autoSave of excalidraw editors.",
+                        "default": false,
+                        "markdownDeprecationMessage": "The autosaving should be handled by the native `files.autoSave` vscode settings"
+                    },
+                    "excalidraw.syncTheme": {
+                        "scope": "resource",
+                        "description": "Sync Excalidraw theme with VSCode color theme.",
+                        "type": "boolean",
+                        "markdownDeprecationMessage": "Please use the `excalidraw.theme` setting set to `auto` instead",
                         "default": false
                     },
                     "excalidraw.theme": {
