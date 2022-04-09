@@ -25,6 +25,20 @@ function getExcalidrawConfig(rootElement) {
   return JSON.parse(strConfig);
 }
 
+async function getLibraryItems(config) {
+    try {
+      const library = config.library
+        ? await loadLibraryFromBlob(
+            new Blob([config.library], { type: "application/json" })
+          )
+        : {};
+      return library.version == 1 ? library.library : library.libraryItems;
+    } catch (e) {
+      vscode.postMessage({ type: "error", content: `Failed to load library: ${e}` });
+      return [];
+    }
+}
+
 async function main() {
   try {
     const rootElement = document.getElementById("root");
@@ -36,13 +50,7 @@ async function main() {
       ? previousState
       : await getInitialData(config.content, config.contentType);
 
-    const library = config.library
-      ? await loadLibraryFromBlob(
-          new Blob([config.library], { type: "application/json" })
-        )
-      : {};
-
-    const libraryItems = library.version == 1 ? library.library : library.libraryItems;
+    let libraryItems = await getLibraryItems(config);
 
     ReactDOM.render(
       <React.StrictMode>
@@ -59,8 +67,8 @@ async function main() {
     );
   } catch (error) {
     vscode.postMessage({
-      type: "log",
-      msg: error.message,
+      type: "error",
+      content: `Failed to load Document: ${error}`,
     });
   }
 }

@@ -66,8 +66,11 @@ class ExcalidrawEditor {
         case "save":
           await document.save();
           return;
+        case "error":
+          vscode.window.showErrorMessage(msg.content);
+          return;
         case "log":
-          console.log(msg.msg);
+          console.log(msg.content);
           return;
       }
     });

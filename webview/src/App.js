@@ -66,7 +66,7 @@ export default function App(props) {
   useEffect(() => {
     window.addEventListener("message", (e) => {
       const message = e.data;
-      vscode.postMessage({ type: "log", msg: message });
+      vscode.postMessage({ type: "log", content: message });
       switch (message.type) {
         case "import-library":
           excalidrawRef.current.importLibrary(
