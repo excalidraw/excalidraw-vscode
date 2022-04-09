@@ -48,7 +48,7 @@
                     },
                     "excalidraw.libraryPath": {
                         "scope": "resource",
-                        "description": "Path to the file containing the Excalidraw library.",
+                        "description": "Path to the file used to store the excalidraw library. If not set, the library will be persisted in the user storage. Supports ${workspaceFolder} variable.",
                         "type": "string"
                     }
                 }
