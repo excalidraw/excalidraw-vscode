@@ -58,10 +58,10 @@ class ExcalidrawEditor {
     const onDidReceiveMessage = this.webviewPanel.webview.onDidReceiveMessage(async (msg) => {
       switch (msg.type) {
         case "library-change":
-          await this.context.globalState.update("library", msg.library);
+          await this.saveLibrary(msg.library);
           return
         case "change":
-          await this.updateTextDocument(document, msg.contenta);
+          await this.updateTextDocument(document, msg.content);
           return
         case "save":
           await document.save();
@@ -76,7 +76,7 @@ class ExcalidrawEditor {
       {
         content: document.getText(),
         contentType: parse(document.uri.path).ext == '.excalidraw' ? "application/json" : "image/svg+xml",
-        library: this.context.globalState.get("library"),
+        library: await this.loadLibrary(),
         viewModeEnabled: document.uri.scheme === "git" ? true : undefined,
         syncTheme: this.config.get("syncTheme", false),
         name: parse(document.uri.fsPath).name,
@@ -110,25 +110,39 @@ class ExcalidrawEditor {
     this.webviewPanel.webview.postMessage({ type: "import-library", libraryUrl, csrfToken });
   }
 
-  public async loadLibrary() {
-    const libraryPath = await this.config.get<string>("libraryPath");
-    if (libraryPath) {
-      const libraryUri = vscode.Uri.file(libraryPath);
-      const libraryDocument = await vscode.workspace.openTextDocument(libraryUri);
-      return libraryDocument.getText();
+  public async getLibraryUri() {
+    let libraryPath = await this.config.get<string>("libraryPath");
+    if (!libraryPath) {
+      return undefined;
     }
-    return this.context.globalState.get("library");
+
+    libraryPath = libraryPath?.replace("${workspaceFolder}", vscode.workspace.workspaceFolders?.[0].uri.fsPath || "undefined");
+
+    const libraryUri = vscode.Uri.file(libraryPath)
+    try {
+      await vscode.workspace.fs.stat(libraryUri)
+      return libraryUri;
+    } catch (e) {
+      vscode.window.showErrorMessage(`Library file not found at ${libraryUri.fsPath}`);
+    }
+  }
+
+  public async loadLibrary() {
+    const libraryUri = await this.getLibraryUri();
+    if (!libraryUri) {
+      return this.context.globalState.get<string>("library");
+    }
+    const libraryDocument = await vscode.workspace.openTextDocument(libraryUri);
+    return libraryDocument.getText();
   }
 
   public async saveLibrary(library: string) {
-    const libraryPath = await this.config.get<string>("libraryPath");
-    if (libraryPath) {
-      const libraryUri = vscode.Uri.file(libraryPath);
-      const libraryDocument = await vscode.workspace.openTextDocument(libraryUri);
-      await this.updateTextDocument(libraryDocument, library);
-      return;
+    const libraryUri = await this.getLibraryUri();
+    if (!libraryUri) {
+      return this.context.globalState.update("library", library);
     }
-    return this.context.globalState.update("library", library);
+    const libraryDocument = await vscode.workspace.openTextDocument(libraryUri);
+    await this.updateTextDocument(libraryDocument, library);
   }
 
   private async getHtmlForWebview(

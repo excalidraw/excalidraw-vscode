@@ -10,13 +10,11 @@ async function getInitialData(content, contentType) {
   if (!content) {
     return {};
   }
-  vscode.postMessage({ type: "log", msg: "Loading from blob!" });
   const initialData = await loadFromBlob(
     new Blob([content], { type: contentType }),
     null,
     null
   );
-  vscode.postMessage({ type: "log", msg: "Loaded from blob!" });
 
   return { ...initialData, scrollToContent: true };
 }
@@ -44,10 +42,12 @@ async function main() {
         )
       : {};
 
+    const libraryItems = library.version == 1 ? library.library : library.libraryItems;
+
     ReactDOM.render(
       <React.StrictMode>
         <App
-          initialData={{ libraryItems: library.libraryItems || [], ...initialData }}
+          initialData={{ libraryItems, ...initialData }}
           vscode={vscode}
           name={config.name}
           contentType={config.contentType}
