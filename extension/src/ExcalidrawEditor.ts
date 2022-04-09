@@ -110,6 +110,27 @@ class ExcalidrawEditor {
     this.webviewPanel.webview.postMessage({ type: "import-library", libraryUrl, csrfToken });
   }
 
+  public async loadLibrary() {
+    const libraryPath = await this.config.get<string>("libraryPath");
+    if (libraryPath) {
+      const libraryUri = vscode.Uri.file(libraryPath);
+      const libraryDocument = await vscode.workspace.openTextDocument(libraryUri);
+      return libraryDocument.getText();
+    }
+    return this.context.globalState.get("library");
+  }
+
+  public async saveLibrary(library: string) {
+    const libraryPath = await this.config.get<string>("libraryPath");
+    if (libraryPath) {
+      const libraryUri = vscode.Uri.file(libraryPath);
+      const libraryDocument = await vscode.workspace.openTextDocument(libraryUri);
+      await this.updateTextDocument(libraryDocument, library);
+      return;
+    }
+    return this.context.globalState.update("library", library);
+  }
+
   private async getHtmlForWebview(
     data: Record<string, unknown>
   ): Promise<string> {

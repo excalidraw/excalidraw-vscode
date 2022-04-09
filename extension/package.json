@@ -45,6 +45,12 @@
                         "description": "Sync Excalidraw theme with VSCode color theme.",
                         "type": "boolean",
                         "default": "false"
+                    },
+                    "excalidraw.libraryPath": {
+                        "scope": "resource",
+                        "description": "Path to the file containing the Excalidraw library.",
+                        "type": "boolean",
+                        "default": "false"
                     }
                 }
             }
