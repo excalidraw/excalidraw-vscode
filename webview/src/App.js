@@ -8,8 +8,6 @@ import Excalidraw, {
   THEME,
 } from "@excalidraw/excalidraw-next";
 
-import * as Mousetrap from "mousetrap";
-
 import "./styles.css";
 
 function detectTheme() {
@@ -102,22 +100,6 @@ export default function App(props) {
       window.removeEventListener("message");
     };
   }, []);
-
-  useEffect(
-    // map multiple combinations to the same callback
-    () => {
-      const trap = Mousetrap.bind(["command+s", "ctrl+s"], function () {
-        // return false to prevent default browser behavior
-        // and stop event from bubbling
-        vscode.postMessage({ type: "save" });
-        return false;
-      });
-      return () => {
-        trap.unbind();
-      };
-    },
-    []
-  );
 
   function cleanAppState(appState) {
     const validKeys = [
