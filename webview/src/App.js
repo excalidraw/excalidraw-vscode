@@ -2,11 +2,11 @@ import React, { useEffect, useState, useRef } from "react";
 import Excalidraw, {
   exportToSvg,
   getSceneVersion,
+  loadLibraryFromBlob,
   serializeAsJSON,
+  serializeLibraryAsJSON,
   THEME,
-} from "@excalidraw/excalidraw";
-
-import * as Mousetrap from "mousetrap";
+} from "@excalidraw/excalidraw-next";
 
 import "./styles.css";
 
@@ -63,39 +63,43 @@ export default function App(props) {
   const theme = useTheme(syncTheme);
 
   useEffect(() => {
-    window.addEventListener("message", (e) => {
-      const message = e.data;
-      vscode.postMessage({ type: "log", msg: message });
-      switch (message.type) {
-        case "import-library":
-          excalidrawRef.current.importLibrary(
-            message.libraryUrl,
-            message.csrfToken
-          );
-          break;
+    window.addEventListener("message", async (e) => {
+      try {
+        const message = e.data;
+        vscode.postMessage({ type: "log", content: message });
+        switch (message.type) {
+          case "import-library":
+            excalidrawRef.current.importLibrary(
+              message.libraryUrl,
+              message.csrfToken
+            );
+            break;
+          case "library-change":
+            const blob = new Blob([message.library], {
+              type: "application/json",
+            });
+            const { libraryItems } = await loadLibraryFromBlob(blob);
+            if (
+              JSON.stringify(libraryItems) ==
+              JSON.stringify(libraryItemsRef.current)
+            ) {
+              return;
+            }
+            libraryItemsRef.current = libraryItems;
+            excalidrawRef.current.updateScene({ libraryItems });
+            break;
+        }
+      } catch (e) {
+        this.postMessage({ type: "error", content: e.message });
       }
     });
+
+    vscode.postMessage({type: "ready"});
 
     return () => {
       window.removeEventListener("message");
     };
   }, []);
-
-  useEffect(
-    // map multiple combinations to the same callback
-    () => {
-      const trap = Mousetrap.bind(["command+s", "ctrl+s"], function () {
-        // return false to prevent default browser behavior
-        // and stop event from bubbling
-        vscode.postMessage({ type: "save" });
-        return false;
-      });
-      return () => {
-        trap.unbind();
-      }
-    },
-    []
-  );
 
   function cleanAppState(appState) {
     const validKeys = [
@@ -168,10 +172,16 @@ export default function App(props) {
         libraryReturnUrl={"vscode://pomdtr.excalidraw-editor/importLib"}
         onChange={debounce(onChange, 250)}
         onLibraryChange={(libraryItems) => {
+          if (
+            JSON.stringify(libraryItems) ==
+            JSON.stringify(libraryItemsRef.current)
+          ) {
+            return;
+          }
           libraryItemsRef.current = libraryItems;
           vscode.postMessage({
             type: "library-change",
-            libraryItems: libraryItems,
+            library: serializeLibraryAsJSON(libraryItems),
           });
         }}
       />

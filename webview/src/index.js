@@ -1,4 +1,4 @@
-import { loadFromBlob } from "@excalidraw/excalidraw";
+import { loadFromBlob, loadLibraryFromBlob } from "@excalidraw/excalidraw-next";
 import React from "react";
 import ReactDOM from "react-dom";
 import { Base64 } from "js-base64";
@@ -10,13 +10,11 @@ async function getInitialData(content, contentType) {
   if (!content) {
     return {};
   }
-  vscode.postMessage({ type: "log", msg: "Loading from blob!" });
   const initialData = await loadFromBlob(
     new Blob([content], { type: contentType }),
     null,
     null
   );
-  vscode.postMessage({ type: "log", msg: "Loaded from blob!" });
 
   return { ...initialData, scrollToContent: true };
 }
@@ -27,9 +25,22 @@ function getExcalidrawConfig(rootElement) {
   return JSON.parse(strConfig);
 }
 
+async function getLibraryItems(config) {
+    try {
+      const library = config.library
+        ? await loadLibraryFromBlob(
+            new Blob([config.library], { type: "application/json" })
+          )
+        : {};
+      return library.version == 1 ? library.library : library.libraryItems;
+    } catch (e) {
+      vscode.postMessage({ type: "error", content: `Failed to load library: ${e}` });
+      return [];
+    }
+}
+
 async function main() {
   try {
-    vscode.postMessage({ type: "log", msg: "Hello from the client side" });
     const rootElement = document.getElementById("root");
 
     const previousState = vscode.getState();
@@ -39,15 +50,12 @@ async function main() {
       ? previousState
       : await getInitialData(config.content, config.contentType);
 
-    vscode.postMessage({
-      type: "log",
-      msg: `Initial Data: ${JSON.stringify(initialData, null, 2)}`,
-    });
+    let libraryItems = await getLibraryItems(config);
 
     ReactDOM.render(
       <React.StrictMode>
         <App
-          initialData={{ libraryItems: config.libraryItems, ...initialData }}
+          initialData={{ libraryItems, ...initialData }}
           vscode={vscode}
           name={config.name}
           contentType={config.contentType}
@@ -59,8 +67,8 @@ async function main() {
     );
   } catch (error) {
     vscode.postMessage({
-      type: "log",
-      msg: error.message,
+      type: "error",
+      content: `Failed to load Document: ${error}`,
     });
   }
 }

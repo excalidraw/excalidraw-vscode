@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- add the ability to store the library in an `excalidrawlib` file using the `excalidraw.libraryPath` pref.
+
 ## 2.0.16
 
 - The extension is now part of the excalidraw organization !
