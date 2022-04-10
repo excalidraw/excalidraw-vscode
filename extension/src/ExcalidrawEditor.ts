@@ -137,7 +137,7 @@ class ExcalidrawEditor {
 
     edit.replace(
       document.uri,
-      new vscode.Range(0, 0, document.lineCount, 0),
+      new vscode.Range(0, 0, document.lineCount, document.lineAt(document.lineCount - 1).text.length),
       content
     );
 
