@@ -78,6 +78,18 @@ class ExcalidrawEditor {
 
   }
 
+  getContentType() {
+    const extension = parse(this.document.uri.path).ext;
+    return {
+      ".svg": "image/svg+xml",
+      ".excalidraw": "application/json",
+    }[extension]
+  }
+
+  isViewOnly() {
+    return this.document.uri.scheme === "git" || this.document.uri.scheme === "conflictResolution";
+  }
+
   public async start() {
     // Setup initial content for the webview
     // Receive message from the webview.
@@ -92,10 +104,10 @@ class ExcalidrawEditor {
     this.webviewPanel.webview.html = await this.getHtmlForWebview(
       {
         content: this.document.getText(),
-        contentType: parse(this.document.uri.path).ext == '.excalidraw' ? "application/json" : "image/svg+xml",
+        contentType: this.getContentType(),
         library: await this.loadLibrary(),
-        viewModeEnabled: this.document.uri.scheme === "git" ? true : undefined,
-        syncTheme: excalidrawConfig.get<boolean>("syncTheme", false),
+        viewModeEnabled: this.isViewOnly() || undefined,
+        theme: excalidrawConfig.get("theme", "auto"),
         name: parse(this.document.uri.fsPath).name,
       }
     );

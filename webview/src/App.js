@@ -21,15 +21,13 @@ function detectTheme() {
   }
 }
 
-function useTheme(syncTheme) {
-  const [theme, setTheme] = useState(syncTheme ? detectTheme() : undefined);
+function useTheme(themeVariant) {
+  const [theme, setTheme] = useState(themeVariant == "auto" ? detectTheme() : themeVariant);
 
   useEffect(() => {
-    if (!syncTheme) {
-      return;
-    }
     var observer = new MutationObserver(function (mutations) {
       mutations.forEach(function (_) {
+        if (themeVariant != "auto") return;
         setTheme(detectTheme());
       });
     });
@@ -47,7 +45,7 @@ function useTheme(syncTheme) {
 }
 
 export default function App(props) {
-  const { initialData, vscode, contentType, syncTheme, viewModeEnabled, name } =
+  const { initialData, vscode, contentType, viewModeEnabled, name } =
     props;
   const {
     elements = [],
@@ -60,7 +58,7 @@ export default function App(props) {
   const excalidrawRef = useRef(null);
   const sceneVersion = useRef(getSceneVersion(elements));
   const libraryItemsRef = useRef(libraryItems);
-  const theme = useTheme(syncTheme);
+  const theme = useTheme(props.theme);
 
   useEffect(() => {
     window.addEventListener("message", async (e) => {

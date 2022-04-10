@@ -46,6 +46,17 @@
                         "type": "boolean",
                         "default": false
                     },
+                    "excalidraw.theme": {
+                        "scope": "resource",
+                        "description": "Sync Excalidraw theme with VSCode color theme.",
+                        "type": "string",
+                        "default": "auto",
+                        "enum": [
+                            "auto",
+                            "light",
+                            "dark"
+                        ]
+                    },
                     "excalidraw.libraryPath": {
                         "scope": "resource",
                         "description": "Path to the file used to store the excalidraw library. If not set, the library will be persisted in the user storage. Supports ${workspaceFolder} variable.",
