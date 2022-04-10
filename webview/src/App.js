@@ -96,6 +96,8 @@ export default function App(props) {
       }
     });
 
+    vscode.postMessage({type: "ready"});
+
     return () => {
       window.removeEventListener("message");
     };

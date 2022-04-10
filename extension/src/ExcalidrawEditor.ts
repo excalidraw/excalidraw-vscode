@@ -54,31 +54,36 @@ class ExcalidrawEditor {
   }
 
   public async handleMessage(msg: any) {
-      switch (msg.type) {
-        case "library-change":
-          await this.saveLibrary(msg.library);
-          ExcalidrawEditor.eventEmitter.fire(msg);
-          return;
-        case "change":
-          await this.updateTextDocument(this.document, msg.content);
-          return
-        case "save":
-          await this.document.save();
-          return;
-        case "error":
-          vscode.window.showErrorMessage(msg.content);
-          return;
-        case "log":
-          console.log(msg.content);
-          return;
-      }
+    switch (msg.type) {
+      case "ready":
+        this.webviewPanel.webview.postMessage({ type: "library-change", library: await this.loadLibrary() });
+        break;
+      case "library-change":
+        await this.saveLibrary(msg.library);
+        ExcalidrawEditor.eventEmitter.fire(msg);
+        return;
+      case "change":
+        await this.updateTextDocument(this.document, msg.content);
+        return
+      case "save":
+        await this.document.save();
+        return;
+      case "error":
+        vscode.window.showErrorMessage(msg.content);
+        return;
+      case "log":
+        console.log(msg.content);
+        return;
+    }
 
   }
 
   public async start() {
     // Setup initial content for the webview
     // Receive message from the webview.
-    const onDidReceiveMessage = this.webviewPanel.webview.onDidReceiveMessage(this.handleMessage);
+    const onDidReceiveMessage = this.webviewPanel.webview.onDidReceiveMessage((msg) => {
+      this.handleMessage(msg);
+    });
 
     const onDidReceiveEvent = ExcalidrawEditor.eventEmitter.event((msg) => {
       this.webviewPanel.webview.postMessage(msg);
