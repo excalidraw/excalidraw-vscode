@@ -56,7 +56,8 @@ class ExcalidrawEditor {
   public async handleMessage(msg: any) {
     switch (msg.type) {
       case "ready":
-        this.webviewPanel.webview.postMessage({ type: "library-change", library: await this.loadLibrary() });
+        await this.webviewPanel.webview.postMessage({ type: "change", content: this.document.getText(), contentType: this.getContentType() });
+        await this.webviewPanel.webview.postMessage({ type: "library-change", library: await this.loadLibrary() });
         break;
       case "library-change":
         await this.saveLibrary(msg.library);
@@ -71,6 +72,9 @@ class ExcalidrawEditor {
       case "error":
         vscode.window.showErrorMessage(msg.content);
         return;
+      case "info":
+        vscode.window.showInformationMessage(msg.content);
+        return;
       case "log":
         console.log(msg.content);
         return;
@@ -79,7 +83,7 @@ class ExcalidrawEditor {
   }
 
   getContentType() {
-    const extension = parse(this.document.uri.path).ext;
+    const extension = parse(this.document.uri.path).ext as ".svg" | ".excalidraw";
     return {
       ".svg": "image/svg+xml",
       ".excalidraw": "application/json",
@@ -101,6 +105,8 @@ class ExcalidrawEditor {
       this.webviewPanel.webview.postMessage(msg);
     })
 
+    const onDidChangeTextDocument = vscode.workspace.onDidChangeTextDocument(this.documentChangeHandler());
+
     this.webviewPanel.webview.html = await this.getHtmlForWebview(
       {
         content: this.document.getText(),
@@ -116,6 +122,7 @@ class ExcalidrawEditor {
       () => {
         onDidReceiveMessage.dispose()
         onDidReceiveEvent.dispose()
+        onDidChangeTextDocument.dispose()
       }
     )
   }
@@ -135,6 +142,20 @@ class ExcalidrawEditor {
     );
 
     return vscode.workspace.applyEdit(edit);
+  }
+
+  private documentChangeHandler() {
+    let lastContent = this.document.getText();
+    return (evt: vscode.TextDocumentChangeEvent) => {
+      if (evt.document != this.document) return;
+      if (evt.contentChanges.length == 0) return;
+
+      const content = this.document.getText()
+      if (content.trim() !== lastContent.trim()) {
+        lastContent = content;
+        this.webviewPanel.webview.postMessage({ type: "change", content, contentType: this.getContentType() });
+      }
+    }
   }
 
   public importLibrary(libraryUrl: string, csrfToken: string) {

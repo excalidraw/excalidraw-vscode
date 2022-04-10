@@ -3,6 +3,7 @@ import Excalidraw, {
   exportToSvg,
   getSceneVersion,
   loadLibraryFromBlob,
+  loadFromBlob,
   serializeAsJSON,
   serializeLibraryAsJSON,
   THEME,
@@ -22,7 +23,9 @@ function detectTheme() {
 }
 
 function useTheme(themeVariant) {
-  const [theme, setTheme] = useState(themeVariant == "auto" ? detectTheme() : themeVariant);
+  const [theme, setTheme] = useState(
+    themeVariant == "auto" ? detectTheme() : themeVariant
+  );
 
   useEffect(() => {
     var observer = new MutationObserver(function (mutations) {
@@ -45,8 +48,7 @@ function useTheme(themeVariant) {
 }
 
 export default function App(props) {
-  const { initialData, vscode, contentType, viewModeEnabled, name } =
-    props;
+  const { initialData, vscode, contentType, viewModeEnabled, name } = props;
   const {
     elements = [],
     appState = {},
@@ -60,11 +62,20 @@ export default function App(props) {
   const libraryItemsRef = useRef(libraryItems);
   const theme = useTheme(props.theme);
 
+  const hasLibraryChanged = (libraryItems) =>
+    JSON.stringify(libraryItems) != JSON.stringify(libraryItemsRef.current);
+
+  const hasContentChanged = (elements) =>
+    getSceneVersion(elements) != sceneVersion.current;
+
   useEffect(() => {
     window.addEventListener("message", async (e) => {
       try {
         const message = e.data;
-        vscode.postMessage({ type: "log", content: message });
+        vscode.postMessage({
+          type: "log",
+          content: `Extension -> Webview ${message.type}`,
+        });
         switch (message.type) {
           case "import-library":
             excalidrawRef.current.importLibrary(
@@ -72,49 +83,44 @@ export default function App(props) {
               message.csrfToken
             );
             break;
-          case "library-change":
+          case "library-change": {
             const blob = new Blob([message.library], {
               type: "application/json",
             });
             const { libraryItems } = await loadLibraryFromBlob(blob);
-            if (
-              JSON.stringify(libraryItems) ==
-              JSON.stringify(libraryItemsRef.current)
-            ) {
-              return;
-            }
+            if (!hasLibraryChanged(libraryItems)) return;
+
             libraryItemsRef.current = libraryItems;
             excalidrawRef.current.updateScene({ libraryItems });
             break;
+          }
+          case "change": {
+            const blob = new Blob([message.content], {
+              type: message.contentType,
+            });
+
+            const { elements, appState, files } = await loadFromBlob(blob);
+            if (!hasContentChanged(elements, appState)) return;
+            sceneVersion.current = getSceneVersion(elements);
+
+            excalidrawRef.current.updateScene({
+              elements,
+              files,
+            });
+            break;
+          }
         }
-      } catch (e) {
-        this.postMessage({ type: "error", content: e.message });
+      } catch (error) {
+        vscode.postMessage({ type: "error", content: error.message });
       }
     });
 
-    vscode.postMessage({type: "ready"});
+    vscode.postMessage({ type: "ready" });
 
     return () => {
       window.removeEventListener("message");
     };
   }, []);
-
-  function cleanAppState(appState) {
-    const validKeys = [
-      "scrollX",
-      "scrollY",
-      "zenModeEnabled",
-      "viewModeEnabled",
-      "gridModeEnable",
-      "zoom",
-      "selectedElementIds",
-      "viewBackgroundColor",
-    ];
-    const filtered = Object.entries(appState).filter(([key, _]) =>
-      validKeys.includes(key)
-    );
-    return Object.fromEntries(filtered);
-  }
 
   async function onChange(elements, appState, files) {
     vscode.setState({
@@ -124,8 +130,9 @@ export default function App(props) {
       files,
     });
 
-    if (sceneVersion.current != getSceneVersion(elements)) {
+    if (hasContentChanged(elements)) {
       sceneVersion.current = getSceneVersion(elements);
+
       if (contentType == "application/json") {
         vscode.postMessage({
           type: "change",
@@ -170,17 +177,13 @@ export default function App(props) {
         libraryReturnUrl={"vscode://pomdtr.excalidraw-editor/importLib"}
         onChange={debounce(onChange, 250)}
         onLibraryChange={(libraryItems) => {
-          if (
-            JSON.stringify(libraryItems) ==
-            JSON.stringify(libraryItemsRef.current)
-          ) {
-            return;
+          if (hasLibraryChanged(libraryItems)) {
+            libraryItemsRef.current = libraryItems;
+            vscode.postMessage({
+              type: "library-change",
+              library: serializeLibraryAsJSON(libraryItems),
+            });
           }
-          libraryItemsRef.current = libraryItems;
-          vscode.postMessage({
-            type: "library-change",
-            library: serializeLibraryAsJSON(libraryItems),
-          });
         }}
       />
     </div>
@@ -201,4 +204,21 @@ function debounce(func, wait) {
     clearTimeout(timeout);
     timeout = setTimeout(later, wait);
   };
+}
+
+function cleanAppState(appState) {
+  const validKeys = [
+    "scrollX",
+    "scrollY",
+    "zenModeEnabled",
+    "viewModeEnabled",
+    "gridModeEnable",
+    "zoom",
+    "selectedElementIds",
+    "viewBackgroundColor",
+  ];
+  const filtered = Object.entries(appState).filter(([key, _]) =>
+    validKeys.includes(key)
+  );
+  return Object.fromEntries(filtered);
 }
