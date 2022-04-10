@@ -161,6 +161,7 @@ export default function App(props) {
           canvasActions: {
             loadScene: false,
             saveScene: false,
+            export: false,
             saveToActiveFile: false,
           },
         }}
