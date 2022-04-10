@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import Excalidraw, {
   exportToSvg,
   getSceneVersion,
+  loadLibraryFromBlob,
   serializeAsJSON,
   serializeLibraryAsJSON,
   THEME,
@@ -64,16 +65,34 @@ export default function App(props) {
   const theme = useTheme(syncTheme);
 
   useEffect(() => {
-    window.addEventListener("message", (e) => {
-      const message = e.data;
-      vscode.postMessage({ type: "log", content: message });
-      switch (message.type) {
-        case "import-library":
-          excalidrawRef.current.importLibrary(
-            message.libraryUrl,
-            message.csrfToken
-          );
-          break;
+    window.addEventListener("message", async (e) => {
+      try {
+        const message = e.data;
+        vscode.postMessage({ type: "log", content: message });
+        switch (message.type) {
+          case "import-library":
+            excalidrawRef.current.importLibrary(
+              message.libraryUrl,
+              message.csrfToken
+            );
+            break;
+          case "library-change":
+            const blob = new Blob([message.library], {
+              type: "application/json",
+            });
+            const { libraryItems } = await loadLibraryFromBlob(blob);
+            if (
+              JSON.stringify(libraryItems) ==
+              JSON.stringify(libraryItemsRef.current)
+            ) {
+              return;
+            }
+            libraryItemsRef.current = libraryItems;
+            excalidrawRef.current.updateScene({ libraryItems });
+            break;
+        }
+      } catch (e) {
+        this.postMessage({ type: "error", content: e.message });
       }
     });
 
@@ -93,7 +112,7 @@ export default function App(props) {
       });
       return () => {
         trap.unbind();
-      }
+      };
     },
     []
   );
@@ -169,6 +188,12 @@ export default function App(props) {
         libraryReturnUrl={"vscode://pomdtr.excalidraw-editor/importLib"}
         onChange={debounce(onChange, 250)}
         onLibraryChange={(libraryItems) => {
+          if (
+            JSON.stringify(libraryItems) ==
+            JSON.stringify(libraryItemsRef.current)
+          ) {
+            return;
+          }
           libraryItemsRef.current = libraryItems;
           vscode.postMessage({
             type: "library-change",

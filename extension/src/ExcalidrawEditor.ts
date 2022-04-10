@@ -2,6 +2,8 @@ import * as vscode from "vscode";
 import { parse } from "path";
 const { Base64 } = require('js-base64');
 
+const excalidrawConfig = vscode.workspace.getConfiguration("excalidraw")
+
 export class ExcalidrawTextEditorProvider
   implements vscode.CustomTextEditorProvider {
   public static register(context: vscode.ExtensionContext): vscode.Disposable {
@@ -17,7 +19,6 @@ export class ExcalidrawTextEditorProvider
 
   static activeEditor: ExcalidrawEditor | undefined;
 
-
   constructor(private readonly context: vscode.ExtensionContext) { }
 
   public async resolveCustomTextEditor(
@@ -25,9 +26,12 @@ export class ExcalidrawTextEditorProvider
     webviewPanel: vscode.WebviewPanel,
     _token: vscode.CancellationToken
   ): Promise<void> {
+    webviewPanel.webview.options = {
+      enableScripts: true,
+    };
 
-    const editor = new ExcalidrawEditor(webviewPanel, this.context);
-    await editor.edit(document);
+    const editor = new ExcalidrawEditor(document, webviewPanel, this.context);
+    editor.start();
     ExcalidrawTextEditorProvider.activeEditor = editor;
 
     const onDidChangeViewState = webviewPanel.onDidChangeViewState((e) => {
@@ -41,30 +45,25 @@ export class ExcalidrawTextEditorProvider
 }
 
 class ExcalidrawEditor {
-  private config: vscode.WorkspaceConfiguration;
+
+  // Allows to pass events between editors
+  private static eventEmitter = new vscode.EventEmitter<{ type: string, msg: any }>();
+
   constructor(
-    readonly webviewPanel: vscode.WebviewPanel, private readonly context: vscode.ExtensionContext) {
-
-    webviewPanel.webview.options = {
-      enableScripts: true,
-    };
-
-    this.config = vscode.workspace.getConfiguration("excalidraw");
+    readonly document: vscode.TextDocument, readonly webviewPanel: vscode.WebviewPanel, readonly context: vscode.ExtensionContext) {
   }
 
-  public async edit(document: vscode.TextDocument) {
-    // Setup initial content for the webview
-    // Receive message from the webview.
-    const onDidReceiveMessage = this.webviewPanel.webview.onDidReceiveMessage(async (msg) => {
+  public async handleMessage(msg: any) {
       switch (msg.type) {
         case "library-change":
           await this.saveLibrary(msg.library);
-          return
+          ExcalidrawEditor.eventEmitter.fire(msg);
+          return;
         case "change":
-          await this.updateTextDocument(document, msg.content);
+          await this.updateTextDocument(this.document, msg.content);
           return
         case "save":
-          await document.save();
+          await this.document.save();
           return;
         case "error":
           vscode.window.showErrorMessage(msg.content);
@@ -73,23 +72,35 @@ class ExcalidrawEditor {
           console.log(msg.content);
           return;
       }
-    });
+
+  }
+
+  public async start() {
+    // Setup initial content for the webview
+    // Receive message from the webview.
+    const onDidReceiveMessage = this.webviewPanel.webview.onDidReceiveMessage(this.handleMessage);
+
+    const onDidReceiveEvent = ExcalidrawEditor.eventEmitter.event((msg) => {
+      this.webviewPanel.webview.postMessage(msg);
+    })
 
     this.webviewPanel.webview.html = await this.getHtmlForWebview(
       {
-        content: document.getText(),
-        contentType: parse(document.uri.path).ext == '.excalidraw' ? "application/json" : "image/svg+xml",
+        content: this.document.getText(),
+        contentType: parse(this.document.uri.path).ext == '.excalidraw' ? "application/json" : "image/svg+xml",
         library: await this.loadLibrary(),
-        viewModeEnabled: document.uri.scheme === "git" ? true : undefined,
-        syncTheme: this.config.get("syncTheme", false),
-        name: parse(document.uri.fsPath).name,
+        viewModeEnabled: this.document.uri.scheme === "git" ? true : undefined,
+        syncTheme: excalidrawConfig.get<boolean>("syncTheme", false),
+        name: parse(this.document.uri.fsPath).name,
       }
     );
 
     this.webviewPanel.onDidDispose(
-      onDidReceiveMessage.dispose
+      () => {
+        onDidReceiveMessage.dispose()
+        onDidReceiveEvent.dispose()
+      }
     )
-
   }
   /**
 * Apply Edit on Document
@@ -114,7 +125,7 @@ class ExcalidrawEditor {
   }
 
   public async getLibraryUri() {
-    let libraryPath = await this.config.get<string>("libraryPath");
+    let libraryPath = await excalidrawConfig.get<string>("libraryPath");
     if (!libraryPath) {
       return undefined;
     }
