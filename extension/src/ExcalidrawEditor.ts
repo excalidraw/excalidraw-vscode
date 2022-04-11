@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { parse } from "path";
+import * as path from "path";
 const { Base64 } = require('js-base64');
 
 const excalidrawConfig = vscode.workspace.getConfiguration("excalidraw")
@@ -79,7 +79,7 @@ class ExcalidrawEditor {
   }
 
   getContentType() {
-    const extension = parse(this.document.uri.path).ext;
+    const extension = path.parse(this.document.uri.path).ext;
     return {
       ".svg": "image/svg+xml",
       ".excalidraw": "application/json",
@@ -108,7 +108,7 @@ class ExcalidrawEditor {
         library: await this.loadLibrary(),
         viewModeEnabled: this.isViewOnly() || undefined,
         theme: excalidrawConfig.get("theme", "auto"),
-        name: parse(this.document.uri.fsPath).name,
+        name: path.parse(this.document.uri.fsPath).name,
       }
     );
 
@@ -143,12 +143,15 @@ class ExcalidrawEditor {
 
   public async getLibraryUri() {
     let libraryPath = await excalidrawConfig.get<string>("libraryPath");
-    if (!libraryPath || !vscode.workspace.workspaceFolders) {
-      return undefined;
-    }
+    const workspaceFolders = vscode.workspace.workspaceFolders
+    if (!libraryPath || !workspaceFolders) return;
 
 
-    const libraryUri = vscode.Uri.joinPath(vscode.workspace.workspaceFolders?.[0].uri, libraryPath);
+    const fileWorkspace = getFileWorkspaceFolder(this.document, workspaceFolders as vscode.WorkspaceFolder[]);
+    if (!fileWorkspace) return;
+
+    const libraryUri = vscode.Uri.joinPath(fileWorkspace.uri, libraryPath);
+    // Check if library exists
     try {
       await vscode.workspace.fs.stat(libraryUri)
       return libraryUri;
@@ -191,5 +194,17 @@ class ExcalidrawEditor {
     );
 
     return html;
+  }
+}
+
+function getFileWorkspaceFolder(document: vscode.TextDocument, workspaceFolders: vscode.WorkspaceFolder[]): vscode.WorkspaceFolder | undefined {
+  const parts = document.uri.path.split(path.sep).slice(0, -1);
+  while (parts.length > 0) {
+    const joined = parts.join(path.sep);
+    const folder = workspaceFolders.find(f => f.uri.path === joined);
+    if (folder) {
+      return folder;
+    }
+    parts.pop();
   }
 }

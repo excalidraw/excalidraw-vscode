@@ -57,7 +57,7 @@
                             "dark"
                         ]
                     },
-                    "excalidraw.libraryPath": {
+                    "excalidraw.workspaceLibraryPath": {
                         "scope": "resource",
                         "description": "Path to the file used to store the excalidraw library (relative to workspace root). If not set, the library will be persisted in the user storage.",
                         "type": "string"
