@@ -3,7 +3,7 @@
     "icon": "assets/logo.png",
     "displayName": "Excalidraw",
     "description": "Draw schemas in VSCode using Excalidraw",
-    "version": "2.0.16",
+    "version": "2.1.0",
     "publisher": "pomdtr",
     "engines": {
         "vscode": "^1.56.0"
@@ -59,7 +59,7 @@
                     },
                     "excalidraw.libraryPath": {
                         "scope": "resource",
-                        "description": "Path to the file used to store the excalidraw library. If not set, the library will be persisted in the user storage. Supports ${workspaceFolder} variable.",
+                        "description": "Path to the file used to store the excalidraw library (relative to workspace root). If not set, the library will be persisted in the user storage.",
                         "type": "string"
                     }
                 }
