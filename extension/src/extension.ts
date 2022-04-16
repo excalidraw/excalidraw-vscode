@@ -15,12 +15,10 @@ class ExcalidrawUriHandler implements vscode.UriHandler {
   }
 
   public async handleUri(uri: vscode.Uri) {
-    console.log(`Handling uri ${uri.toString()}`);
     try {
       const hash = new URLSearchParams(uri.fragment);
       const libraryUrl = hash.get("addLibrary");
       const csrfToken = hash.get("token");
-      console.log(libraryUrl, csrfToken);
       if (libraryUrl && csrfToken && ExcalidrawEditorProvider.activeEditor) {
         ExcalidrawEditorProvider.activeEditor.importLibrary(
           libraryUrl,

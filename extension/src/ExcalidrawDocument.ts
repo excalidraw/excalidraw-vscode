@@ -28,19 +28,13 @@ export class ExcalidrawDocument implements vscode.CustomDocument {
     this.contentType = this.getContentType();
   }
 
-  async revert(cancellation: vscode.CancellationToken) {
+  async revert() {
     const content = await vscode.workspace.fs.readFile(this.uri);
-    if (cancellation.isCancellationRequested) {
-      return;
-    }
     this.content = content;
   }
 
-  async backup(
-    destination: vscode.Uri,
-    cancellation: vscode.CancellationToken
-  ): Promise<vscode.CustomDocumentBackup> {
-    await this.saveAs(destination, cancellation);
+  async backup(destination: vscode.Uri): Promise<vscode.CustomDocumentBackup> {
+    await this.saveAs(destination);
     return {
       id: destination.toString(),
       delete: async () => {
@@ -51,8 +45,8 @@ export class ExcalidrawDocument implements vscode.CustomDocument {
     };
   }
 
-  async save(cancellation?: vscode.CancellationToken) {
-    this.saveAs(this.uri, cancellation);
+  async save() {
+    this.saveAs(this.uri);
   }
 
   async update(content: Uint8Array) {
@@ -60,10 +54,7 @@ export class ExcalidrawDocument implements vscode.CustomDocument {
     this._onDidDocumentChange.fire();
   }
 
-  async saveAs(
-    destination: vscode.Uri,
-    cancellation?: vscode.CancellationToken
-  ) {
+  async saveAs(destination: vscode.Uri) {
     return vscode.workspace.fs.writeFile(destination, this.content);
   }
 

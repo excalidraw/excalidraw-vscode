@@ -32,8 +32,7 @@ export class ExcalidrawEditorProvider
 
   public async resolveCustomEditor(
     document: ExcalidrawDocument,
-    webviewPanel: vscode.WebviewPanel,
-    token: vscode.CancellationToken
+    webviewPanel: vscode.WebviewPanel
   ) {
     webviewPanel.webview.options = {
       enableScripts: true,
@@ -63,17 +62,15 @@ export class ExcalidrawEditorProvider
 
   async backupCustomDocument(
     document: ExcalidrawDocument,
-    context: vscode.CustomDocumentBackupContext,
-    cancellation: vscode.CancellationToken
+    context: vscode.CustomDocumentBackupContext
   ): Promise<vscode.CustomDocumentBackup> {
-    return document.backup(context.destination, cancellation);
+    return document.backup(context.destination);
   }
 
   // TODO: Backup Support
   async openCustomDocument(
     uri: vscode.Uri,
-    openContext: vscode.CustomDocumentOpenContext,
-    token: vscode.CancellationToken
+    openContext: vscode.CustomDocumentOpenContext
   ): Promise<ExcalidrawDocument> {
     const content = await vscode.workspace.fs.readFile(
       openContext.backupId ? vscode.Uri.parse(openContext.backupId) : uri
@@ -91,24 +88,17 @@ export class ExcalidrawEditorProvider
     return document;
   }
 
-  revertCustomDocument(
-    document: ExcalidrawDocument,
-    cancellation: vscode.CancellationToken
-  ): Thenable<void> {
-    return document.revert(cancellation);
+  revertCustomDocument(document: ExcalidrawDocument): Thenable<void> {
+    return document.revert();
   }
 
-  saveCustomDocument(
-    document: ExcalidrawDocument,
-    cancellation: vscode.CancellationToken
-  ): Thenable<void> {
-    return document.save(cancellation);
+  saveCustomDocument(document: ExcalidrawDocument): Thenable<void> {
+    return document.save();
   }
 
   async saveCustomDocumentAs(
     document: ExcalidrawDocument,
-    destination: vscode.Uri,
-    cancellation: vscode.CancellationToken
+    destination: vscode.Uri
   ) {
     await document.saveAs(destination);
   }
@@ -144,9 +134,8 @@ class ExcalidrawEditor {
       case "error":
         vscode.window.showErrorMessage(msg.content);
         return;
-      case "log":
-        console.log(msg.content);
-        return;
+      case "info":
+        vscode.window.showInformationMessage(msg.content);
     }
   }
 
@@ -194,15 +183,19 @@ class ExcalidrawEditor {
   }
 
   public async getLibraryUri() {
-    let libraryPath = await excalidrawConfig.get<string>("libraryPath");
+    const libraryPath = await excalidrawConfig.get<string>("libraryPath");
     const workspaceFolders = vscode.workspace.workspaceFolders;
-    if (!libraryPath || !workspaceFolders) return;
+    if (!libraryPath || !workspaceFolders) {
+      return;
+    }
 
     const fileWorkspace = getFileWorkspaceFolder(
       this.document.uri,
       workspaceFolders as vscode.WorkspaceFolder[]
     );
-    if (!fileWorkspace) return;
+    if (!fileWorkspace) {
+      return;
+    }
 
     return vscode.Uri.joinPath(fileWorkspace.uri, libraryPath);
   }
@@ -237,7 +230,7 @@ class ExcalidrawEditor {
       "public",
       "index.html"
     );
-    let content = await vscode.workspace.fs.readFile(htmlUri);
+    const content = await vscode.workspace.fs.readFile(htmlUri);
     const html = this.textDecoder.decode(content);
 
     return html.replace(

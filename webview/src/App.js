@@ -67,7 +67,6 @@ export default function App(props) {
     const listener = async (e) => {
       try {
         const message = e.data;
-        props.vscode.postMessage({ type: "log", content: message });
         switch (message.type) {
           case "import-library":
             excalidrawRef.current.importLibrary(
