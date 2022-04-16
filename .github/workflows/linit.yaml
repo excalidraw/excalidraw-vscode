@@ -1,10 +1,10 @@
 name: Lint
 
-on: pull_request
+on: push
 
 jobs:
   lint-extension:
-    name: Lint
+    name: Lint Extension
     defaults:
       run:
         working-directory: ./extension
