@@ -1,0 +1,26 @@
+on: workflow_dispatch
+
+name: Deploy Extension
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 17
+      - run: npm ci
+        working-directory: extension
+      - name: Publish to Open VSX Registry
+        uses: HaaLeo/publish-vscode-extension@v1
+        with:
+          packagePath: extension
+          preRelease: ${{ github.event.inputs.prerelease }}
+          pat: ${{ secrets.OPEN_VSX_TOKEN }}
+      - name: Publish to Visual Studio Marketplace
+        uses: HaaLeo/publish-vscode-extension@v1
+        with:
+          packagePath: extension
+          pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
+          preRelease: ${{ github.event.inputs.prerelease }}
+          registryUrl: https://marketplace.visualstudio.com
