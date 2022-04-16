@@ -68,13 +68,17 @@
         "customEditors": [
             {
                 "viewType": "editor.excalidraw",
-                "displayName": "Excalidraw Editor",
+                "displayName": "Excalidraw",
+                "priority": "default",
                 "selector": [
                     {
                         "filenamePattern": "*.excalidraw"
                     },
                     {
                         "filenamePattern": "*.excalidraw.svg"
+                    },
+                    {
+                        "filenamePattern": "*.excalidraw.png"
                     }
                 ]
             }
@@ -86,6 +90,7 @@
         "package": "npm run build-webview && gulp && webpack --mode production --devtool hidden-source-map",
         "build": "npm run build-webview && gulp && webpack --mode development",
         "build-webview": "cd ../webview && npm run build",
+        "start-webview": "cd ../webview && npm run start",
         "open-in-browser": "vscode-test-web --extensionDevelopmentPath=. ."
     },
     "capabilities": {
@@ -94,16 +99,20 @@
         }
     },
     "devDependencies": {
+        "@excalidraw/eslint-config": "^1.0.3",
         "@types/minimatch": "^3.0.4",
         "@types/node": "^15.3.0",
         "@types/vscode": "^1.56.0",
-        "@typescript-eslint/eslint-plugin": "^4.23.0",
-        "@typescript-eslint/parser": "^4.23.0",
+        "@typescript-eslint/eslint-plugin": "^5.19.0",
+        "@typescript-eslint/parser": "^5.19.0",
         "@vscode/test-web": "*",
-        "eslint": "^7.26.0",
+        "eslint": "^8.13.0",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-plugin-prettier": "^4.0.0",
         "gulp": "^4.0.2",
         "gulp-inline-source": "^4.0.0",
         "gulp-replace": "^1.1.3",
+        "prettier": "^2.6.2",
         "ts-loader": "^9.2.8",
         "typescript": "^4.2.4",
         "webpack": "^5.70.0",
