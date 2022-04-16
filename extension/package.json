@@ -68,13 +68,23 @@
         "customEditors": [
             {
                 "viewType": "editor.excalidraw",
-                "displayName": "Excalidraw Editor",
+                "displayName": "Excalidraw",
+                "priority": "option",
                 "selector": [
                     {
                         "filenamePattern": "*.excalidraw"
                     },
                     {
+                        "filenamePattern": "*.svg"
+                    },
+                    {
                         "filenamePattern": "*.excalidraw.svg"
+                    },
+                    {
+                        "filenamePattern": "*.png"
+                    },
+                    {
+                        "filenamePattern": "*.excalidraw.png"
                     }
                 ]
             }
@@ -86,6 +96,7 @@
         "package": "npm run build-webview && gulp && webpack --mode production --devtool hidden-source-map",
         "build": "npm run build-webview && gulp && webpack --mode development",
         "build-webview": "cd ../webview && npm run build",
+        "start-webview": "cd ../webview && npm run start",
         "open-in-browser": "vscode-test-web --extensionDevelopmentPath=. ."
     },
     "capabilities": {
@@ -110,7 +121,7 @@
         "webpack-cli": "^4.9.2"
     },
     "dependencies": {
-        "js-base64": "^3.7.2",
-        "path-browserify": "^1.0.1"
+        "path-browserify": "^1.0.1",
+        "js-base64": "^3.7.2"
     }
 }

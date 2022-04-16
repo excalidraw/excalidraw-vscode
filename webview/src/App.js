@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
-import Excalidraw, {
+import {
+  Excalidraw,
+  exportToBlob,
   exportToSvg,
   getSceneVersion,
   loadLibraryFromBlob,
@@ -22,7 +24,9 @@ function detectTheme() {
 }
 
 function useTheme(themeVariant) {
-  const [theme, setTheme] = useState(themeVariant == "auto" ? detectTheme() : themeVariant);
+  const [theme, setTheme] = useState(
+    themeVariant == "auto" ? detectTheme() : themeVariant
+  );
 
   useEffect(() => {
     var observer = new MutationObserver(function (mutations) {
@@ -45,26 +49,25 @@ function useTheme(themeVariant) {
 }
 
 export default function App(props) {
-  const { initialData, vscode, contentType, viewModeEnabled, name } =
-    props;
   const {
     elements = [],
     appState = {},
     scrollToContent,
     libraryItems = [],
     files = [],
-  } = initialData;
+  } = props.initialData;
 
   const excalidrawRef = useRef(null);
   const sceneVersion = useRef(getSceneVersion(elements));
   const libraryItemsRef = useRef(libraryItems);
   const theme = useTheme(props.theme);
+  const textEncoder = new TextEncoder();
 
   useEffect(() => {
-    window.addEventListener("message", async (e) => {
+    const listener = async (e) => {
       try {
         const message = e.data;
-        vscode.postMessage({ type: "log", content: message });
+        props.vscode.postMessage({ type: "log", content: message });
         switch (message.type) {
           case "import-library":
             excalidrawRef.current.importLibrary(
@@ -88,61 +91,59 @@ export default function App(props) {
             break;
         }
       } catch (e) {
-        this.postMessage({ type: "error", content: e.message });
+        props.vscode.postMessage({ type: "error", content: e.message });
       }
-    });
-
-    vscode.postMessage({type: "ready"});
+    };
+    window.addEventListener("message", listener);
 
     return () => {
-      window.removeEventListener("message");
+      window.removeEventListener("message", listener);
     };
   }, []);
 
-  function cleanAppState(appState) {
-    const validKeys = [
-      "scrollX",
-      "scrollY",
-      "zenModeEnabled",
-      "viewModeEnabled",
-      "gridModeEnable",
-      "zoom",
-      "selectedElementIds",
-      "viewBackgroundColor",
-    ];
-    const filtered = Object.entries(appState).filter(([key, _]) =>
-      validKeys.includes(key)
-    );
-    return Object.fromEntries(filtered);
-  }
-
   async function onChange(elements, appState, files) {
-    vscode.setState({
-      elements,
-      appState: cleanAppState(appState),
-      libraryItems: libraryItemsRef.current,
-      files,
-    });
-
-    if (sceneVersion.current != getSceneVersion(elements)) {
-      sceneVersion.current = getSceneVersion(elements);
-      if (contentType == "application/json") {
-        vscode.postMessage({
-          type: "change",
-          content: serializeAsJSON(elements, appState, files, "local"),
-        });
-      } else {
-        const svg = await exportToSvg({
-          elements,
-          appState: {
-            ...appState,
-            exportBackground: true,
-            exportEmbedScene: true,
-          },
-          files,
-        });
-        vscode.postMessage({ type: "change", content: svg.outerHTML });
-      }
+    if (sceneVersion.current === getSceneVersion(elements)) {
+      return;
+    }
+    sceneVersion.current = getSceneVersion(elements);
+    if (props.contentType == "application/json") {
+      props.vscode.postMessage({
+        type: "change",
+        content: Array.from(
+          textEncoder.encode(
+            serializeAsJSON(elements, appState, files, "database")
+          )
+        ),
+      });
+    } else if (props.contentType == "image/svg+xml") {
+      const svg = await exportToSvg({
+        elements,
+        appState: {
+          ...appState,
+          exportBackground: true,
+          exportEmbedScene: true,
+        },
+        files,
+      });
+      props.vscode.postMessage({
+        type: "change",
+        content: Array.from(textEncoder.encode(svg.outerHTML)),
+      });
+    } else if (props.contentType == "image/png") {
+      const blob = await exportToBlob({
+        elements,
+        appState: {
+          ...appState,
+          exportBackground: true,
+          exportEmbedScene: true,
+        },
+        files,
+      });
+      const arrayBuffer = await blob.arrayBuffer();
+      props.vscode.postMessage({
+        type: "change",
+        content: Array.from(new Uint8Array(arrayBuffer)),
+      });
     }
   }
 
@@ -157,9 +158,9 @@ export default function App(props) {
             saveToActiveFile: false,
           },
         }}
-        name={name}
+        name={props.name}
         theme={theme}
-        viewModeEnabled={viewModeEnabled}
+        viewModeEnabled={props.viewModeEnabled}
         initialData={{
           elements,
           scrollToContent,
@@ -177,7 +178,7 @@ export default function App(props) {
             return;
           }
           libraryItemsRef.current = libraryItems;
-          vscode.postMessage({
+          props.vscode.postMessage({
             type: "library-change",
             library: serializeLibraryAsJSON(libraryItems),
           });

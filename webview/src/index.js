@@ -11,7 +11,14 @@ async function getInitialData(content, contentType) {
     return {};
   }
   const initialData = await loadFromBlob(
-    new Blob([content], { type: contentType }),
+    new Blob(
+      [
+        contentType == "image/png"
+          ? content
+          : new TextDecoder().decode(content),
+      ],
+      { type: contentType }
+    ),
     null,
     null
   );
@@ -20,37 +27,38 @@ async function getInitialData(content, contentType) {
 }
 
 function getExcalidrawConfig(rootElement) {
-  const b64Config = rootElement.getAttribute("data-excalidraw");
+  const b64Config = rootElement.getAttribute("data-excalidraw-config");
   const strConfig = Base64.decode(b64Config);
   return JSON.parse(strConfig);
 }
-
-async function getLibraryItems(config) {
-    try {
-      const library = config.library
-        ? await loadLibraryFromBlob(
-            new Blob([config.library], { type: "application/json" })
-          )
-        : {};
-      return library.version == 1 ? library.library : library.libraryItems;
-    } catch (e) {
-      vscode.postMessage({ type: "error", content: `Failed to load library: ${e}` });
-      return [];
-    }
+async function getLibraryItems(libraryBlob) {
+  try {
+    const library = await loadLibraryFromBlob(
+      new Blob([libraryBlob], { type: "application/json" })
+    );
+    return library.version == 1 ? library.library : library.libraryItems;
+  } catch (e) {
+    vscode.postMessage({
+      type: "error",
+      content: `Failed to load library: ${e}`,
+    });
+    return [];
+  }
 }
 
 async function main() {
   try {
     const rootElement = document.getElementById("root");
+    const config = await getExcalidrawConfig(rootElement);
 
-    const previousState = vscode.getState();
-    const config = getExcalidrawConfig(rootElement);
+    const initialData = await getInitialData(
+      new Uint8Array(config.content),
+      config.contentType
+    );
 
-    const initialData = previousState
-      ? previousState
-      : await getInitialData(config.content, config.contentType);
-
-    let libraryItems = await getLibraryItems(config);
+    let libraryItems = config.library
+      ? await getLibraryItems(config.library)
+      : [];
 
     ReactDOM.render(
       <React.StrictMode>

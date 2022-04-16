@@ -5,7 +5,7 @@
   "keywords": [],
   "main": "src/index.js",
   "dependencies": {
-    "@excalidraw/excalidraw-next": "0.11.0-58fe639",
+    "@excalidraw/excalidraw-next": "0.11.0-3840e2f",
     "js-base64": "^3.7.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
