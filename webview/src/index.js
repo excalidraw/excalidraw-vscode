@@ -7,9 +7,6 @@ import App from "./App";
 const vscode = window.acquireVsCodeApi();
 
 async function getInitialData(content, contentType) {
-  if (!content) {
-    return {};
-  }
   const initialData = await loadFromBlob(
     new Blob(
       [
@@ -51,10 +48,13 @@ async function main() {
     const rootElement = document.getElementById("root");
     const config = await getExcalidrawConfig(rootElement);
 
-    const initialData = await getInitialData(
-      new Uint8Array(config.content),
-      config.contentType
-    );
+    const initialData =
+      config.content.length > 0
+        ? await getInitialData(
+            new Uint8Array(config.content),
+            config.contentType
+          )
+        : null;
 
     let libraryItems = config.library
       ? await getLibraryItems(config.library)
