@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import * as path from "path";
-const { Base64 } = require("js-base64");
+import { Base64 } from "js-base64";
 
 import { ExcalidrawDocument } from "./ExcalidrawDocument";
 
