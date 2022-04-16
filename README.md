@@ -8,7 +8,6 @@
 - [vsce](https://github.com/microsoft/vscode-vsce)
 
 This repository contains a [workspace file](./excalidraw-vscode.code-workspace).
-In order to run the extension wou will need to open it using the `File: Open Workspace from File` command.
 
 ### Install the dependencies
 
@@ -25,7 +24,7 @@ To inspect/debug the webview, use the `Developer: Open Webview Developer tools c
 ### Package the extension to a vsix archive
 
 ```console
-vsce package
+vsce package # from the extension directory
 ```
 
 The vsix archive can then be installed using the `Extensions: Install from VSIX...` command
