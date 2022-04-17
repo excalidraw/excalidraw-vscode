@@ -38,17 +38,19 @@
                     "excalidraw.autoSave": {
                         "type": "boolean",
                         "description": "Controls autoSave of excalidraw editors.",
-                        "default": false
+                        "default": false,
+                        "deprecationMessage": "This setting is deprecated and will be removed in a future release. Please use the setting \"files.autoSave\" instead."
                     },
                     "excalidraw.syncTheme": {
                         "scope": "resource",
                         "description": "Sync Excalidraw theme with VSCode color theme.",
                         "type": "boolean",
-                        "default": false
+                        "default": false,
+                        "deprecationMessage": "This setting is deprecated and will be removed in a future release. Please use the setting \"excalidraw.theme\" instead."
                     },
                     "excalidraw.theme": {
                         "scope": "resource",
-                        "description": "Sync Excalidraw theme with VSCode color theme.",
+                        "description": "Excalidraw theme. Use auto to sync theme with VSCode color theme.",
                         "type": "string",
                         "default": "auto",
                         "enum": [
