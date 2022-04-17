@@ -4,12 +4,12 @@ import { Base64 } from "js-base64";
 
 import { ExcalidrawDocument } from "./ExcalidrawDocument";
 
-const excalidrawConfig = vscode.workspace.getConfiguration("excalidraw");
-
 export class ExcalidrawEditorProvider
   implements vscode.CustomEditorProvider<ExcalidrawDocument>
 {
-  public static register(context: vscode.ExtensionContext): vscode.Disposable {
+  public static async register(
+    context: vscode.ExtensionContext
+  ): Promise<vscode.Disposable> {
     const provider = new ExcalidrawEditorProvider(context);
     const providerRegistration = vscode.window.registerCustomEditorProvider(
       ExcalidrawEditorProvider.viewType,
@@ -21,7 +21,30 @@ export class ExcalidrawEditorProvider
     );
     context.globalState.setKeysForSync(["library"]);
 
+    ExcalidrawEditorProvider.migrateLegacyLibraryItems(context);
+
     return providerRegistration;
+  }
+
+  private static migrateLegacyLibraryItems(context: vscode.ExtensionContext) {
+    const libraryItems = context.globalState.get("libraryItems");
+    if (!libraryItems) {
+      return;
+    }
+    context.globalState
+      .update(
+        "library",
+        JSON.stringify({
+          type: "excalidrawlib",
+          version: 2,
+          source:
+            "https://marketplace.visualstudio.com/items?itemName=pomdtr.excalidraw-editor",
+          libraryItems,
+        })
+      )
+      .then(() => {
+        context.globalState.update("libraryItems", undefined);
+      });
   }
 
   private static readonly viewType = "editor.excalidraw";
@@ -39,7 +62,7 @@ export class ExcalidrawEditorProvider
     };
 
     const editor = new ExcalidrawEditor(document, webviewPanel, this.context);
-    const editorDisposable = await editor.start();
+    const editorDisposable = await editor.setupWebview();
     ExcalidrawEditorProvider.activeEditor = editor;
 
     const onDidChangeViewState = webviewPanel.onDidChangeViewState((e) => {
@@ -119,26 +142,6 @@ class ExcalidrawEditor {
     readonly context: vscode.ExtensionContext
   ) {}
 
-  public async handleMessage(msg: any) {
-    switch (msg.type) {
-      case "library-change":
-        await this.saveLibrary(msg.library);
-        ExcalidrawEditor.eventEmitter.fire(msg);
-        return;
-      case "change":
-        await this.document.update(new Uint8Array(msg.content));
-        return;
-      case "save":
-        await this.document.save();
-        return;
-      case "error":
-        vscode.window.showErrorMessage(msg.content);
-        return;
-      case "info":
-        vscode.window.showInformationMessage(msg.content);
-    }
-  }
-
   isViewOnly() {
     return (
       this.document.uri.scheme === "git" ||
@@ -146,13 +149,33 @@ class ExcalidrawEditor {
     );
   }
 
-  public async start() {
+  public async setupWebview() {
     // Setup initial content for the webview
     // Receive message from the webview.
+
+    const libraryUri = await this.getLibraryUri();
+
     const onDidReceiveMessage = this.webviewPanel.webview.onDidReceiveMessage(
-      (msg) => {
-        this.handleMessage(msg);
-      }
+      async (msg) => {
+        switch (msg.type) {
+          case "library-change":
+            await this.saveLibrary(msg.library, libraryUri);
+            ExcalidrawEditor.eventEmitter.fire(msg);
+            return;
+          case "change":
+            await this.document.update(new Uint8Array(msg.content));
+            return;
+          case "save":
+            await this.document.save();
+            return;
+          case "error":
+            vscode.window.showErrorMessage(msg.content);
+            return;
+          case "info":
+            vscode.window.showInformationMessage(msg.content);
+        }
+      },
+      this
     );
 
     const onDidReceiveEvent = ExcalidrawEditor.eventEmitter.event((msg) => {
@@ -162,9 +185,11 @@ class ExcalidrawEditor {
     this.webviewPanel.webview.html = await this.buildHtmlForWebview({
       content: Array.from(this.document.content),
       contentType: this.document.contentType,
-      library: await this.loadLibrary(),
+      library: await this.loadLibrary(libraryUri),
       viewModeEnabled: this.isViewOnly() || undefined,
-      theme: excalidrawConfig.get("theme", "auto"),
+      theme: vscode.workspace
+        .getConfiguration("excalidraw")
+        .get("theme", "auto"),
       name: path.parse(this.document.uri.fsPath).name,
     });
 
@@ -183,9 +208,9 @@ class ExcalidrawEditor {
   }
 
   public async getLibraryUri() {
-    const libraryPath = await excalidrawConfig.get<string>(
-      "workspaceLibraryPath"
-    );
+    const libraryPath = await vscode.workspace
+      .getConfiguration("excalidraw")
+      .get<string>("workspaceLibraryPath");
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (!libraryPath || !workspaceFolders) {
       return;
@@ -202,8 +227,7 @@ class ExcalidrawEditor {
     return vscode.Uri.joinPath(fileWorkspace.uri, libraryPath);
   }
 
-  public async loadLibrary() {
-    const libraryUri = await this.getLibraryUri();
+  public async loadLibrary(libraryUri?: vscode.Uri) {
     if (!libraryUri) {
       return this.context.globalState.get<string>("library");
     }
@@ -211,19 +235,23 @@ class ExcalidrawEditor {
       const libraryContent = await vscode.workspace.fs.readFile(libraryUri);
       return this.textDecoder.decode(libraryContent);
     } catch (e) {
+      vscode.window.showErrorMessage(`Failed to load library: ${e}`);
       return this.context.globalState.get<string>("library");
     }
   }
 
-  public async saveLibrary(library: string) {
-    const libraryUri = await this.getLibraryUri();
+  public async saveLibrary(library: string, libraryUri?: vscode.Uri) {
     if (!libraryUri) {
       return this.context.globalState.update("library", library);
     }
-    await vscode.workspace.fs.writeFile(
-      libraryUri,
-      new TextEncoder().encode(library)
-    );
+    try {
+      await vscode.workspace.fs.writeFile(
+        libraryUri,
+        new TextEncoder().encode(library)
+      );
+    } catch (e) {
+      await vscode.window.showErrorMessage(`Failed to save library: ${e}`);
+    }
   }
 
   private async buildHtmlForWebview(config: any): Promise<string> {
