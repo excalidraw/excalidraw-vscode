@@ -190,13 +190,20 @@ class ExcalidrawEditor {
       theme: vscode.workspace
         .getConfiguration("excalidraw")
         .get("theme", "auto"),
-      name: path.parse(this.document.uri.fsPath).name,
+      name: this.extractName(this.document.uri),
     });
 
     return new vscode.Disposable(() => {
       onDidReceiveMessage.dispose();
       onDidReceiveEvent.dispose();
     });
+  }
+
+  public extractName(uri: vscode.Uri) {
+    const matches = /([^\/]+)\.excalidraw/.exec(uri.path);
+    if (matches) {
+      return matches[1];
+    }
   }
 
   public importLibrary(libraryUrl: string, csrfToken: string) {
