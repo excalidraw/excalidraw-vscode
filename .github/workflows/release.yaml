@@ -1,4 +1,11 @@
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      prerelease:
+        default: false
+        required: false
+        description: "Whether to run publish the extension as a pre-release"
+        type: boolean
 
 name: Deploy Extension
 jobs:
