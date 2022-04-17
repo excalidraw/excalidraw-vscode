@@ -183,7 +183,9 @@ class ExcalidrawEditor {
   }
 
   public async getLibraryUri() {
-    const libraryPath = await excalidrawConfig.get<string>("libraryPath");
+    const libraryPath = await excalidrawConfig.get<string>(
+      "workspaceLibraryPath"
+    );
     const workspaceFolders = vscode.workspace.workspaceFolders;
     if (!libraryPath || !workspaceFolders) {
       return;
