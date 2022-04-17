@@ -1,7 +1,5 @@
 # Excalidraw VSCode Extension
 
-This extension is now part of the excalidraw organisation. New Development will take place in https://github.com/excalidraw/excalidraw-vscode.
-
 ## Development
 
 ### Requirements
