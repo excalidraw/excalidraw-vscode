@@ -7,8 +7,6 @@
 - [Node.js](https://nodejs.org/en/)
 - [vsce](https://github.com/microsoft/vscode-vsce)
 
-This repository contains a [workspace file](./excalidraw-vscode.code-workspace).
-
 ### Install the dependencies
 
 ```bash
