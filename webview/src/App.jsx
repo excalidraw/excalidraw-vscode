@@ -112,7 +112,7 @@ export default function App(props) {
         type: "change",
         content: Array.from(
           textEncoder.encode(
-            serializeAsJSON(elements, appState, files, "database")
+            serializeAsJSON(elements, appState, files, "local")
           )
         ),
       });
