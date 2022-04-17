@@ -16,4 +16,18 @@ jobs:
           node-version: 17
       - run: npm ci
       - run: npm run lint
+  lint-webview:
+    name: Lint Webview
+    defaults:
+      run:
+        working-directory: ./webview
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 17
+      - run: npm ci
+      - run: npm run lint
+
 

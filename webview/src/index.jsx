@@ -56,7 +56,7 @@ async function main() {
           )
         : null;
 
-    let libraryItems = config.library
+    const libraryItems = config.library
       ? await getLibraryItems(config.library)
       : [];
 

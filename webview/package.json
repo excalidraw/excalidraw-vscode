@@ -5,8 +5,12 @@
   "keywords": [],
   "main": "src/index.js",
   "dependencies": {
+    "@excalidraw/eslint-config": "^1.0.3",
     "@excalidraw/excalidraw-next": "0.11.0-3840e2f",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
     "js-base64": "^3.7.2",
+    "prettier": "^2.6.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },
@@ -14,7 +18,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint --ext .js,.jsx src/"
   },
   "browserslist": [
     ">0.2%",

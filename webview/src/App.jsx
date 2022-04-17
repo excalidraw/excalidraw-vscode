@@ -29,9 +29,11 @@ function useTheme(themeVariant) {
   );
 
   useEffect(() => {
-    var observer = new MutationObserver(function (mutations) {
-      mutations.forEach(function (_) {
-        if (themeVariant != "auto") return;
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach(() => {
+        if (themeVariant != "auto") {
+          return;
+        }
         setTheme(detectTheme());
       });
     });
@@ -188,12 +190,12 @@ export default function App(props) {
 }
 
 function debounce(func, wait) {
-  var timeout;
+  let timeout;
   return function () {
-    var context = this,
-      args = arguments;
+    const context = this;
+    const args = arguments;
 
-    var later = function () {
+    const later = function () {
       timeout = null;
       func.apply(context, args);
     };
