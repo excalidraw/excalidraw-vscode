@@ -200,10 +200,8 @@ class ExcalidrawEditor {
   }
 
   public extractName(uri: vscode.Uri) {
-    const matches = /([^\/]+)\.excalidraw/.exec(uri.path);
-    if (matches) {
-      return matches[1];
-    }
+    const name = path.parse(uri.fsPath).name;
+    return name.endsWith(".excalidraw") ? name.slice(0, -11) : name;
   }
 
   public importLibrary(libraryUrl: string, csrfToken: string) {
