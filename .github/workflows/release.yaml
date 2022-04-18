@@ -11,16 +11,18 @@ name: Deploy Extension
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: extension
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
           node-version: 16
       - run: npm ci
-        working-directory: extension
       - run: npm install -g vsce ovsx
       - name: Publish to Visual Studio Marketplace
         run: vsce publish --pat "${{ secrets.VS_MARKETPLACE_TOKEN }}" ${{ github.event.inputs.preRelease && '--pre-release' || '' }}
       - name: Publish to Open VSX registry
-        if: ! github.event.inputs.preRelease
+        if: github.event.inputs.preRelease != true
         run: ovsx publish --pat ${{ secrets.OPEN_VSX_TOKEN }}
