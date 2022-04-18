@@ -13,7 +13,7 @@ Try the web version at : <https://excalidraw.com/>
 
 By default, this extension only handles `*.excalidraw`, `*.excalidraw.svg` and `*.excalidraw.png` files.
 
-Add this to your VS Code settings.json file if you want to associate it with addiional file extensions (ex: SVG):
+Add this to your VS Code settings.json file if you want to associate it with additional file extensions (ex: SVG):
 
 ```json
 {
