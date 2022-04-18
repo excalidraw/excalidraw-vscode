@@ -1,7 +1,9 @@
 # Changelog
 
-## Unreleased
+## 2.1.0
 
+- allow to open and edit png with embedded scene
+- deprecate `excalidraw.syncTheme` preference in favour of `excalidraw.theme`
 - add the ability to store the library in an `excalidrawlib` file using the `excalidraw.libraryPath` pref.
 
 ## 2.0.16
