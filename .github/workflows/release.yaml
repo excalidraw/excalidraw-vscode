@@ -18,16 +18,9 @@ jobs:
           node-version: 16
       - run: npm ci
         working-directory: extension
-      # - name: Publish to Open VSX Registry
-      #   uses: HaaLeo/publish-vscode-extension@v1
-      #   with:
-      #     packagePath: extension
-      #     preRelease: ${{ github.event.inputs.preRelease }}
-      #     pat: ${{ secrets.OPEN_VSX_TOKEN }}
+      - run: npm install -g vsce ovsx
       - name: Publish to Visual Studio Marketplace
-        uses: HaaLeo/publish-vscode-extension@v1
-        with:
-          packagePath: extension
-          pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
-          preRelease: ${{ github.event.inputs.preRelease }}
-          registryUrl: https://marketplace.visualstudio.com
+        run: vsce publish --pat "${{ secrets.VS_MARKETPLACE_TOKEN }}" ${{ github.event.inputs.preRelease && '--pre-release' || '' }}
+      - name: Publish to Open VSX registry
+        if: ! github.event.inputs.preRelease
+        run: ovsx publish --pat ${{ secrets.OPEN_VSX_TOKEN }}
