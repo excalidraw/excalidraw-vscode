@@ -129,9 +129,9 @@ export class ExcalidrawEditorProvider
 
 class ExcalidrawEditor {
   // Allows to pass events between editors
-  private static eventEmitter = new vscode.EventEmitter<{
-    type: string;
-    msg: any;
+  private static onLibraryChange = new vscode.EventEmitter<{
+    uri?: vscode.Uri;
+    content: any;
   }>();
 
   private textDecoder = new TextDecoder();
@@ -160,7 +160,10 @@ class ExcalidrawEditor {
         switch (msg.type) {
           case "library-change":
             await this.saveLibrary(msg.library, libraryUri);
-            ExcalidrawEditor.eventEmitter.fire(msg);
+            ExcalidrawEditor.onLibraryChange.fire({
+              uri: libraryUri,
+              content: msg.library,
+            });
             return;
           case "change":
             await this.document.update(new Uint8Array(msg.content));
@@ -178,8 +181,13 @@ class ExcalidrawEditor {
       this
     );
 
-    const onDidReceiveEvent = ExcalidrawEditor.eventEmitter.event((msg) => {
-      this.webviewPanel.webview.postMessage(msg);
+    const onLibraryChange = ExcalidrawEditor.onLibraryChange.event((msg) => {
+      if (msg.uri?.toString() === libraryUri?.toString()) {
+        this.webviewPanel.webview.postMessage({
+          type: "library-change",
+          library: msg.content,
+        });
+      }
     });
 
     this.webviewPanel.webview.html = await this.buildHtmlForWebview({
@@ -195,7 +203,7 @@ class ExcalidrawEditor {
 
     return new vscode.Disposable(() => {
       onDidReceiveMessage.dispose();
-      onDidReceiveEvent.dispose();
+      onLibraryChange.dispose();
     });
   }
 
