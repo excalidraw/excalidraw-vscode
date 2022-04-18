@@ -9,6 +9,7 @@ import {
   serializeLibraryAsJSON,
   THEME,
 } from "@excalidraw/excalidraw-next";
+import * as Mousetrap from "mousetrap";
 
 import "./styles.css";
 
@@ -101,6 +102,17 @@ export default function App(props) {
       window.removeEventListener("message", listener);
     };
   }, []);
+
+  // Saving trigger a dialog when using the extension in a browser
+  useEffect(() => {
+    const trap = Mousetrap.bind(["command+s", "ctrl+s"], () => {
+      // return false to prevent default browser behavior and stop event from bubbling
+      return false;
+    });
+    return () => {
+      trap.unbind();
+    };
+  });
 
   async function onChange(elements, appState, files) {
     if (sceneVersion.current === getSceneVersion(elements)) {
