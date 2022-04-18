@@ -3,31 +3,21 @@ name: Lint
 on: push
 
 jobs:
-  lint-extension:
-    name: Lint Extension
-    defaults:
-      run:
-        working-directory: ./extension
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 17
+          node-version: 16
       - run: npm ci
+        working-directory: extension
       - run: npm run lint
-  lint-webview:
-    name: Lint Webview
-    defaults:
-      run:
-        working-directory: ./webview
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 17
-      - run: npm ci
+        name: Lint Extension
+        working-directory: extension
       - run: npm run lint
+        name: Lint Webview
+        working-directory: webview
 
 
