@@ -4,6 +4,7 @@ import {
   exportToBlob,
   exportToSvg,
   getSceneVersion,
+  loadFromBlob,
   loadLibraryFromBlob,
   serializeAsJSON,
   serializeLibraryAsJSON,
@@ -71,13 +72,29 @@ export default function App(props) {
       try {
         const message = e.data;
         switch (message.type) {
-          case "import-library":
+          case "import-library": {
             excalidrawRef.current.importLibrary(
               message.libraryUrl,
               message.csrfToken
             );
             break;
-          case "library-change":
+          }
+          case "update": {
+            const content = new TextDecoder().decode(
+              new Uint8Array(message.content)
+            );
+            const blob = new Blob([content], {
+              type: "application/json",
+            });
+            const { elements, files } = await loadFromBlob(blob);
+            await excalidrawRef.current.updateScene({
+              elements,
+              files,
+              commitToHistory: true,
+            });
+            break;
+          }
+          case "library-change": {
             const blob = new Blob([message.library], {
               type: "application/json",
             });
@@ -91,6 +108,7 @@ export default function App(props) {
             libraryItemsRef.current = libraryItems;
             excalidrawRef.current.updateScene({ libraryItems });
             break;
+          }
         }
       } catch (e) {
         props.vscode.postMessage({ type: "error", content: e.message });
@@ -106,7 +124,7 @@ export default function App(props) {
   // Saving trigger a dialog when using the extension in a browser
   useEffect(() => {
     const trap = Mousetrap.bind(["command+s", "ctrl+s"], () => {
-      // return false to prevent default browser behavior and stop event from bubbling
+      // return false to prevent default browser behavior // and stop event from bubbling
       return false;
     });
     return () => {

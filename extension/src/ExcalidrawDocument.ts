@@ -4,8 +4,11 @@ import * as path from "path";
 export class ExcalidrawDocument implements vscode.CustomDocument {
   uri: vscode.Uri;
   content: Uint8Array;
-  protected _onDidDocumentChange = new vscode.EventEmitter<void>();
-  public onDidDocumentChange = this._onDidDocumentChange.event;
+  private _onDidFileChange = new vscode.EventEmitter<Uint8Array>();
+  public onDidFileChange = this._onDidFileChange.event;
+  private _onDidContentChange = new vscode.EventEmitter<void>();
+  public onDidContentChange = this._onDidContentChange.event;
+  private fileSystemWatcher: vscode.FileSystemWatcher;
 
   public readonly contentType;
 
@@ -26,6 +29,20 @@ export class ExcalidrawDocument implements vscode.CustomDocument {
     this.uri = uri;
     this.content = content;
     this.contentType = this.getContentType();
+    this.fileSystemWatcher = vscode.workspace.createFileSystemWatcher(
+      uri.fsPath,
+      true,
+      false,
+      true
+    );
+    this.fileSystemWatcher.onDidChange(async (uri) => {
+      const content = await vscode.workspace.fs.readFile(uri);
+      if (this.content.toString() === content.toString()) {
+        return;
+      }
+      this.content = content;
+      this._onDidFileChange.fire(content);
+    });
   }
 
   async revert() {
@@ -51,7 +68,7 @@ export class ExcalidrawDocument implements vscode.CustomDocument {
 
   async update(content: Uint8Array) {
     this.content = content;
-    this._onDidDocumentChange.fire();
+    this._onDidContentChange.fire();
   }
 
   async saveAs(destination: vscode.Uri) {
@@ -66,6 +83,7 @@ export class ExcalidrawDocument implements vscode.CustomDocument {
 
   dispose(): void {
     this._onDidDispose.fire();
-    this._onDidDocumentChange.dispose();
+    this._onDidContentChange.dispose();
+    this.fileSystemWatcher.dispose();
   }
 }

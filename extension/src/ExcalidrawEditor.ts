@@ -61,7 +61,11 @@ export class ExcalidrawEditorProvider
       enableScripts: true,
     };
 
-    const editor = new ExcalidrawEditor(document, webviewPanel, this.context);
+    const editor = new ExcalidrawEditor(
+      document,
+      webviewPanel.webview,
+      this.context
+    );
     const editorDisposable = await editor.setupWebview();
     ExcalidrawEditorProvider.activeEditor = editor;
 
@@ -100,7 +104,7 @@ export class ExcalidrawEditorProvider
     );
     const document = new ExcalidrawDocument(uri, content);
 
-    const onDidDocumentChange = document.onDidDocumentChange(() => {
+    const onDidDocumentChange = document.onDidContentChange(() => {
       this._onDidChangeCustomDocument.fire({ document });
     });
 
@@ -138,7 +142,7 @@ class ExcalidrawEditor {
 
   constructor(
     readonly document: ExcalidrawDocument,
-    readonly webviewPanel: vscode.WebviewPanel,
+    readonly webview: vscode.Webview,
     readonly context: vscode.ExtensionContext
   ) {}
 
@@ -155,7 +159,7 @@ class ExcalidrawEditor {
 
     const libraryUri = await this.getLibraryUri();
 
-    const onDidReceiveMessage = this.webviewPanel.webview.onDidReceiveMessage(
+    const onDidReceiveMessage = this.webview.onDidReceiveMessage(
       async (msg) => {
         switch (msg.type) {
           case "library-change":
@@ -183,14 +187,21 @@ class ExcalidrawEditor {
 
     const onLibraryChange = ExcalidrawEditor.onLibraryChange.event((msg) => {
       if (msg.uri?.toString() === libraryUri?.toString()) {
-        this.webviewPanel.webview.postMessage({
+        this.webview.postMessage({
           type: "library-change",
           library: msg.content,
         });
       }
     });
 
-    this.webviewPanel.webview.html = await this.buildHtmlForWebview({
+    const onDidFileChange = this.document.onDidFileChange((content) => {
+      this.webview.postMessage({
+        type: "update",
+        content: Array.from(content),
+      });
+    });
+
+    this.webview.html = await this.buildHtmlForWebview({
       content: Array.from(this.document.content),
       contentType: this.document.contentType,
       library: await this.loadLibrary(libraryUri),
@@ -203,6 +214,7 @@ class ExcalidrawEditor {
 
     return new vscode.Disposable(() => {
       onDidReceiveMessage.dispose();
+      onDidFileChange.dispose();
       onLibraryChange.dispose();
     });
   }
@@ -213,7 +225,7 @@ class ExcalidrawEditor {
   }
 
   public importLibrary(libraryUrl: string, csrfToken: string) {
-    this.webviewPanel.webview.postMessage({
+    this.webview.postMessage({
       type: "import-library",
       libraryUrl,
       csrfToken,
