@@ -61,11 +61,7 @@ export class ExcalidrawEditorProvider
       enableScripts: true,
     };
 
-    const editor = new ExcalidrawEditor(
-      document,
-      webviewPanel.webview,
-      this.context
-    );
+    const editor = new ExcalidrawEditor(document, webviewPanel, this.context);
     const editorDisposable = await editor.setupWebview();
     ExcalidrawEditorProvider.activeEditor = editor;
 
@@ -133,16 +129,13 @@ export class ExcalidrawEditorProvider
 
 class ExcalidrawEditor {
   // Allows to pass events between editors
-  private static onLibraryChange = new vscode.EventEmitter<{
-    uri?: vscode.Uri;
-    content: any;
-  }>();
+  private static onLibraryChange = new vscode.EventEmitter<string>();
 
   private textDecoder = new TextDecoder();
 
   constructor(
     readonly document: ExcalidrawDocument,
-    readonly webview: vscode.Webview,
+    readonly webviewPanel: vscode.WebviewPanel,
     readonly context: vscode.ExtensionContext
   ) {}
 
@@ -157,17 +150,15 @@ class ExcalidrawEditor {
     // Setup initial content for the webview
     // Receive message from the webview.
 
-    const libraryUri = await this.getLibraryUri();
+    let libraryUri = await this.getLibraryUri();
 
-    const onDidReceiveMessage = this.webview.onDidReceiveMessage(
+    const onDidReceiveMessage = this.webviewPanel.webview.onDidReceiveMessage(
       async (msg) => {
         switch (msg.type) {
           case "library-change":
-            await this.saveLibrary(msg.library, libraryUri);
-            ExcalidrawEditor.onLibraryChange.fire({
-              uri: libraryUri,
-              content: msg.library,
-            });
+            const library = msg.library;
+            await this.saveLibrary(library, libraryUri);
+            ExcalidrawEditor.onLibraryChange.fire(library);
             return;
           case "change":
             await this.document.update(new Uint8Array(msg.content));
@@ -185,14 +176,28 @@ class ExcalidrawEditor {
       this
     );
 
-    const onLibraryChange = ExcalidrawEditor.onLibraryChange.event((msg) => {
-      if (msg.uri?.toString() === libraryUri?.toString()) {
-        this.webview.postMessage({
+    const onDidLibraryConfigurationChange =
+      vscode.workspace.onDidChangeConfiguration(async (e) => {
+        if (!e.affectsConfiguration("excalidraw.workspaceLibraryPath")) {
+          return;
+        }
+
+        libraryUri = await this.getLibraryUri();
+        const library = await this.loadLibrary();
+        this.postMessage({
           type: "library-change",
-          library: msg.content,
+          library,
+        });
+      });
+
+    const onLibraryChange = ExcalidrawEditor.onLibraryChange.event(
+      (library) => {
+        this.postMessage({
+          type: "library-change",
+          library,
         });
       }
-    });
+    );
 
     // TODO: find a way to avoid overwriting most recent changes
     // const onDidFileChange = this.document.onDidFileChange((content) => {
@@ -202,7 +207,7 @@ class ExcalidrawEditor {
     //   });
     // });
 
-    this.webview.html = await this.buildHtmlForWebview({
+    this.webviewPanel.webview.html = await this.buildHtmlForWebview({
       content: Array.from(this.document.content),
       contentType: this.document.contentType,
       library: await this.loadLibrary(libraryUri),
@@ -213,9 +218,20 @@ class ExcalidrawEditor {
       name: this.extractName(this.document.uri),
     });
 
+    const onFocusChange = this.webviewPanel.onDidChangeViewState(async (e) => {
+      if (e.webviewPanel.active) {
+        this.postMessage({
+          type: "library-change",
+          library: await this.loadLibrary(libraryUri),
+        });
+      }
+    });
+
     return new vscode.Disposable(() => {
       onDidReceiveMessage.dispose();
       // onDidFileChange.dispose();
+      onFocusChange.dispose();
+      onDidLibraryConfigurationChange.dispose();
       onLibraryChange.dispose();
     });
   }
@@ -226,11 +242,17 @@ class ExcalidrawEditor {
   }
 
   public importLibrary(libraryUrl: string, csrfToken: string) {
-    this.webview.postMessage({
+    this.postMessage({
       type: "import-library",
       libraryUrl,
       csrfToken,
     });
+  }
+
+  private postMessage(msg: any) {
+    if (this.webviewPanel.active) {
+      this.webviewPanel.webview.postMessage(msg);
+    }
   }
 
   public async getLibraryUri() {
