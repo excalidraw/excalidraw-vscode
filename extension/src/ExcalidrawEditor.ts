@@ -194,12 +194,13 @@ class ExcalidrawEditor {
       }
     });
 
-    const onDidFileChange = this.document.onDidFileChange((content) => {
-      this.webview.postMessage({
-        type: "update",
-        content: Array.from(content),
-      });
-    });
+    // TODO: find a way to avoid overwriting most recent changes
+    // const onDidFileChange = this.document.onDidFileChange((content) => {
+    //   this.webview.postMessage({
+    //     type: "update",
+    //     content: Array.from(content),
+    //   });
+    // });
 
     this.webview.html = await this.buildHtmlForWebview({
       content: Array.from(this.document.content),
@@ -214,7 +215,7 @@ class ExcalidrawEditor {
 
     return new vscode.Disposable(() => {
       onDidReceiveMessage.dispose();
-      onDidFileChange.dispose();
+      // onDidFileChange.dispose();
       onLibraryChange.dispose();
     });
   }
