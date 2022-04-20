@@ -52,7 +52,7 @@
                         "scope": "resource",
                         "description": "Excalidraw theme. Use auto to sync theme with VSCode color theme.",
                         "type": "string",
-                        "default": "auto",
+                        "default": "light",
                         "enum": [
                             "auto",
                             "light",

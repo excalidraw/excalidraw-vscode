@@ -209,7 +209,7 @@ class ExcalidrawEditor {
       viewModeEnabled: this.isViewOnly() || undefined,
       theme: vscode.workspace
         .getConfiguration("excalidraw")
-        .get("theme", "auto"),
+        .get("theme", "light"),
       name: this.extractName(this.document.uri),
     });
 
