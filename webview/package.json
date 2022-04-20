@@ -6,7 +6,7 @@
   "main": "src/index.js",
   "dependencies": {
     "@excalidraw/eslint-config": "^1.0.3",
-    "@excalidraw/excalidraw-next": "0.11.0-3840e2f",
+    "@excalidraw/excalidraw-next": "0.11.0-b5a46dd",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
     "js-base64": "^3.7.2",
