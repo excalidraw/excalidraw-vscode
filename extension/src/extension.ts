@@ -38,18 +38,49 @@ class ExcalidrawUriHandler implements vscode.UriHandler {
   }
 }
 
-function updateThemeConfig() {
-  vscode.window
-    .showQuickPick([
-      { label: "auto", description: "Sync theme with vscode" },
-      { label: "light", description: "Always use light theme" },
-      { label: "dark", description: "Always use dark theme" },
-    ])
-    .then((theme) => {
-      if (theme !== undefined) {
-        vscode.workspace
-          .getConfiguration("excalidraw")
-          .update("theme", theme.label);
-      }
-    });
+async function updateThemeConfig() {
+  const excalidrawConfig = vscode.workspace.getConfiguration("excalidraw");
+  const initialTheme = excalidrawConfig.get<string>("theme");
+  const items = [
+    {
+      label: "light",
+      description: "Always use light theme",
+    },
+    {
+      label: "dark",
+      description: "Always use dark theme",
+    },
+    {
+      label: "auto",
+      description: "Sync theme with vscode",
+    },
+  ];
+  const updateTheme = (variant: string) => {
+    excalidrawConfig.update("theme", variant);
+  };
+  const quickPick = vscode.window.createQuickPick();
+  quickPick.items = items;
+  quickPick.activeItems = items.filter((item) => item.label === initialTheme);
+  quickPick.onDidChangeActive((actives) => {
+    if (actives.length > 0) {
+      updateTheme(actives[0].label);
+    }
+  });
+  let confirm = false;
+  quickPick.onDidAccept(() => {
+    confirm = true;
+    const actives = quickPick.activeItems;
+    if (actives.length > 0) {
+      excalidrawConfig.update("theme", actives[0].label);
+    } else {
+      excalidrawConfig.update("theme", initialTheme);
+    }
+    quickPick.hide();
+  });
+  quickPick.onDidHide(() => {
+    if (!confirm) {
+      excalidrawConfig.update("theme", initialTheme);
+    }
+  });
+  quickPick.show();
 }
