@@ -173,7 +173,7 @@ class ExcalidrawEditor {
             await this.document.update(new Uint8Array(msg.content));
             return;
           case "save":
-            await this.document.save();
+            vscode.commands.executeCommand("workbench.action.files.save");
             return;
           case "error":
             vscode.window.showErrorMessage(msg.content);
