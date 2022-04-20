@@ -23,7 +23,8 @@
         "url": "https://github.com/pomdtr"
     },
     "activationEvents": [
-        "onCustomEditor:editor.excalidraw"
+        "onCustomEditor:editor.excalidraw",
+        "onCommand:excalidraw.theme.update"
     ],
     "repository": {
         "type": "git",
@@ -31,6 +32,12 @@
     },
     "browser": "./dist/extension.js",
     "contributes": {
+        "commands": [
+            {
+                "command": "excalidraw.theme.update",
+                "title": "Excalidraw: Color Theme"
+            }
+        ],
         "configuration": [
             {
                 "title": "Excalidraw",

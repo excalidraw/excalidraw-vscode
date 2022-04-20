@@ -5,6 +5,12 @@ export async function activate(context: vscode.ExtensionContext) {
   // Register our custom editor providers
   context.subscriptions.push(await ExcalidrawEditorProvider.register(context));
   context.subscriptions.push(ExcalidrawUriHandler.register());
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "excalidraw.theme.update",
+      updateThemeConfig
+    )
+  );
 }
 
 class ExcalidrawUriHandler implements vscode.UriHandler {
@@ -30,4 +36,20 @@ class ExcalidrawUriHandler implements vscode.UriHandler {
       console.error(e);
     }
   }
+}
+
+function updateThemeConfig() {
+  vscode.window
+    .showQuickPick([
+      { label: "auto", description: "Sync theme with vscode" },
+      { label: "light", description: "Always use light theme" },
+      { label: "dark", description: "Always use dark theme" },
+    ])
+    .then((theme) => {
+      if (theme !== undefined) {
+        vscode.workspace
+          .getConfiguration("excalidraw")
+          .update("theme", theme.label);
+      }
+    });
 }
