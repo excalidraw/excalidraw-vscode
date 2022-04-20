@@ -2,6 +2,7 @@
 
 ## 2.1.0
 
+- sync changes from document to webview
 - allow to open and edit png with embedded scene
 - deprecate `excalidraw.syncTheme` preference in favour of `excalidraw.theme`
 - add the ability to store the library in an `excalidrawlib` file using the `excalidraw.libraryPath` pref.

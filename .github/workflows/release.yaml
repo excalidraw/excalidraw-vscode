@@ -24,5 +24,5 @@ jobs:
       - name: Publish to Visual Studio Marketplace
         run: vsce publish --pat "${{ secrets.VS_MARKETPLACE_TOKEN }}" ${{ github.event.inputs.preRelease && '--pre-release' || '' }}
       - name: Publish to Open VSX registry
-        if: github.event.inputs.preRelease != true
+        if: ${{ github.event.inputs.preRelease != true }}
         run: ovsx publish --pat ${{ secrets.OPEN_VSX_TOKEN }}
