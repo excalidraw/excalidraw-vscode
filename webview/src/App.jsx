@@ -125,6 +125,7 @@ export default function App(props) {
   useEffect(() => {
     const trap = Mousetrap.bind(["command+s", "ctrl+s"], () => {
       // return false to prevent default browser behavior // and stop event from bubbling
+      props.vscode.postMessage({ type: "save" });
       return false;
     });
     return () => {
