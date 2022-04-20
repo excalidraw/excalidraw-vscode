@@ -25,6 +25,7 @@ jobs:
         id: publishToOpenVSX
         with:
           preRelease: ${{ github.event.inputs.preRelease }}
+          packagePath: ./extension
           pat: ${{ secrets.OPEN_VSX_TOKEN }}
       - name: Publish to Visual Studio Marketplace
         uses: HaaLeo/publish-vscode-extension@v1
