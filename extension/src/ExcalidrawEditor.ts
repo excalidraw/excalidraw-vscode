@@ -67,12 +67,22 @@ export class ExcalidrawEditorProvider
       this.context
     );
     const editorDisposable = await editor.setupWebview();
+
     ExcalidrawEditorProvider.activeEditor = editor;
+    vscode.commands.executeCommand("setContext", "excalidraw.active", true);
 
     const onDidChangeViewState = webviewPanel.onDidChangeViewState((e) => {
-      ExcalidrawEditorProvider.activeEditor = e.webviewPanel.active
-        ? editor
-        : undefined;
+      if (e.webviewPanel.active) {
+        ExcalidrawEditorProvider.activeEditor = editor;
+        vscode.commands.executeCommand("setContext", "excalidraw.active", true);
+      } else {
+        ExcalidrawEditorProvider.activeEditor = undefined;
+        vscode.commands.executeCommand(
+          "setContext",
+          "excalidraw.active",
+          false
+        );
+      }
     });
 
     webviewPanel.onDidDispose(() => {
