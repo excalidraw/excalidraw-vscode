@@ -159,6 +159,19 @@ class ExcalidrawEditor {
 
     const libraryUri = await this.getLibraryUri();
 
+    const onDidChangeConfiguration = vscode.workspace.onDidChangeConfiguration(
+      (e) => {
+        if (!e.affectsConfiguration("excalidraw.theme", this.document.uri)) {
+          return;
+        }
+        this.webview.postMessage({
+          type: "theme-change",
+          theme: this.getTheme(),
+        });
+      },
+      this
+    );
+
     const onDidReceiveMessage = this.webview.onDidReceiveMessage(
       async (msg) => {
         switch (msg.type) {
@@ -207,17 +220,22 @@ class ExcalidrawEditor {
       contentType: this.document.contentType,
       library: await this.loadLibrary(libraryUri),
       viewModeEnabled: this.isViewOnly() || undefined,
-      theme: vscode.workspace
-        .getConfiguration("excalidraw")
-        .get("theme", "light"),
+      theme: this.getTheme(),
       name: this.extractName(this.document.uri),
     });
 
     return new vscode.Disposable(() => {
       onDidReceiveMessage.dispose();
       // onDidFileChange.dispose();
+      onDidChangeConfiguration.dispose();
       onLibraryChange.dispose();
     });
+  }
+
+  private getTheme() {
+    return vscode.workspace
+      .getConfiguration("excalidraw")
+      .get("theme", "light");
   }
 
   public extractName(uri: vscode.Uri) {

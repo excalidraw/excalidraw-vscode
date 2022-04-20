@@ -20,7 +20,7 @@ async function getInitialData(content, contentType) {
     null
   );
 
-  return { ...initialData, scrollToContent: true };
+  return { ...initialData };
 }
 
 function getExcalidrawConfig(rootElement) {
