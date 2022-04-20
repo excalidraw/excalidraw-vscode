@@ -41,6 +41,11 @@ class ExcalidrawUriHandler implements vscode.UriHandler {
 async function updateThemeConfig() {
   const excalidrawConfig = vscode.workspace.getConfiguration("excalidraw");
   const initialTheme = excalidrawConfig.get<string>("theme");
+  const updateTheme = (variant: string | undefined) => {
+    excalidrawConfig.update("theme", variant);
+  };
+
+  const quickPick = vscode.window.createQuickPick();
   const items = [
     {
       label: "light",
@@ -52,35 +57,34 @@ async function updateThemeConfig() {
     },
     {
       label: "auto",
-      description: "Sync theme with vscode",
+      description: "Sync theme with VSCode",
     },
   ];
-  const updateTheme = (variant: string) => {
-    excalidrawConfig.update("theme", variant);
-  };
-  const quickPick = vscode.window.createQuickPick();
   quickPick.items = items;
   quickPick.activeItems = items.filter((item) => item.label === initialTheme);
+
   quickPick.onDidChangeActive((actives) => {
     if (actives.length > 0) {
       updateTheme(actives[0].label);
     }
   });
+
   let confirm = false;
   quickPick.onDidAccept(() => {
     confirm = true;
     const actives = quickPick.activeItems;
     if (actives.length > 0) {
-      excalidrawConfig.update("theme", actives[0].label);
+      updateTheme(actives[0].label);
     } else {
-      excalidrawConfig.update("theme", initialTheme);
+      updateTheme(initialTheme);
     }
     quickPick.hide();
   });
   quickPick.onDidHide(() => {
     if (!confirm) {
-      excalidrawConfig.update("theme", initialTheme);
+      updateTheme(initialTheme);
     }
   });
+
   quickPick.show();
 }
