@@ -44,19 +44,6 @@
             {
                 "title": "Excalidraw",
                 "properties": {
-                    "excalidraw.autoSave": {
-                        "type": "boolean",
-                        "description": "Controls autoSave of excalidraw editors.",
-                        "default": false,
-                        "deprecationMessage": "This setting is deprecated and will be removed in a future release. Please use the setting \"files.autoSave\" instead."
-                    },
-                    "excalidraw.syncTheme": {
-                        "scope": "resource",
-                        "description": "Sync Excalidraw theme with VSCode color theme.",
-                        "type": "boolean",
-                        "default": false,
-                        "deprecationMessage": "This setting is deprecated and will be removed in a future release. Please use the setting \"excalidraw.theme\" instead."
-                    },
                     "excalidraw.theme": {
                         "scope": "resource",
                         "description": "Excalidraw theme. Use auto to sync theme with VSCode color theme.",
