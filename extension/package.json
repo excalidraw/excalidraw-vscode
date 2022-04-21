@@ -81,14 +81,7 @@
                 {
                     "command": "excalidraw.theme.update",
                     "group": "navigation",
-                    "when": "excalidraw.active"
-                }
-            ],
-            "commandPalette": [
-                {
-                    "command": "excalidraw.theme.update",
-                    "group": "navigation",
-                    "when": "excalidraw.active"
+                    "when": "resourceFilename =~ /^.+\\.excalidraw$/ || resourceFilename =~ /^.+\\.excalidraw\\.svg$/ || resourceFilename =~ /^.+\\.excalidraw\\.png$/"
                 }
             ]
         },
