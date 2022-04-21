@@ -98,7 +98,7 @@ export default function App(props) {
             const blob = new Blob([message.library], {
               type: "application/json",
             });
-            const { libraryItems } = await loadLibraryFromBlob(blob);
+            const libraryItems = await loadLibraryFromBlob(blob);
             if (
               JSON.stringify(libraryItems) ==
               JSON.stringify(libraryItemsRef.current)
@@ -209,6 +209,10 @@ export default function App(props) {
           ) {
             return;
           }
+          props.vscode.postMessage({
+            type: "error",
+            new: libraryItems,
+          });
           libraryItemsRef.current = libraryItems;
           props.vscode.postMessage({
             type: "library-change",

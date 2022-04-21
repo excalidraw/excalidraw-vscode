@@ -49,30 +49,20 @@ export class ExcalidrawEditorProvider
 
   private static readonly viewType = "editor.excalidraw";
 
-  static activeEditor: ExcalidrawEditor | undefined;
-
   constructor(private readonly context: vscode.ExtensionContext) {}
 
   public async resolveCustomEditor(
     document: ExcalidrawDocument,
     webviewPanel: vscode.WebviewPanel
   ) {
-    webviewPanel.webview.options = {
-      enableScripts: true,
-    };
-
-    const editor = new ExcalidrawEditor(document, webviewPanel, this.context);
+    const editor = new ExcalidrawEditor(
+      document,
+      webviewPanel.webview,
+      this.context
+    );
     const editorDisposable = await editor.setupWebview();
-    ExcalidrawEditorProvider.activeEditor = editor;
-
-    const onDidChangeViewState = webviewPanel.onDidChangeViewState((e) => {
-      ExcalidrawEditorProvider.activeEditor = e.webviewPanel.active
-        ? editor
-        : undefined;
-    });
 
     webviewPanel.onDidDispose(() => {
-      onDidChangeViewState.dispose();
       editorDisposable.dispose();
     });
   }
@@ -127,15 +117,18 @@ export class ExcalidrawEditorProvider
   }
 }
 
-class ExcalidrawEditor {
+export class ExcalidrawEditor {
   // Allows to pass events between editors
   private static onLibraryChange = new vscode.EventEmitter<string>();
-
+  private static onLibraryImport = new vscode.EventEmitter<{
+    libraryUrl: string;
+    csrfToken: string;
+  }>();
   private textDecoder = new TextDecoder();
 
   constructor(
     readonly document: ExcalidrawDocument,
-    readonly webviewPanel: vscode.WebviewPanel,
+    readonly webview: vscode.Webview,
     readonly context: vscode.ExtensionContext
   ) {}
 
@@ -149,10 +142,13 @@ class ExcalidrawEditor {
   public async setupWebview() {
     // Setup initial content for the webview
     // Receive message from the webview.
+    this.webview.options = {
+      enableScripts: true,
+    };
 
     let libraryUri = await this.getLibraryUri();
 
-    const onDidReceiveMessage = this.webviewPanel.webview.onDidReceiveMessage(
+    const onDidReceiveMessage = this.webview.onDidReceiveMessage(
       async (msg) => {
         switch (msg.type) {
           case "library-change":
@@ -178,36 +174,43 @@ class ExcalidrawEditor {
 
     const onDidLibraryConfigurationChange =
       vscode.workspace.onDidChangeConfiguration(async (e) => {
-        if (!e.affectsConfiguration("excalidraw.workspaceLibraryPath")) {
+        if (
+          !e.affectsConfiguration(
+            "excalidraw.workspaceLibraryPath",
+            this.document.uri
+          )
+        ) {
           return;
         }
 
         libraryUri = await this.getLibraryUri();
-        const library = await this.loadLibrary();
-        this.postMessage({
+        const library = await this.loadLibrary(libraryUri);
+        this.webview.postMessage({
           type: "library-change",
           library,
         });
       });
 
+    const onLibraryImport = ExcalidrawEditor.onLibraryImport.event(
+      async ({ csrfToken, libraryUrl }) => {
+        this.webview.postMessage({
+          type: "import-library",
+          libraryUrl,
+          csrfToken,
+        });
+      }
+    );
+
     const onLibraryChange = ExcalidrawEditor.onLibraryChange.event(
       (library) => {
-        this.postMessage({
+        this.webview.postMessage({
           type: "library-change",
           library,
         });
       }
     );
 
-    // TODO: find a way to avoid overwriting most recent changes
-    // const onDidFileChange = this.document.onDidFileChange((content) => {
-    //   this.webview.postMessage({
-    //     type: "update",
-    //     content: Array.from(content),
-    //   });
-    // });
-
-    this.webviewPanel.webview.html = await this.buildHtmlForWebview({
+    this.webview.html = await this.buildHtmlForWebview({
       content: Array.from(this.document.content),
       contentType: this.document.contentType,
       library: await this.loadLibrary(libraryUri),
@@ -218,19 +221,9 @@ class ExcalidrawEditor {
       name: this.extractName(this.document.uri),
     });
 
-    const onFocusChange = this.webviewPanel.onDidChangeViewState(async (e) => {
-      if (e.webviewPanel.active) {
-        this.postMessage({
-          type: "library-change",
-          library: await this.loadLibrary(libraryUri),
-        });
-      }
-    });
-
     return new vscode.Disposable(() => {
       onDidReceiveMessage.dispose();
-      // onDidFileChange.dispose();
-      onFocusChange.dispose();
+      onLibraryImport.dispose();
       onDidLibraryConfigurationChange.dispose();
       onLibraryChange.dispose();
     });
@@ -239,20 +232,6 @@ class ExcalidrawEditor {
   public extractName(uri: vscode.Uri) {
     const name = path.parse(uri.fsPath).name;
     return name.endsWith(".excalidraw") ? name.slice(0, -11) : name;
-  }
-
-  public importLibrary(libraryUrl: string, csrfToken: string) {
-    this.postMessage({
-      type: "import-library",
-      libraryUrl,
-      csrfToken,
-    });
-  }
-
-  private postMessage(msg: any) {
-    if (this.webviewPanel.active) {
-      this.webviewPanel.webview.postMessage(msg);
-    }
   }
 
   public async getLibraryUri() {
@@ -273,6 +252,10 @@ class ExcalidrawEditor {
     }
 
     return vscode.Uri.joinPath(fileWorkspace.uri, libraryPath);
+  }
+
+  public static importLibrary(libraryUrl: string, csrfToken: string) {
+    this.onLibraryImport.fire({ libraryUrl, csrfToken });
   }
 
   public async loadLibrary(libraryUri?: vscode.Uri) {
