@@ -35,7 +35,7 @@
         "commands": [
             {
                 "command": "excalidraw.theme.update",
-                "title": "Excalidraw: Color Theme",
+                "title": "Color Theme",
                 "icon": "$(color-mode)",
                 "category": "Excalidraw"
             }
