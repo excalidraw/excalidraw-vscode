@@ -119,7 +119,7 @@ export class ExcalidrawEditorProvider
 
 export class ExcalidrawEditor {
   // Allows to pass events between editors
-  private static onLibraryChange = new vscode.EventEmitter<string>();
+  private static onDidChangeLibrary = new vscode.EventEmitter<string>();
   private static onLibraryImport = new vscode.EventEmitter<{
     libraryUrl: string;
     csrfToken: string;
@@ -148,7 +148,7 @@ export class ExcalidrawEditor {
 
     let libraryUri = await this.getLibraryUri();
 
-    const onDidChangeConfiguration = vscode.workspace.onDidChangeConfiguration(
+    const onDidChangeThemeConfiguration = vscode.workspace.onDidChangeConfiguration(
       (e) => {
         if (!e.affectsConfiguration("excalidraw.theme", this.document.uri)) {
           return;
@@ -167,7 +167,7 @@ export class ExcalidrawEditor {
           case "library-change":
             const library = msg.library;
             await this.saveLibrary(library, libraryUri);
-            ExcalidrawEditor.onLibraryChange.fire(library);
+            ExcalidrawEditor.onDidChangeLibrary.fire(library);
             return;
           case "change":
             await this.document.update(new Uint8Array(msg.content));
@@ -185,7 +185,7 @@ export class ExcalidrawEditor {
       this
     );
 
-    const onDidLibraryConfigurationChange =
+    const onDidChangeLibraryConfiguration =
       vscode.workspace.onDidChangeConfiguration(async (e) => {
         if (
           !e.affectsConfiguration(
@@ -214,7 +214,7 @@ export class ExcalidrawEditor {
       }
     );
 
-    const onLibraryChange = ExcalidrawEditor.onLibraryChange.event(
+    const onDidChangeLibrary = ExcalidrawEditor.onDidChangeLibrary.event(
       (library) => {
         this.webview.postMessage({
           type: "library-change",
@@ -234,10 +234,10 @@ export class ExcalidrawEditor {
 
     return new vscode.Disposable(() => {
       onDidReceiveMessage.dispose();
-      onDidChangeConfiguration.dispose();
+      onDidChangeThemeConfiguration.dispose();
       onLibraryImport.dispose();
-      onDidLibraryConfigurationChange.dispose();
-      onLibraryChange.dispose();
+      onDidChangeLibraryConfiguration.dispose();
+      onDidChangeLibrary.dispose();
     });
   }
 
