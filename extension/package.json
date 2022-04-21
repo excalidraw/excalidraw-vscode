@@ -23,7 +23,8 @@
         "url": "https://github.com/pomdtr"
     },
     "activationEvents": [
-        "onCustomEditor:editor.excalidraw"
+        "onCustomEditor:editor.excalidraw",
+        "onCommand:excalidraw.theme.update"
     ],
     "repository": {
         "type": "git",
@@ -31,28 +32,23 @@
     },
     "browser": "./dist/extension.js",
     "contributes": {
+        "commands": [
+            {
+                "command": "excalidraw.theme.update",
+                "title": "Excalidraw: Color Theme",
+                "icon": "$(color-mode)",
+                "category": "Excalidraw"
+            }
+        ],
         "configuration": [
             {
                 "title": "Excalidraw",
                 "properties": {
-                    "excalidraw.autoSave": {
-                        "type": "boolean",
-                        "description": "Controls autoSave of excalidraw editors.",
-                        "default": false,
-                        "deprecationMessage": "This setting is deprecated and will be removed in a future release. Please use the setting \"files.autoSave\" instead."
-                    },
-                    "excalidraw.syncTheme": {
-                        "scope": "resource",
-                        "description": "Sync Excalidraw theme with VSCode color theme.",
-                        "type": "boolean",
-                        "default": false,
-                        "deprecationMessage": "This setting is deprecated and will be removed in a future release. Please use the setting \"excalidraw.theme\" instead."
-                    },
                     "excalidraw.theme": {
                         "scope": "resource",
                         "description": "Excalidraw theme. Use auto to sync theme with VSCode color theme.",
                         "type": "string",
-                        "default": "auto",
+                        "default": "light",
                         "enum": [
                             "auto",
                             "light",
@@ -67,6 +63,15 @@
                 }
             }
         ],
+        "menus": {
+            "editor/title": [
+                {
+                    "command": "excalidraw.theme.update",
+                    "group": "navigation",
+                    "when": "resourceFilename =~ /^.+\\.excalidraw$/ || resourceFilename =~ /^.+\\.excalidraw\\.svg$/ || resourceFilename =~ /^.+\\.excalidraw\\.png$/"
+                }
+            ]
+        },
         "customEditors": [
             {
                 "viewType": "editor.excalidraw",

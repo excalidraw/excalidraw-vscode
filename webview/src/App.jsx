@@ -25,46 +25,49 @@ function detectTheme() {
   }
 }
 
-function useTheme(themeVariant) {
-  const [theme, setTheme] = useState(
-    themeVariant == "auto" ? detectTheme() : themeVariant
-  );
+function useTheme(initialThemeConfig) {
+  const [themeConfig, setThemeConfig] = useState(initialThemeConfig);
+  const getExcalidrawTheme = () => {
+    switch (themeConfig) {
+      case "light":
+        return THEME.LIGHT;
+      case "dark":
+        return THEME.DARK;
+      case "auto":
+        return detectTheme();
+    }
+  };
+  const [theme, setTheme] = useState(getExcalidrawTheme(initialThemeConfig));
+  const updateTheme = () => {
+    setTheme(getExcalidrawTheme());
+  };
+
+  useEffect(updateTheme, [themeConfig]);
 
   useEffect(() => {
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach(() => {
-        if (themeVariant != "auto") {
-          return;
-        }
-        setTheme(detectTheme());
-      });
+    const observer = new MutationObserver(() => {
+      updateTheme();
     });
     observer.observe(document.body, {
       attributes: true,
       attributeFilter: ["class"],
     });
-
     return () => {
       observer.disconnect();
     };
   }, []);
 
-  return theme;
+  return { theme, setThemeConfig };
 }
 
 export default function App(props) {
-  const {
-    elements = [],
-    appState = {},
-    scrollToContent,
-    libraryItems = [],
-    files = [],
-  } = props.initialData;
-
   const excalidrawRef = useRef(null);
-  const sceneVersion = useRef(getSceneVersion(elements));
-  const libraryItemsRef = useRef(libraryItems);
-  const theme = useTheme(props.theme);
+  const sceneVersionRef = useRef(
+    getSceneVersion(props.initialData.elements || [])
+  );
+  const libraryItemsRef = useRef(props.initialData.libraryItems || []);
+
+  const { theme, setThemeConfig } = useTheme(props.theme);
   const textEncoder = new TextEncoder();
 
   useEffect(() => {
@@ -109,6 +112,10 @@ export default function App(props) {
             excalidrawRef.current.updateScene({ libraryItems });
             break;
           }
+          case "theme-change": {
+            setThemeConfig(message.theme);
+            break;
+          }
         }
       } catch (e) {
         props.vscode.postMessage({ type: "error", content: e.message });
@@ -131,13 +138,13 @@ export default function App(props) {
     return () => {
       trap.unbind();
     };
-  });
+  }, []);
 
   async function onChange(elements, appState, files) {
-    if (sceneVersion.current === getSceneVersion(elements)) {
+    if (sceneVersionRef.current === getSceneVersion(elements)) {
       return;
     }
-    sceneVersion.current = getSceneVersion(elements);
+    sceneVersionRef.current = getSceneVersion(elements);
     if (props.contentType == "application/json") {
       props.vscode.postMessage({
         type: "change",
@@ -194,11 +201,8 @@ export default function App(props) {
         theme={theme}
         viewModeEnabled={props.viewModeEnabled}
         initialData={{
-          elements,
-          scrollToContent,
-          appState: { ...appState },
-          libraryItems,
-          files,
+          ...props.initialData,
+          scrollToContent: true,
         }}
         libraryReturnUrl={"vscode://pomdtr.excalidraw-editor/importLib"}
         onChange={debounce(onChange, 250)}
