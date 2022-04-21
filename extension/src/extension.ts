@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { ExcalidrawEditorProvider } from "./ExcalidrawEditor";
+import { ExcalidrawEditor, ExcalidrawEditorProvider } from "./ExcalidrawEditor";
 
 export async function activate(context: vscode.ExtensionContext) {
   // Register our custom editor providers
@@ -25,11 +25,8 @@ class ExcalidrawUriHandler implements vscode.UriHandler {
       const hash = new URLSearchParams(uri.fragment);
       const libraryUrl = hash.get("addLibrary");
       const csrfToken = hash.get("token");
-      if (libraryUrl && csrfToken && ExcalidrawEditorProvider.activeEditor) {
-        ExcalidrawEditorProvider.activeEditor.importLibrary(
-          libraryUrl,
-          csrfToken
-        );
+      if (libraryUrl && csrfToken) {
+        ExcalidrawEditor.importLibrary(libraryUrl, csrfToken);
         vscode.window.showInformationMessage("Library added successfully!");
       }
     } catch (e) {

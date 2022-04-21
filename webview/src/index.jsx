@@ -28,12 +28,11 @@ function getExcalidrawConfig(rootElement) {
   const strConfig = Base64.decode(b64Config);
   return JSON.parse(strConfig);
 }
-async function getLibraryItems(libraryBlob) {
+async function getLibraryItems(libraryString) {
   try {
-    const library = await loadLibraryFromBlob(
-      new Blob([libraryBlob], { type: "application/json" })
+    return await loadLibraryFromBlob(
+      new Blob([libraryString], { type: "application/json" })
     );
-    return library.version == 1 ? library.library : library.libraryItems;
   } catch (e) {
     vscode.postMessage({
       type: "error",
