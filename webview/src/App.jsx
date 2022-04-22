@@ -193,6 +193,13 @@ export default function App(props) {
         }}
         libraryReturnUrl={"vscode://pomdtr.excalidraw-editor/importLib"}
         onChange={debounce(onChange, 250)}
+        onLinkOpen={(element, event) => {
+          props.vscode.postMessage({
+            type: "link-open",
+            url: element.link,
+          });
+          event.preventDefault();
+        }}
         onLibraryChange={(libraryItems) => {
           if (
             JSON.stringify(libraryItems) ==

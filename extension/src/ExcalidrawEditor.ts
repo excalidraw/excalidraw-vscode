@@ -166,15 +166,19 @@ export class ExcalidrawEditor {
             const library = msg.library;
             await this.saveLibrary(library, libraryUri);
             ExcalidrawEditor.onDidChangeLibrary.fire(library);
-            return;
+            break;
           case "change":
             await this.document.update(new Uint8Array(msg.content));
-            return;
+            break;
+          case "link-open":
+            vscode.env.openExternal(vscode.Uri.parse(msg.url));
+            break;
           case "error":
             vscode.window.showErrorMessage(msg.content);
-            return;
+            break;
           case "info":
             vscode.window.showInformationMessage(msg.content);
+            break;
         }
       },
       this
