@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.1.0
+## 3.0.0 (unreleased)
 
 - allow to open and edit png with embedded scene
 - deprecate `excalidraw.syncTheme` preference in favour of `excalidraw.theme`
