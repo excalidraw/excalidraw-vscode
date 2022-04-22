@@ -9,7 +9,6 @@ Try the web version at : <https://excalidraw.com/>
 
 ![./assets/screenshot.png](https://github.com/excalidraw/excalidraw-vscode/raw/HEAD/extension/assets/screenshot.png)
 
-
 ## Associate Additional Extensions With The Excalidraw Editor
 
 By default, this extension only handles `*.excalidraw`, `*.excalidraw.svg` and `*.excalidraw.png` files.
