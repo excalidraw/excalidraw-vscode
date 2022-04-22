@@ -148,8 +148,8 @@ export class ExcalidrawEditor {
 
     let libraryUri = await this.getLibraryUri();
 
-    const onDidChangeThemeConfiguration = vscode.workspace.onDidChangeConfiguration(
-      (e) => {
+    const onDidChangeThemeConfiguration =
+      vscode.workspace.onDidChangeConfiguration((e) => {
         if (!e.affectsConfiguration("excalidraw.theme", this.document.uri)) {
           return;
         }
@@ -157,9 +157,7 @@ export class ExcalidrawEditor {
           type: "theme-change",
           theme: this.getTheme(),
         });
-      },
-      this
-    );
+      }, this);
 
     const onDidReceiveMessage = this.webview.onDidReceiveMessage(
       async (msg) => {
