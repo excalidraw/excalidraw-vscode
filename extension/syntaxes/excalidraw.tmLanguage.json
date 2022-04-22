@@ -1,0 +1,10 @@
+{
+    "name": "excalidraw",
+    "scopeName": "source.excalidraw",
+    "comment": "Excalidraw",
+    "patterns": [
+      {
+        "include": "source.json"
+      }
+    ]
+  }
