@@ -63,6 +63,12 @@
                 }
             }
         ],
+        "configurationDefaults": {
+            "files.associations": {
+                "*.excalidraw": "json",
+                "*.excalidrawlib": "json"
+            }
+        },
         "menus": {
             "editor/title": [
                 {
