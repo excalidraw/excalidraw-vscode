@@ -3,7 +3,7 @@
     "icon": "assets/logo.png",
     "displayName": "Excalidraw",
     "description": "Draw schemas in VSCode using Excalidraw",
-    "version": "2.1.10",
+    "version": "2.1.9",
     "publisher": "pomdtr",
     "engines": {
         "vscode": "^1.63.0"
@@ -88,25 +88,6 @@
                         "filenamePattern": "*.excalidraw.png"
                     }
                 ]
-            }
-        ],
-        "languages": [
-            {
-                "id": "excalidraw",
-                "aliases": ["Excalidraw", "excalidraw"],
-                "extensions": [
-                    ".excalidraw",
-                    ".excalidrawlib"
-                ],
-                "mimetypes": ["application/json", "application/manifest+json"],
-                "configuration": "./language-configuration.json"
-            }
-        ],
-        "grammars": [
-            {
-                "language": "excalidraw",
-                "scopeName": "source.excalidraw",
-                "path": "./syntaxes/excalidraw.tmLanguage.json"
             }
         ]
     },
