@@ -10,7 +10,6 @@ import {
   serializeLibraryAsJSON,
   THEME,
 } from "@excalidraw/excalidraw-next";
-import * as Mousetrap from "mousetrap";
 
 import "./styles.css";
 
@@ -125,18 +124,6 @@ export default function App(props) {
 
     return () => {
       window.removeEventListener("message", listener);
-    };
-  }, []);
-
-  // Saving trigger a dialog when using the extension in a browser
-  useEffect(() => {
-    const trap = Mousetrap.bind(["command+s", "ctrl+s"], () => {
-      // return false to prevent default browser behavior // and stop event from bubbling
-      props.vscode.postMessage({ type: "save" });
-      return false;
-    });
-    return () => {
-      trap.unbind();
     };
   }, []);
 

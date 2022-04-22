@@ -3,7 +3,7 @@
     "icon": "assets/logo.png",
     "displayName": "Excalidraw",
     "description": "Draw schemas in VSCode using Excalidraw",
-    "version": "2.1.8",
+    "version": "2.1.9",
     "publisher": "pomdtr",
     "engines": {
         "vscode": "^1.63.0"
@@ -99,7 +99,7 @@
         "lint": "eslint --ext .ts src",
         "build-webview": "cd ../webview && npm run build",
         "start-webview": "cd ../webview && npm run start",
-        "open-in-browser": "vscode-test-web --extensionDevelopmentPath=. ."
+        "open-in-browser": "vscode-test-web --extensionDevelopmentPath=. ../examples"
     },
     "capabilities": {
         "untrustedWorkspaces": {

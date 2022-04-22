@@ -170,9 +170,6 @@ export class ExcalidrawEditor {
           case "change":
             await this.document.update(new Uint8Array(msg.content));
             return;
-          case "save":
-            vscode.commands.executeCommand("workbench.action.files.save");
-            return;
           case "error":
             vscode.window.showErrorMessage(msg.content);
             return;
