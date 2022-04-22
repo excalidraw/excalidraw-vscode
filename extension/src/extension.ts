@@ -35,15 +35,27 @@ class ExcalidrawUriHandler implements vscode.UriHandler {
   }
 }
 
+function getConfigurationScope(
+  config: vscode.WorkspaceConfiguration,
+  key: string
+) {
+  const inspect = config.inspect(key);
+  if (inspect?.workspaceFolderValue) {
+    return vscode.ConfigurationTarget.WorkspaceFolder;
+  }
+  if (inspect?.workspaceValue) {
+    return vscode.ConfigurationTarget.Workspace;
+  }
+  return vscode.ConfigurationTarget.Global;
+}
+
 async function updateThemeConfig() {
   const excalidrawConfig = vscode.workspace.getConfiguration("excalidraw");
   const initialTheme = excalidrawConfig.get<string>("theme");
+  // Todo: find out the scope of the current theme config before updating it
+  const configurationScope = getConfigurationScope(excalidrawConfig, "theme");
   const updateTheme = (variant: string | undefined) => {
-    excalidrawConfig.update(
-      "theme",
-      variant,
-      vscode.ConfigurationTarget.Global
-    );
+    excalidrawConfig.update("theme", variant, configurationScope);
   };
 
   const quickPick = vscode.window.createQuickPick();
