@@ -39,7 +39,11 @@ async function updateThemeConfig() {
   const excalidrawConfig = vscode.workspace.getConfiguration("excalidraw");
   const initialTheme = excalidrawConfig.get<string>("theme");
   const updateTheme = (variant: string | undefined) => {
-    excalidrawConfig.update("theme", variant);
+    excalidrawConfig.update(
+      "theme",
+      variant,
+      vscode.ConfigurationTarget.Global
+    );
   };
 
   const quickPick = vscode.window.createQuickPick();
