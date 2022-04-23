@@ -1,11 +1,5 @@
 import * as vscode from "vscode";
-import {
-  showEditor,
-  showImage,
-  showSource,
-  toggleTheme,
-  updateTheme,
-} from "./commands";
+import { showEditor, showImage, showSource, updateTheme } from "./commands";
 import { ExcalidrawEditorProvider } from "./editor";
 import { ExcalidrawUriHandler } from "./uri-handler";
 
@@ -24,9 +18,6 @@ export async function activate(context: vscode.ExtensionContext) {
   );
   context.subscriptions.push(
     vscode.commands.registerCommand("excalidraw.showImage", showImage)
-  );
-  context.subscriptions.push(
-    vscode.commands.registerCommand("excalidraw.toggleTheme", toggleTheme)
   );
   context.subscriptions.push(
     vscode.commands.registerCommand("excalidraw.showImageToSide", (uri) =>

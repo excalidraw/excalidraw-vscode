@@ -39,11 +39,6 @@
                 "icon": "$(color-mode)"
             },
             {
-                "command": "excalidraw.toggleTheme",
-                "title": "Toggle Excalidraw Theme",
-                "icon": "$(color-mode)"
-            },
-            {
                 "command": "excalidraw.showSource",
                 "title": "Open Source",
                 "icon": "$(go-to-file)"
@@ -116,10 +111,6 @@
                     "when": "activeCustomEditorId == 'editor.excalidraw'"
                 },
                 {
-                    "command": "excalidraw.toggleTheme",
-                    "when": "false"
-                },
-                {
                     "command": "excalidraw.showSource",
                     "when": "false"
                 },
@@ -164,8 +155,7 @@
                     "group": "navigation"
                 },
                 {
-                    "command": "excalidraw.toggleTheme",
-                    "alt": "excalidraw.updateTheme",
+                    "command": "excalidraw.updateTheme",
                     "when": "activeCustomEditorId == 'editor.excalidraw'",
                     "group": "navigation"
                 }

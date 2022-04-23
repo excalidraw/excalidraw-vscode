@@ -67,29 +67,8 @@ export async function updateTheme() {
   quickPick.show();
 }
 
-export function toggleTheme() {
-  const excalidrawConfig = vscode.workspace.getConfiguration("excalidraw");
-  const excalidrawTheme = excalidrawConfig.get<string>("theme");
-
-  let newTheme;
-  if (excalidrawTheme === "auto") {
-    newTheme =
-      vscode.window.activeColorTheme.kind == vscode.ColorThemeKind.Light
-        ? "dark"
-        : "light";
-  } else {
-    newTheme = excalidrawTheme === "light" ? "dark" : "light";
-  }
-
-  excalidrawConfig.update(
-    "theme",
-    newTheme,
-    getConfigurationScope(excalidrawConfig, "theme")
-  );
-}
-
 export function showSource(uri: vscode.Uri, viewColumn?: vscode.ViewColumn) {
-  vscode.window.showTextDocument(uri, { viewColumn: viewColumn });
+  vscode.window.showTextDocument(uri, { viewColumn });
 }
 
 export function showEditor(uri: vscode.Uri, viewColumn?: vscode.ViewColumn) {
