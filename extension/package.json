@@ -45,7 +45,7 @@
             },
             {
                 "command": "excalidraw.showSource",
-                "title": "Show Source",
+                "title": "Open Source",
                 "icon": "$(go-to-file)"
             },
             {
@@ -58,12 +58,12 @@
             },
             {
                 "command": "excalidraw.showImage",
-                "title": "Show Image",
+                "title": "Open Image",
                 "icon": "$(go-to-file)"
             },
             {
                 "command": "excalidraw.showSourceToSide",
-                "title": "Show Source to the Side",
+                "title": "Open Source to the Side",
                 "icon": "$(go-to-file)"
             },
             {
@@ -76,7 +76,7 @@
             },
             {
                 "command": "excalidraw.showImageToSide",
-                "title": "Show Image to the Side",
+                "title": "Open Image to the Side",
                 "icon": "$(go-to-file)"
             }
         ],
@@ -148,7 +148,7 @@
                 {
                     "command": "excalidraw.showEditor",
                     "alt": "excalidraw.showEditorToSide",
-                    "when": "activeCustomEditorId != 'editor.excalidraw' && resourceFilename =~ /^.+\\.excalidraw(.png|svg)?$/",
+                    "when": "activeCustomEditorId != 'editor.excalidraw' && resourceFilename =~ /^.+\\.excalidraw(.png|.svg)?$/",
                     "group": "navigation"
                 },
                 {
