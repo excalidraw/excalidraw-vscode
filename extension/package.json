@@ -23,8 +23,8 @@
         "url": "https://github.com/pomdtr"
     },
     "activationEvents": [
-        "onCustomEditor:editor.excalidraw",
-        "onCommand:excalidraw.theme.update"
+        "workspaceContains:**/*.{excalidraw,excalidraw.svg}",
+        "onCustomEditor:editor.excalidraw"
     ],
     "repository": {
         "type": "git",
@@ -34,10 +34,45 @@
     "contributes": {
         "commands": [
             {
-                "command": "excalidraw.theme.update",
-                "title": "Color Theme",
-                "icon": "$(color-mode)",
-                "category": "Excalidraw"
+                "command": "excalidraw.updateTheme",
+                "title": "Choose Excalidraw Theme",
+                "icon": "$(color-mode)"
+            },
+            {
+                "command": "excalidraw.showSource",
+                "title": "Open Source",
+                "icon": "$(go-to-file)"
+            },
+            {
+                "command": "excalidraw.showEditor",
+                "title": "Open Excalidraw",
+                "icon": {
+                    "dark": "./assets/menu-icon-dark.png",
+                    "light": "./assets/menu-icon-light.png"
+                }
+            },
+            {
+                "command": "excalidraw.showImage",
+                "title": "Open Image",
+                "icon": "$(go-to-file)"
+            },
+            {
+                "command": "excalidraw.showSourceToSide",
+                "title": "Open Source to the Side",
+                "icon": "$(go-to-file)"
+            },
+            {
+                "command": "excalidraw.showEditorToSide",
+                "title": "Open Excalidraw to the Side",
+                "icon": {
+                    "dark": "./assets/menu-icon-dark.png",
+                    "light": "./assets/menu-icon-light.png"
+                }
+            },
+            {
+                "command": "excalidraw.showImageToSide",
+                "title": "Open Image to the Side",
+                "icon": "$(go-to-file)"
             }
         ],
         "configuration": [
@@ -70,11 +105,59 @@
             }
         },
         "menus": {
+            "commandPalette": [
+                {
+                    "command": "excalidraw.updateTheme",
+                    "when": "activeCustomEditorId == 'editor.excalidraw'"
+                },
+                {
+                    "command": "excalidraw.showSource",
+                    "when": "false"
+                },
+                {
+                    "command": "excalidraw.showEditor",
+                    "when": "false"
+                },
+                {
+                    "command": "excalidraw.showImage",
+                    "when": "false"
+                },
+                {
+                    "command": "excalidraw.showSourceToSide",
+                    "when": "false"
+                },
+                {
+                    "command": "excalidraw.showEditorToSide",
+                    "when": "false"
+                },
+                {
+                    "command": "excalidraw.showImageToSide",
+                    "when": "false"
+                }
+            ],
             "editor/title": [
                 {
-                    "command": "excalidraw.theme.update",
+                    "command": "excalidraw.showEditor",
+                    "alt": "excalidraw.showEditorToSide",
+                    "when": "activeCustomEditorId != 'editor.excalidraw' && resourceFilename =~ /^.+\\.excalidraw(.png|.svg)?$/",
+                    "group": "navigation"
+                },
+                {
+                    "command": "excalidraw.showSource",
+                    "alt": "excalidraw.showSourceToSide",
                     "group": "navigation",
-                    "when": "resourceFilename =~ /^.+\\.excalidraw$/ || resourceFilename =~ /^.+\\.excalidraw\\.svg$/ || resourceFilename =~ /^.+\\.excalidraw\\.png$/"
+                    "when": "activeCustomEditorId == 'editor.excalidraw' && resourceFilename =~ /^.+\\.excalidraw(.svg)?$/"
+                },
+                {
+                    "command": "excalidraw.showImage",
+                    "alt": "excalidraw.showImageToSide",
+                    "when": "activeCustomEditorId == 'editor.excalidraw' && resourceFilename =~ /^.+\\.excalidraw.png$/",
+                    "group": "navigation"
+                },
+                {
+                    "command": "excalidraw.updateTheme",
+                    "when": "activeCustomEditorId == 'editor.excalidraw'",
+                    "group": "navigation"
                 }
             ]
         },
