@@ -50,7 +50,7 @@
             },
             {
                 "command": "excalidraw.showEditor",
-                "title": "Open in Excalidraw",
+                "title": "Open Excalidraw",
                 "icon": {
                     "dark": "./assets/menu-icon-dark.png",
                     "light": "./assets/menu-icon-light.png"
@@ -68,7 +68,7 @@
             },
             {
                 "command": "excalidraw.showEditorToSide",
-                "title": "Open in Excalidraw to the Side",
+                "title": "Open Excalidraw to the Side",
                 "icon": {
                     "dark": "./assets/menu-icon-dark.png",
                     "light": "./assets/menu-icon-light.png"
@@ -148,7 +148,7 @@
                 {
                     "command": "excalidraw.showEditor",
                     "alt": "excalidraw.showEditorToSide",
-                    "when": "activeCustomEditorId != 'editor.excalidraw' && resourceFilename =~ /^.+\\.excalidraw(.png)?$/",
+                    "when": "activeCustomEditorId != 'editor.excalidraw' && resourceFilename =~ /^.+\\.excalidraw(.png|svg)?$/",
                     "group": "navigation"
                 },
                 {
@@ -166,7 +166,7 @@
                 {
                     "command": "excalidraw.toggleTheme",
                     "alt": "excalidraw.updateTheme",
-                    "when": "activeCustomEditorId == 'editor.excalidraw' && resourceFilename =~ /^.+\\.excalidraw(.svg|.png)?$/",
+                    "when": "activeCustomEditorId == 'editor.excalidraw'",
                     "group": "navigation"
                 }
             ]
