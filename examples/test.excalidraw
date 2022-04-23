@@ -1,7 +1,7 @@
 {
   "type": "excalidraw",
   "version": 2,
-  "source": "vscode-webview://0fsnsgdrmm13vrfal2sbn8vm137gu3s8tfohiliss6e2bgvvekb1",
+  "source": "vscode-webview://0rttkp2istpb79ltblcai748cj2hbpcf3no5kcdkj8tilajtjsv4",
   "elements": [
     {
       "type": "rectangle",
@@ -31,8 +31,8 @@
     },
     {
       "type": "ellipse",
-      "version": 211,
-      "versionNonce": 517024061,
+      "version": 212,
+      "versionNonce": 759009850,
       "isDeleted": false,
       "id": "38En5Fmm-AHopgkU3Wuse",
       "fillStyle": "hachure",
@@ -51,7 +51,7 @@
       "groupIds": [],
       "strokeSharpness": "sharp",
       "boundElements": [],
-      "updated": 1650187072234,
+      "updated": 1650715265204,
       "link": null,
       "locked": false
     },
@@ -86,6 +86,40 @@
         1,
         1
       ]
+    },
+    {
+      "id": "TQJPDw0iuf0BrGpBccQyp",
+      "type": "text",
+      "x": 212,
+      "y": 401,
+      "width": 104,
+      "height": 25,
+      "angle": 0,
+      "strokeColor": "#000000",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "strokeSharpness": "sharp",
+      "seed": 524040250,
+      "version": 12,
+      "versionNonce": 1491271846,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1650715575524,
+      "link": null,
+      "locked": false,
+      "text": "Excalidraw",
+      "fontSize": 20,
+      "fontFamily": 1,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "baseline": 18,
+      "containerId": null,
+      "originalText": "Excalidraw"
     }
   ],
   "appState": {
