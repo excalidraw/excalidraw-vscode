@@ -69,7 +69,10 @@
             {
                 "command": "excalidraw.showEditorToSide",
                 "title": "Open in Excalidraw to the Side",
-                "icon": "./assets/logo.png"
+                "icon": {
+                    "dark": "./assets/menu-icon-dark.png",
+                    "light": "./assets/menu-icon-light.png"
+                }
             },
             {
                 "command": "excalidraw.showImageToSide",
