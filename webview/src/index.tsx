@@ -4,9 +4,16 @@ import ReactDOM from "react-dom";
 import { Base64 } from "js-base64";
 
 import App from "./App";
+
+declare global {
+  interface Window {
+    acquireVsCodeApi(): any;
+  }
+}
+
 const vscode = window.acquireVsCodeApi();
 
-async function getInitialData(content, contentType) {
+async function getInitialData(content: Uint8Array, contentType: string) {
   const initialData = await loadFromBlob(
     new Blob(
       [
@@ -23,12 +30,15 @@ async function getInitialData(content, contentType) {
   return { ...initialData };
 }
 
-function getExcalidrawConfig(rootElement) {
+function getExcalidrawConfig(rootElement: HTMLElement) {
   const b64Config = rootElement.getAttribute("data-excalidraw-config");
+  if (!b64Config) {
+    throw Error("data-excalidraw-config attribute is missing");
+  }
   const strConfig = Base64.decode(b64Config);
   return JSON.parse(strConfig);
 }
-async function getLibraryItems(libraryString) {
+async function getLibraryItems(libraryString: string) {
   try {
     return await loadLibraryFromBlob(
       new Blob([libraryString], { type: "application/json" })
@@ -45,6 +55,9 @@ async function getLibraryItems(libraryString) {
 async function main() {
   try {
     const rootElement = document.getElementById("root");
+    if (!rootElement) {
+      throw Error("root element is missing");
+    }
     const config = await getExcalidrawConfig(rootElement);
 
     const initialData =

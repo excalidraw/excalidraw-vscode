@@ -19,7 +19,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "lint": "eslint --ext .js,.jsx src/"
+    "lint": "eslint --ext .tsx src/"
   },
   "browserslist": [
     ">0.2%",
@@ -28,6 +28,8 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "@types/react": "^18.0.6",
+    "@types/react-dom": "^18.0.2",
     "react-scripts": "4.0.1"
   }
 }

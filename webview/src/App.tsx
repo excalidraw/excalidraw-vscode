@@ -4,7 +4,6 @@ import {
   exportToBlob,
   exportToSvg,
   getSceneVersion,
-  loadFromBlob,
   loadLibraryFromBlob,
   serializeAsJSON,
   serializeLibraryAsJSON,
@@ -12,6 +11,12 @@ import {
 } from "@excalidraw/excalidraw-next";
 
 import "./styles.css";
+import {
+  ExcalidrawImperativeAPI,
+  AppState,
+  BinaryFiles,
+} from "@excalidraw/excalidraw-next/types/types";
+import { ExcalidrawElement } from "@excalidraw/excalidraw-next/types/element/types";
 
 function detectTheme() {
   switch (document.body.className) {
@@ -24,7 +29,7 @@ function detectTheme() {
   }
 }
 
-function useTheme(initialThemeConfig) {
+function useTheme(initialThemeConfig: string) {
   const [themeConfig, setThemeConfig] = useState(initialThemeConfig);
   const getExcalidrawTheme = () => {
     switch (themeConfig) {
@@ -36,7 +41,7 @@ function useTheme(initialThemeConfig) {
         return detectTheme();
     }
   };
-  const [theme, setTheme] = useState(getExcalidrawTheme(initialThemeConfig));
+  const [theme, setTheme] = useState(getExcalidrawTheme());
   const updateTheme = () => {
     setTheme(getExcalidrawTheme());
   };
@@ -59,8 +64,15 @@ function useTheme(initialThemeConfig) {
   return { theme, setThemeConfig };
 }
 
-export default function App(props) {
-  const excalidrawRef = useRef(null);
+export default function App(props: {
+  initialData: any;
+  vscode: any;
+  name: string;
+  contentType: string;
+  theme: string;
+  viewModeEnabled: boolean;
+}) {
+  const excalidrawRef = useRef<ExcalidrawImperativeAPI>(null);
   const sceneVersionRef = useRef(
     getSceneVersion(props.initialData.elements || [])
   );
@@ -70,30 +82,15 @@ export default function App(props) {
   const textEncoder = new TextEncoder();
 
   useEffect(() => {
-    const listener = async (e) => {
+    const listener = async (e: any) => {
       try {
         const message = e.data;
         switch (message.type) {
           case "import-library": {
-            excalidrawRef.current.importLibrary(
+            excalidrawRef.current!.importLibrary(
               message.libraryUrl,
               message.csrfToken
             );
-            break;
-          }
-          case "update": {
-            const content = new TextDecoder().decode(
-              new Uint8Array(message.content)
-            );
-            const blob = new Blob([content], {
-              type: "application/json",
-            });
-            const { elements, files } = await loadFromBlob(blob);
-            await excalidrawRef.current.updateScene({
-              elements,
-              files,
-              commitToHistory: true,
-            });
             break;
           }
           case "library-change": {
@@ -108,7 +105,7 @@ export default function App(props) {
               return;
             }
             libraryItemsRef.current = libraryItems;
-            excalidrawRef.current.updateScene({ libraryItems });
+            excalidrawRef.current!.updateScene({ libraryItems });
             break;
           }
           case "theme-change": {
@@ -117,7 +114,10 @@ export default function App(props) {
           }
         }
       } catch (e) {
-        props.vscode.postMessage({ type: "error", content: e.message });
+        props.vscode.postMessage({
+          type: "error",
+          content: (e as Error).message,
+        });
       }
     };
     window.addEventListener("message", listener);
@@ -127,7 +127,11 @@ export default function App(props) {
     };
   }, []);
 
-  async function onChange(elements, appState, files) {
+  async function onChange(
+    elements: readonly ExcalidrawElement[],
+    appState: AppState,
+    files: BinaryFiles
+  ) {
     if (sceneVersionRef.current === getSceneVersion(elements)) {
       return;
     }
@@ -165,6 +169,13 @@ export default function App(props) {
         },
         files,
       });
+      if (!blob) {
+        props.vscode.postMessage({
+          type: "error",
+          content: "Failed to export",
+        });
+        return;
+      }
       const arrayBuffer = await blob.arrayBuffer();
       props.vscode.postMessage({
         type: "change",
@@ -180,7 +191,6 @@ export default function App(props) {
         UIOptions={{
           canvasActions: {
             loadScene: false,
-            saveScene: false,
             saveToActiveFile: false,
           },
         }}
@@ -222,18 +232,16 @@ export default function App(props) {
   );
 }
 
-function debounce(func, wait) {
-  let timeout;
-  return function () {
-    const context = this;
-    const args = arguments;
+export function debounce<T extends unknown[], U>(
+  callback: (...args: T) => PromiseLike<U> | U,
+  wait: number
+) {
+  let timer: NodeJS.Timeout;
 
-    const later = function () {
-      timeout = null;
-      func.apply(context, args);
-    };
-
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
+  return (...args: T): Promise<U> => {
+    clearTimeout(timer);
+    return new Promise((resolve) => {
+      timer = setTimeout(() => resolve(callback(...args)), wait);
+    });
   };
 }
