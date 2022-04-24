@@ -39,6 +39,10 @@
                 "icon": "$(color-mode)"
             },
             {
+                "command": "excalidraw.preventDefault",
+                "title": "Prevent Default"
+            },
+            {
                 "command": "excalidraw.showSource",
                 "title": "Open Source",
                 "icon": "$(go-to-file)"
@@ -111,6 +115,10 @@
                     "when": "activeCustomEditorId == 'editor.excalidraw'"
                 },
                 {
+                    "command": "excalidraw.preventDefault",
+                    "when": "false"
+                },
+                {
                     "command": "excalidraw.showSource",
                     "when": "false"
                 },
@@ -177,6 +185,26 @@
                         "filenamePattern": "*.excalidraw.png"
                     }
                 ]
+            }
+        ],
+        "keybindings": [
+            {
+                "command": "excalidraw.preventDefault",
+                "key": "ctrl+x",
+                "mac": "cmd+x",
+                "when": "activeCustomEditorId == 'editor.excalidraw'"
+            },
+            {
+                "command": "excalidraw.preventDefault",
+                "key": "ctrl+z",
+                "mac": "cmd+z",
+                "when": "activeCustomEditorId == 'editor.excalidraw'"
+            },
+            {
+                "command": "excalidraw.preventDefault",
+                "key": "ctrl+y",
+                "mac": "cmd+shift+z",
+                "when": "activeCustomEditorId == 'editor.excalidraw'"
             }
         ]
     },
