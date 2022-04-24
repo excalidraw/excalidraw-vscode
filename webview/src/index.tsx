@@ -4,14 +4,7 @@ import ReactDOM from "react-dom";
 import { Base64 } from "js-base64";
 
 import App from "./App";
-
-declare global {
-  interface Window {
-    acquireVsCodeApi(): any;
-  }
-}
-
-const vscode = window.acquireVsCodeApi();
+import { vscode } from "./vscode";
 
 async function getInitialData(content: Uint8Array, contentType: string) {
   const initialData = await loadFromBlob(
@@ -38,6 +31,7 @@ function getExcalidrawConfig(rootElement: HTMLElement) {
   const strConfig = Base64.decode(b64Config);
   return JSON.parse(strConfig);
 }
+
 async function getLibraryItems(libraryString: string) {
   try {
     return await loadLibraryFromBlob(
@@ -76,7 +70,6 @@ async function main() {
       <React.StrictMode>
         <App
           initialData={{ libraryItems, ...initialData }}
-          vscode={vscode}
           name={config.name}
           contentType={config.contentType}
           viewModeEnabled={config.viewModeEnabled}

@@ -17,6 +17,7 @@ import {
   BinaryFiles,
 } from "@excalidraw/excalidraw-next/types/types";
 import { ExcalidrawElement } from "@excalidraw/excalidraw-next/types/element/types";
+import { vscode } from "./vscode";
 
 function detectTheme() {
   switch (document.body.className) {
@@ -64,21 +65,113 @@ function useTheme(initialThemeConfig: string) {
   return { theme, setThemeConfig };
 }
 
+const textEncoder = new TextEncoder();
+
+export const debounce = <T extends any[]>(
+  fn: (...args: T) => void,
+  timeout: number
+) => {
+  let handle = 0;
+  let lastArgs: T | null = null;
+  const ret = (...args: T) => {
+    lastArgs = args;
+    clearTimeout(handle);
+    handle = window.setTimeout(() => {
+      lastArgs = null;
+      fn(...args);
+    }, timeout);
+  };
+  ret.flush = () => {
+    clearTimeout(handle);
+    if (lastArgs) {
+      const _lastArgs = lastArgs;
+      lastArgs = null;
+      fn(..._lastArgs);
+    }
+  };
+  ret.cancel = () => {
+    lastArgs = null;
+    clearTimeout(handle);
+  };
+  return ret;
+};
+
+function onChange(initialSceneVersion: number, contentType: string) {
+  let previousSceneVersion = initialSceneVersion;
+  const sendChanges = async (
+    elements: readonly ExcalidrawElement[],
+    appState: AppState,
+    files: BinaryFiles
+  ) => {
+    const currentSceneVersion = getSceneVersion(elements);
+    if (previousSceneVersion === getSceneVersion(elements)) {
+      return;
+    }
+    previousSceneVersion = currentSceneVersion;
+    if (contentType == "application/json") {
+      vscode.postMessage({
+        type: "change",
+        content: Array.from(
+          textEncoder.encode(
+            serializeAsJSON(elements, appState, files, "local")
+          )
+        ),
+      });
+    } else if (contentType == "image/svg+xml") {
+      const svg = await exportToSvg({
+        elements,
+        appState: {
+          ...appState,
+          exportBackground: true,
+          exportEmbedScene: true,
+        },
+        files,
+      });
+      vscode.postMessage({
+        type: "change",
+        content: Array.from(textEncoder.encode(svg.outerHTML)),
+      });
+    } else if (contentType == "image/png") {
+      const blob = await exportToBlob({
+        elements,
+        appState: {
+          ...appState,
+          exportBackground: true,
+          exportEmbedScene: true,
+        },
+        files,
+      });
+      if (!blob) {
+        vscode.postMessage({
+          type: "error",
+          content: "Failed to export",
+        });
+        return;
+      }
+      const arrayBuffer = await blob.arrayBuffer();
+      vscode.postMessage({
+        type: "change",
+        content: Array.from(new Uint8Array(arrayBuffer)),
+      });
+    }
+  };
+
+  return debounce(sendChanges, 500);
+}
+
 export default function App(props: {
   initialData: any;
-  vscode: any;
   name: string;
   contentType: string;
   theme: string;
   viewModeEnabled: boolean;
 }) {
   const excalidrawRef = useRef<ExcalidrawImperativeAPI>(null);
-  const sceneVersionRef = useRef(
-    getSceneVersion(props.initialData.elements || [])
-  );
   const libraryItemsRef = useRef(props.initialData.libraryItems || []);
   const { theme, setThemeConfig } = useTheme(props.theme);
-  const textEncoder = new TextEncoder();
+  const onChangeRef = useRef(
+    onChange(getSceneVersion(props.initialData.elements), props.contentType)
+  );
 
   useEffect(() => {
     const listener = async (e: any) => {
@@ -113,7 +206,7 @@ export default function App(props: {
           }
         }
       } catch (e) {
-        props.vscode.postMessage({
+        vscode.postMessage({
           type: "error",
           content: (e as Error).message,
         });
@@ -125,63 +218,6 @@ export default function App(props: {
       window.removeEventListener("message", listener);
     };
   }, []);
-
-  async function onChange(
-    elements: readonly ExcalidrawElement[],
-    appState: AppState,
-    files: BinaryFiles
-  ) {
-    if (sceneVersionRef.current === getSceneVersion(elements)) {
-      return;
-    }
-    sceneVersionRef.current = getSceneVersion(elements);
-    if (props.contentType == "application/json") {
-      props.vscode.postMessage({
-        type: "change",
-        content: Array.from(
-          textEncoder.encode(
-            serializeAsJSON(elements, appState, files, "local")
-          )
-        ),
-      });
-    } else if (props.contentType == "image/svg+xml") {
-      const svg = await exportToSvg({
-        elements,
-        appState: {
-          ...appState,
-          exportBackground: true,
-          exportEmbedScene: true,
-        },
-        files,
-      });
-      props.vscode.postMessage({
-        type: "change",
-        content: Array.from(textEncoder.encode(svg.outerHTML)),
-      });
-    } else if (props.contentType == "image/png") {
-      const blob = await exportToBlob({
-        elements,
-        appState: {
-          ...appState,
-          exportBackground: true,
-          exportEmbedScene: true,
-        },
-        files,
-      });
-      if (!blob) {
-        props.vscode.postMessage({
-          type: "error",
-          content: "Failed to export",
-        });
-        return;
-      }
-      const arrayBuffer = await blob.arrayBuffer();
-      props.vscode.postMessage({
-        type: "change",
-        content: Array.from(new Uint8Array(arrayBuffer)),
-      });
-    }
-  }
 
   return (
     <div className="excalidraw-wrapper">
@@ -201,9 +237,9 @@ export default function App(props: {
           scrollToContent: true,
         }}
         libraryReturnUrl={"vscode://pomdtr.excalidraw-editor/importLib"}
-        onChange={debounce(onChange, 250)}
+        onChange={onChangeRef.current}
         onLinkOpen={(element, event) => {
-          props.vscode.postMessage({
+          vscode.postMessage({
             type: "link-open",
             url: element.link,
           });
@@ -216,12 +252,8 @@ export default function App(props: {
           ) {
             return;
           }
-          props.vscode.postMessage({
-            type: "error",
-            new: libraryItems,
-          });
           libraryItemsRef.current = libraryItems;
-          props.vscode.postMessage({
+          vscode.postMessage({
             type: "library-change",
             library: serializeLibraryAsJSON(libraryItems),
           });
@@ -230,32 +262,3 @@ export default function App(props: {
     </div>
   );
 }
-
-export const debounce = <T extends any[]>(
-  fn: (...args: T) => void,
-  timeout: number
-) => {
-  let handle = 0;
-  let lastArgs: T | null = null;
-  const ret = (...args: T) => {
-    lastArgs = args;
-    clearTimeout(handle);
-    handle = window.setTimeout(() => {
-      lastArgs = null;
-      fn(...args);
-    }, timeout);
-  };
-  ret.flush = () => {
-    clearTimeout(handle);
-    if (lastArgs) {
-      const _lastArgs = lastArgs;
-      lastArgs = null;
-      fn(..._lastArgs);
-    }
-  };
-  ret.cancel = () => {
-    lastArgs = null;
-    clearTimeout(handle);
-  };
-  return ret;
-};
