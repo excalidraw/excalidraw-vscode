@@ -77,7 +77,6 @@ export default function App(props: {
     getSceneVersion(props.initialData.elements || [])
   );
   const libraryItemsRef = useRef(props.initialData.libraryItems || []);
-
   const { theme, setThemeConfig } = useTheme(props.theme);
   const textEncoder = new TextEncoder();
 
@@ -232,16 +231,31 @@ export default function App(props: {
   );
 }
 
-export function debounce<T extends unknown[], U>(
-  callback: (...args: T) => PromiseLike<U> | U,
-  wait: number
-) {
-  let timer: NodeJS.Timeout;
-
-  return (...args: T): Promise<U> => {
-    clearTimeout(timer);
-    return new Promise((resolve) => {
-      timer = setTimeout(() => resolve(callback(...args)), wait);
-    });
+export const debounce = <T extends any[]>(
+  fn: (...args: T) => void,
+  timeout: number
+) => {
+  let handle = 0;
+  let lastArgs: T | null = null;
+  const ret = (...args: T) => {
+    lastArgs = args;
+    clearTimeout(handle);
+    handle = window.setTimeout(() => {
+      lastArgs = null;
+      fn(...args);
+    }, timeout);
   };
-}
+  ret.flush = () => {
+    clearTimeout(handle);
+    if (lastArgs) {
+      const _lastArgs = lastArgs;
+      lastArgs = null;
+      fn(..._lastArgs);
+    }
+  };
+  ret.cancel = () => {
+    lastArgs = null;
+    clearTimeout(handle);
+  };
+  return ret;
+};
