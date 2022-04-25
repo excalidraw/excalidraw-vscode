@@ -16,6 +16,8 @@ import {
   ExcalidrawImperativeAPI,
   AppState,
   BinaryFiles,
+  LibraryItems,
+  ExcalidrawInitialDataState,
 } from "@excalidraw/excalidraw-next/types/types";
 import { ExcalidrawElement } from "@excalidraw/excalidraw-next/types/element/types";
 import { vscode } from "./vscode";
@@ -130,7 +132,7 @@ function onChange(initialSceneVersion: number, contentType: string) {
 }
 
 export default function App(props: {
-  initialData: any;
+  initialData: ExcalidrawInitialDataState;
   name: string;
   contentType: string;
   theme: string;
