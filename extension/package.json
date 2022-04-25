@@ -35,20 +35,24 @@
         "commands": [
             {
                 "command": "excalidraw.updateTheme",
-                "title": "Choose Excalidraw Theme",
+                "category": "Excalidraw",
+                "title": "Color Theme",
                 "icon": "$(color-mode)"
             },
             {
                 "command": "excalidraw.preventDefault",
+                "category": "Excalidraw",
                 "title": "Prevent Default"
             },
             {
                 "command": "excalidraw.showSource",
+                "category": "Excalidraw",
                 "title": "Open Source",
                 "icon": "$(go-to-file)"
             },
             {
                 "command": "excalidraw.showEditor",
+                "category": "Excalidraw",
                 "title": "Open Excalidraw",
                 "icon": {
                     "dark": "./assets/menu-icon-dark.png",
@@ -57,16 +61,19 @@
             },
             {
                 "command": "excalidraw.showImage",
+                "category": "Excalidraw",
                 "title": "Open Image",
                 "icon": "$(go-to-file)"
             },
             {
                 "command": "excalidraw.showSourceToSide",
+                "category": "Excalidraw",
                 "title": "Open Source to the Side",
                 "icon": "$(go-to-file)"
             },
             {
                 "command": "excalidraw.showEditorToSide",
+                "category": "Excalidraw",
                 "title": "Open Excalidraw to the Side",
                 "icon": {
                     "dark": "./assets/menu-icon-dark.png",
@@ -75,6 +82,7 @@
             },
             {
                 "command": "excalidraw.showImageToSide",
+                "category": "Excalidraw",
                 "title": "Open Image to the Side",
                 "icon": "$(go-to-file)"
             }
