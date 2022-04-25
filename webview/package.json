@@ -7,6 +7,7 @@
   "dependencies": {
     "@excalidraw/excalidraw-next": "0.11.0-e6a9ff1",
     "js-base64": "^3.7.2",
+    "lodash-es": "^4.17.21",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },
@@ -25,6 +26,7 @@
   ],
   "devDependencies": {
     "@excalidraw/eslint-config": "^1.0.3",
+    "@types/lodash-es": "^4.17.6",
     "@types/mousetrap": "^1.6.9",
     "@types/react": "^18.0.6",
     "@types/react-dom": "^18.0.2",

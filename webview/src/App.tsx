@@ -9,6 +9,7 @@ import {
   serializeLibraryAsJSON,
   THEME,
 } from "@excalidraw/excalidraw-next";
+import * as _ from "lodash-es";
 
 import "./styles.css";
 import {
@@ -66,35 +67,6 @@ function useTheme(initialThemeConfig: string) {
 }
 
 const textEncoder = new TextEncoder();
-
-export const debounce = <T extends any[]>(
-  fn: (...args: T) => void,
-  timeout: number
-) => {
-  let handle = 0;
-  let lastArgs: T | null = null;
-  const ret = (...args: T) => {
-    lastArgs = args;
-    clearTimeout(handle);
-    handle = window.setTimeout(() => {
-      lastArgs = null;
-      fn(...args);
-    }, timeout);
-  };
-  ret.flush = () => {
-    clearTimeout(handle);
-    if (lastArgs) {
-      const _lastArgs = lastArgs;
-      lastArgs = null;
-      fn(..._lastArgs);
-    }
-  };
-  ret.cancel = () => {
-    lastArgs = null;
-    clearTimeout(handle);
-  };
-  return ret;
-};
 
 function onChange(initialSceneVersion: number, contentType: string) {
   let previousSceneVersion = initialSceneVersion;
@@ -156,7 +128,7 @@ function onChange(initialSceneVersion: number, contentType: string) {
     }
   };
 
-  return debounce(sendChanges, 500);
+  return _.debounce(sendChanges, 500);
 }
 
 export default function App(props: {
