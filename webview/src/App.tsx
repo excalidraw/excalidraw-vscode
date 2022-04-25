@@ -70,7 +70,7 @@ const textEncoder = new TextEncoder();
 
 function onChange(initialSceneVersion: number, contentType: string) {
   let previousSceneVersion = initialSceneVersion;
-  const sendChanges = async (
+  return async (
     elements: readonly ExcalidrawElement[],
     appState: AppState,
     files: BinaryFiles
@@ -127,8 +127,6 @@ function onChange(initialSceneVersion: number, contentType: string) {
       });
     }
   };
-
-  return _.debounce(sendChanges, 500);
 }
 
 export default function App(props: {
@@ -142,7 +140,10 @@ export default function App(props: {
   const libraryItemsRef = useRef(props.initialData.libraryItems || []);
   const { theme, setThemeConfig } = useTheme(props.theme);
   const onChangeRef = useRef(
-    onChange(getSceneVersion(props.initialData.elements), props.contentType)
+    _.debounce(
+      onChange(getSceneVersion(props.initialData.elements), props.contentType),
+      500
+    )
   );
 
   useEffect(() => {
