@@ -16,7 +16,6 @@ import {
   ExcalidrawImperativeAPI,
   AppState,
   BinaryFiles,
-  LibraryItems,
   ExcalidrawInitialDataState,
 } from "@excalidraw/excalidraw-next/types/types";
 import { ExcalidrawElement } from "@excalidraw/excalidraw-next/types/element/types";
