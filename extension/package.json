@@ -198,12 +198,6 @@
         "keybindings": [
             {
                 "command": "excalidraw.preventDefault",
-                "key": "ctrl+x",
-                "mac": "cmd+x",
-                "when": "activeCustomEditorId == 'editor.excalidraw'"
-            },
-            {
-                "command": "excalidraw.preventDefault",
                 "key": "ctrl+z",
                 "mac": "cmd+z",
                 "when": "activeCustomEditorId == 'editor.excalidraw'"
