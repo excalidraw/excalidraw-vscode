@@ -1,25 +1,18 @@
 import React, { useEffect, useState, useRef } from "react";
 import {
   Excalidraw,
-  exportToBlob,
-  exportToSvg,
   getSceneVersion,
   loadLibraryFromBlob,
-  serializeAsJSON,
   serializeLibraryAsJSON,
   THEME,
 } from "@excalidraw/excalidraw-next";
-import * as _ from "lodash-es";
 
 import "./styles.css";
 import {
   ExcalidrawImperativeAPI,
-  AppState,
-  BinaryFiles,
   ExcalidrawInitialDataState,
 } from "@excalidraw/excalidraw-next/types/types";
-import { ExcalidrawElement } from "@excalidraw/excalidraw-next/types/element/types";
-import { vscode } from "./vscode";
+import { sendChangesToVSCode, vscode } from "./vscode";
 
 function detectTheme() {
   switch (document.body.className) {
@@ -67,69 +60,6 @@ function useTheme(initialThemeConfig: string) {
   return { theme, setThemeConfig };
 }
 
-const textEncoder = new TextEncoder();
-
-function onChange(initialSceneVersion: number, contentType: string) {
-  let previousSceneVersion = initialSceneVersion;
-  return async (
-    elements: readonly ExcalidrawElement[],
-    appState: AppState,
-    files: BinaryFiles
-  ) => {
-    const currentSceneVersion = getSceneVersion(elements);
-    if (previousSceneVersion === getSceneVersion(elements)) {
-      return;
-    }
-    previousSceneVersion = currentSceneVersion;
-    if (contentType == "application/json") {
-      vscode.postMessage({
-        type: "change",
-        content: Array.from(
-          textEncoder.encode(
-            serializeAsJSON(elements, appState, files, "local")
-          )
-        ),
-      });
-    } else if (contentType == "image/svg+xml") {
-      const svg = await exportToSvg({
-        elements,
-        appState: {
-          ...appState,
-          exportBackground: true,
-          exportEmbedScene: true,
-        },
-        files,
-      });
-      vscode.postMessage({
-        type: "change",
-        content: Array.from(textEncoder.encode(svg.outerHTML)),
-      });
-    } else if (contentType == "image/png") {
-      const blob = await exportToBlob({
-        elements,
-        appState: {
-          ...appState,
-          exportBackground: true,
-          exportEmbedScene: true,
-        },
-        files,
-      });
-      if (!blob) {
-        vscode.postMessage({
-          type: "error",
-          content: "Failed to export",
-        });
-        return;
-      }
-      const arrayBuffer = await blob.arrayBuffer();
-      vscode.postMessage({
-        type: "change",
-        content: Array.from(new Uint8Array(arrayBuffer)),
-      });
-    }
-  };
-}
-
 export default function App(props: {
   initialData: ExcalidrawInitialDataState;
   name: string;
@@ -140,12 +70,7 @@ export default function App(props: {
   const excalidrawRef = useRef<ExcalidrawImperativeAPI>(null);
   const libraryItemsRef = useRef(props.initialData.libraryItems || []);
   const { theme, setThemeConfig } = useTheme(props.theme);
-  const onChangeRef = useRef(
-    _.debounce(
-      onChange(getSceneVersion(props.initialData.elements), props.contentType),
-      500
-    )
-  );
+  const sceneVersion = useRef(getSceneVersion(props.initialData.elements));
 
   useEffect(() => {
     const listener = async (e: any) => {
@@ -193,6 +118,8 @@ export default function App(props: {
     };
   }, []);
 
+  const sendChanges = sendChangesToVSCode(props.contentType);
+
   return (
     <div className="excalidraw-wrapper">
       <Excalidraw
@@ -211,7 +138,17 @@ export default function App(props: {
           scrollToContent: true,
         }}
         libraryReturnUrl={"vscode://pomdtr.excalidraw-editor/importLib"}
-        onChange={onChangeRef.current}
+        onChange={(elements, appState, files) => {
+          const newSceneVersion = getSceneVersion(elements);
+          if (newSceneVersion == sceneVersion.current) {
+            return;
+          }
+          sceneVersion.current = newSceneVersion;
+
+          if (sendChanges) {
+            sendChanges(elements, appState, files);
+          }
+        }}
         onLinkOpen={(element, event) => {
           vscode.postMessage({
             type: "link-open",
