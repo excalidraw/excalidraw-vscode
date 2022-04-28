@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import {
   Excalidraw,
-  getSceneVersion,
   loadLibraryFromBlob,
   serializeLibraryAsJSON,
   THEME,
@@ -70,7 +69,6 @@ export default function App(props: {
   const excalidrawRef = useRef<ExcalidrawImperativeAPI>(null);
   const libraryItemsRef = useRef(props.initialData.libraryItems || []);
   const { theme, setThemeConfig } = useTheme(props.theme);
-  const sceneVersion = useRef(getSceneVersion(props.initialData.elements));
 
   useEffect(() => {
     const listener = async (e: any) => {
@@ -118,8 +116,6 @@ export default function App(props: {
     };
   }, []);
 
-  const sendChanges = sendChangesToVSCode(props.contentType);
-
   return (
     <div className="excalidraw-wrapper">
       <Excalidraw
@@ -138,17 +134,7 @@ export default function App(props: {
           scrollToContent: true,
         }}
         libraryReturnUrl={"vscode://pomdtr.excalidraw-editor/importLib"}
-        onChange={(elements, appState, files) => {
-          const newSceneVersion = getSceneVersion(elements);
-          if (newSceneVersion == sceneVersion.current) {
-            return;
-          }
-          sceneVersion.current = newSceneVersion;
-
-          if (sendChanges) {
-            sendChanges(elements, appState, files);
-          }
-        }}
+        onChange={sendChangesToVSCode(props.contentType)}
         onLinkOpen={(element, event) => {
           vscode.postMessage({
             type: "link-open",

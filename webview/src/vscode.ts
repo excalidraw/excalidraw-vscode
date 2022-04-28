@@ -2,6 +2,7 @@ import {
   serializeAsJSON,
   exportToSvg,
   exportToBlob,
+  getSceneVersion,
 } from "@excalidraw/excalidraw-next";
 import { ExcalidrawElement } from "@excalidraw/excalidraw-next/types/element/types";
 import { AppState, BinaryFiles } from "@excalidraw/excalidraw-next/types/types";
@@ -16,7 +17,21 @@ declare global {
 export const vscode = window.acquireVsCodeApi();
 
 const textEncoder = new TextEncoder();
-const debounceDelay = 500;
+const debounceDelay = 250;
+
+let currentSceneVersion: number | undefined;
+const hasSceneVersionChanged = (elements: readonly ExcalidrawElement[]) => {
+  const newSceneVersion = getSceneVersion(elements);
+  if (typeof currentSceneVersion === "undefined") {
+    currentSceneVersion = newSceneVersion;
+    return false;
+  }
+  if (newSceneVersion === currentSceneVersion) {
+    return false;
+  }
+  currentSceneVersion = newSceneVersion;
+  return true;
+};
 
 const svg2VSCode = _.debounce(
   async (
@@ -24,6 +39,9 @@ const svg2VSCode = _.debounce(
     appState: AppState,
     files: BinaryFiles
   ) => {
+    if (!hasSceneVersionChanged(elements)) {
+      return;
+    }
     const svg = await exportToSvg({
       elements,
       appState: {
@@ -47,6 +65,9 @@ const png2VSCode = _.debounce(
     appState: AppState,
     files: BinaryFiles
   ) => {
+    if (!hasSceneVersionChanged(elements)) {
+      return;
+    }
     const blob = await exportToBlob({
       elements,
       appState: {
@@ -78,6 +99,9 @@ const json2VSCode = _.debounce(
     appState: AppState,
     files: BinaryFiles
   ) => {
+    if (!hasSceneVersionChanged(elements)) {
+      return;
+    }
     vscode.postMessage({
       type: "change",
       content: Array.from(
@@ -101,6 +125,6 @@ export const sendChangesToVSCode = (contentType: string) => {
 
   vscode.postMessage({
     type: "error",
-    content: `Unsupported content type: ${contentType}`,
+    content: `Unsupported content type: ${contentType}.`,
   });
 };
