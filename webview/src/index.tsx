@@ -1,10 +1,17 @@
-import { loadFromBlob, loadLibraryFromBlob } from "@excalidraw/excalidraw-next";
+import {
+  getSceneVersion,
+  loadFromBlob,
+  loadLibraryFromBlob,
+} from "@excalidraw/excalidraw-next";
 import React from "react";
 import ReactDOM from "react-dom";
 import { Base64 } from "js-base64";
 
 import App from "./App";
-import { vscode } from "./vscode";
+import { sendChangesToVSCode, vscode } from "./vscode";
+import { AppState, BinaryFiles } from "@excalidraw/excalidraw-next/types/types";
+import { ExcalidrawElement } from "@excalidraw/excalidraw-next/types/element/types";
+import _ from "lodash-es";
 
 async function getInitialData(content: Uint8Array, contentType: string) {
   const initialData = await loadFromBlob(
@@ -66,14 +73,35 @@ async function main() {
       ? await getLibraryItems(config.library)
       : [];
 
+    const onChange = (() => {
+      let previousVersion = initialData?.elements
+        ? getSceneVersion(initialData.elements)
+        : 0;
+      const sendChanges = sendChangesToVSCode(config.contentType);
+      return _.debounce(
+        (
+          elements: readonly ExcalidrawElement[],
+          appState: AppState,
+          files: BinaryFiles
+        ) => {
+          const currentVersion = getSceneVersion(elements);
+          if (currentVersion !== previousVersion) {
+            previousVersion = currentVersion;
+            sendChanges(elements, appState, files);
+          }
+        },
+        250
+      );
+    })();
+
     ReactDOM.render(
       <React.StrictMode>
         <App
           initialData={{ libraryItems, ...initialData }}
           name={config.name}
-          contentType={config.contentType}
           viewModeEnabled={config.viewModeEnabled}
           theme={config.theme}
+          onChange={onChange}
         />
       </React.StrictMode>,
       rootElement

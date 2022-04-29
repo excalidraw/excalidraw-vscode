@@ -2,11 +2,9 @@ import {
   serializeAsJSON,
   exportToSvg,
   exportToBlob,
-  getSceneVersion,
 } from "@excalidraw/excalidraw-next";
 import { ExcalidrawElement } from "@excalidraw/excalidraw-next/types/element/types";
 import { AppState, BinaryFiles } from "@excalidraw/excalidraw-next/types/types";
-import _ from "lodash";
 
 declare global {
   interface Window {
@@ -17,100 +15,67 @@ declare global {
 export const vscode = window.acquireVsCodeApi();
 
 const textEncoder = new TextEncoder();
-const debounceDelay = 250;
 
-let currentSceneVersion: number | undefined;
-const hasSceneVersionChanged = (elements: readonly ExcalidrawElement[]) => {
-  const newSceneVersion = getSceneVersion(elements);
-  if (typeof currentSceneVersion === "undefined") {
-    currentSceneVersion = newSceneVersion;
-    return false;
-  }
-  if (newSceneVersion === currentSceneVersion) {
-    return false;
-  }
-  currentSceneVersion = newSceneVersion;
-  return true;
+const svg2VSCode = async (
+  elements: readonly ExcalidrawElement[],
+  appState: AppState,
+  files: BinaryFiles
+) => {
+  const svg = await exportToSvg({
+    elements,
+    appState: {
+      ...appState,
+      exportBackground: true,
+      exportEmbedScene: true,
+    },
+    files,
+  });
+  vscode.postMessage({
+    type: "change",
+    content: Array.from(textEncoder.encode(svg.outerHTML)),
+  });
 };
 
-const svg2VSCode = _.debounce(
-  async (
-    elements: readonly ExcalidrawElement[],
-    appState: AppState,
-    files: BinaryFiles
-  ) => {
-    if (!hasSceneVersionChanged(elements)) {
-      return;
-    }
-    const svg = await exportToSvg({
-      elements,
-      appState: {
-        ...appState,
-        exportBackground: true,
-        exportEmbedScene: true,
-      },
-      files,
-    });
+const png2VSCode = async (
+  elements: readonly ExcalidrawElement[],
+  appState: AppState,
+  files: BinaryFiles
+) => {
+  const blob = await exportToBlob({
+    elements,
+    appState: {
+      ...appState,
+      exportBackground: true,
+      exportEmbedScene: true,
+    },
+    files,
+  });
+  if (!blob) {
     vscode.postMessage({
-      type: "change",
-      content: Array.from(textEncoder.encode(svg.outerHTML)),
+      type: "error",
+      content: "Failed to export",
     });
-  },
-  debounceDelay
-);
+    return;
+  }
+  const arrayBuffer = await blob.arrayBuffer();
+  vscode.postMessage({
+    type: "change",
+    content: Array.from(new Uint8Array(arrayBuffer)),
+  });
+};
 
-const png2VSCode = _.debounce(
-  async (
-    elements: readonly ExcalidrawElement[],
-    appState: AppState,
-    files: BinaryFiles
-  ) => {
-    if (!hasSceneVersionChanged(elements)) {
-      return;
-    }
-    const blob = await exportToBlob({
-      elements,
-      appState: {
-        ...appState,
-        exportBackground: true,
-        exportEmbedScene: true,
-      },
-      files,
-    });
-    if (!blob) {
-      vscode.postMessage({
-        type: "error",
-        content: "Failed to export",
-      });
-      return;
-    }
-    const arrayBuffer = await blob.arrayBuffer();
-    vscode.postMessage({
-      type: "change",
-      content: Array.from(new Uint8Array(arrayBuffer)),
-    });
-  },
-  debounceDelay
-);
-
-const json2VSCode = _.debounce(
-  (
-    elements: readonly ExcalidrawElement[],
-    appState: AppState,
-    files: BinaryFiles
-  ) => {
-    if (!hasSceneVersionChanged(elements)) {
-      return;
-    }
-    vscode.postMessage({
-      type: "change",
-      content: Array.from(
-        textEncoder.encode(serializeAsJSON(elements, appState, files, "local"))
-      ),
-    });
-  },
-  debounceDelay
-);
+const json2VSCode = (
+  elements: readonly ExcalidrawElement[],
+  appState: AppState,
+  files: BinaryFiles
+) => {
+  vscode.postMessage({
+    type: "change",
+    content: Array.from(
+      textEncoder.encode(serializeAsJSON(elements, appState, files, "local"))
+    ),
+  });
+};
 
 export const sendChangesToVSCode = (contentType: string) => {
   if (contentType === "image/svg+xml") {
@@ -122,9 +87,5 @@ export const sendChangesToVSCode = (contentType: string) => {
   if (contentType === "application/json") {
     return json2VSCode;
   }
-
-  vscode.postMessage({
-    type: "error",
-    content: `Unsupported content type: ${contentType}.`,
-  });
+  throw new Error(`Unsupported content type: ${contentType}`);
 };

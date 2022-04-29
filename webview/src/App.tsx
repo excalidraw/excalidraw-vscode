@@ -8,10 +8,13 @@ import {
 
 import "./styles.css";
 import {
+  AppState,
+  BinaryFiles,
   ExcalidrawImperativeAPI,
   ExcalidrawInitialDataState,
 } from "@excalidraw/excalidraw-next/types/types";
-import { sendChangesToVSCode, vscode } from "./vscode";
+import { vscode } from "./vscode";
+import { ExcalidrawElement } from "@excalidraw/excalidraw-next/types/element/types";
 
 function detectTheme() {
   switch (document.body.className) {
@@ -62,9 +65,13 @@ function useTheme(initialThemeConfig: string) {
 export default function App(props: {
   initialData: ExcalidrawInitialDataState;
   name: string;
-  contentType: string;
   theme: string;
   viewModeEnabled: boolean;
+  onChange: (
+    elements: readonly ExcalidrawElement[],
+    appState: AppState,
+    files: BinaryFiles
+  ) => void;
 }) {
   const excalidrawRef = useRef<ExcalidrawImperativeAPI>(null);
   const libraryItemsRef = useRef(props.initialData.libraryItems || []);
@@ -134,7 +141,7 @@ export default function App(props: {
           scrollToContent: true,
         }}
         libraryReturnUrl={"vscode://pomdtr.excalidraw-editor/importLib"}
-        onChange={sendChangesToVSCode(props.contentType)}
+        onChange={props.onChange}
         onLinkOpen={(element, event) => {
           vscode.postMessage({
             type: "link-open",
