@@ -303,17 +303,42 @@ export class ExcalidrawEditor {
   }
 
   private async buildHtmlForWebview(config: any): Promise<string> {
-    const htmlUri = vscode.Uri.joinPath(
-      this.context.extensionUri,
-      "public",
-      "index.html"
+    const publicUri = vscode.Uri.joinPath(this.context.extensionUri, "public");
+    const content = await vscode.workspace.fs.readFile(
+      vscode.Uri.joinPath(publicUri, "index.html")
     );
-    const content = await vscode.workspace.fs.readFile(htmlUri);
-    const html = this.textDecoder.decode(content);
+    let html = this.textDecoder.decode(content);
 
-    return html.replace(
+    html = html.replace(
       "{{data-excalidraw-config}}",
       Base64.encode(JSON.stringify(config))
+    );
+
+    html = html.replace(
+      "{{excalidraw-asset-path}}",
+      `${this.webview
+        .asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, "public"))
+        .toString()}/`
+    );
+
+    return this.fixLinks(html, publicUri);
+  }
+  private fixLinks(document: string, documentUri: vscode.Uri): string {
+    return document.replace(
+      new RegExp("((?:src|href)=['\"])(.*?)(['\"])", "gmi"),
+      (subString: string, p1: string, p2: string, p3: string): string => {
+        const lower = p2.toLowerCase();
+        if (
+          p2.startsWith("#") ||
+          lower.startsWith("http://") ||
+          lower.startsWith("https://")
+        ) {
+          return subString;
+        }
+        const newUri = vscode.Uri.joinPath(documentUri, p2);
+        const newUrl = [p1, this.webview.asWebviewUri(newUri), p3].join("");
+        return newUrl;
+      }
     );
   }
 }
