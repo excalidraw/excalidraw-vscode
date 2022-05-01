@@ -5,4 +5,4 @@ To use it, create an empty file with a `.excalidraw` or `.excalidraw.svg` extens
 
 Try the web version at : <https://excalidraw.com/>
 
-![./assets/screenshot.png](https://github.com/excalidraw/excalidraw-vscode/raw/HEAD/extension/assets/screenshot.png)
+![./assets/screenshot.png](./doc/images/screenshot.png)

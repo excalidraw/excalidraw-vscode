@@ -1,6 +1,6 @@
 {
     "name": "excalidraw-editor",
-    "icon": "assets/logo.png",
+    "icon": "assets/images/logo.png",
     "displayName": "Excalidraw",
     "description": "Draw schemas in VS Code using Excalidraw",
     "version": "2.1.13",
@@ -28,7 +28,7 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/excalidraw/excalidraw-vscode"
+        "url": "https://github.com/excalidraw/excalidraw-vscode/tree/master/extension"
     },
     "browser": "./dist/extension.js",
     "contributes": {
@@ -55,8 +55,8 @@
                 "category": "Excalidraw",
                 "title": "Open Excalidraw",
                 "icon": {
-                    "dark": "./assets/menu-icon-dark.png",
-                    "light": "./assets/menu-icon-light.png"
+                    "dark": "./assets/images/menu-icon-dark.png",
+                    "light": "./assets/images/menu-icon-light.png"
                 }
             },
             {

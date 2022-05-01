@@ -309,12 +309,21 @@ export class ExcalidrawEditor {
       "index.html"
     );
     const content = await vscode.workspace.fs.readFile(htmlUri);
-    const html = this.textDecoder.decode(content);
+    let html = this.textDecoder.decode(content);
 
-    return html.replace(
+    html = html.replace(
       "{{data-excalidraw-config}}",
       Base64.encode(JSON.stringify(config))
     );
+
+    html = html.replace(
+      "{{excalidraw-asset-path}}",
+      `${this.webview
+        .asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, "assets"))
+        .toString()}/`
+    );
+
+    return html;
   }
 }
 
