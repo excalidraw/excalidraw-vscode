@@ -317,7 +317,7 @@ export class ExcalidrawEditor {
     html = html.replace(
       "{{excalidraw-asset-path}}",
       `${this.webview
-        .asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, "assets"))
+        .asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, "public"))
         .toString()}/`
     );
 
