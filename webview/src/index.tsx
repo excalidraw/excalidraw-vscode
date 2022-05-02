@@ -69,15 +69,15 @@ async function main() {
           )
         : null;
 
-    const libraryItems = config.library
-      ? await getLibraryItems(config.library)
-      : [];
+    const sendChanges = sendChangesToVSCode(config.contentType);
+    if (!initialData) {
+      sendChanges([], { gridSize: null, viewBackgroundColor: "#ffffff" }, {});
+    }
 
     const onChange = (() => {
       let previousVersion = initialData?.elements
         ? getSceneVersion(initialData.elements)
         : 0;
-      const sendChanges = sendChangesToVSCode(config.contentType);
       return _.debounce(
         (
           elements: readonly ExcalidrawElement[],
@@ -93,6 +93,10 @@ async function main() {
         250
       );
     })();
+
+    const libraryItems = config.library
+      ? await getLibraryItems(config.library)
+      : [];
 
     ReactDOM.render(
       <React.StrictMode>

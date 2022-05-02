@@ -18,7 +18,7 @@ const textEncoder = new TextEncoder();
 
 const svg2VSCode = async (
   elements: readonly ExcalidrawElement[],
-  appState: AppState,
+  appState: Partial<AppState>,
   files: BinaryFiles
 ) => {
   const svg = await exportToSvg({
@@ -38,7 +38,7 @@ const svg2VSCode = async (
 
 const png2VSCode = async (
   elements: readonly ExcalidrawElement[],
-  appState: AppState,
+  appState: Partial<AppState>,
   files: BinaryFiles
 ) => {
   const blob = await exportToBlob({
@@ -66,7 +66,7 @@ const png2VSCode = async (
 
 const json2VSCode = (
   elements: readonly ExcalidrawElement[],
-  appState: AppState,
+  appState: Partial<AppState>,
   files: BinaryFiles
 ) => {
   vscode.postMessage({
