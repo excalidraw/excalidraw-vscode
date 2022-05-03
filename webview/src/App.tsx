@@ -1,21 +1,19 @@
 import React, { useEffect, useState, useRef } from "react";
 import {
   Excalidraw,
-  exportToBlob,
-  exportToSvg,
-  getSceneVersion,
   loadLibraryFromBlob,
-  serializeAsJSON,
   serializeLibraryAsJSON,
   THEME,
 } from "@excalidraw/excalidraw-next";
 
 import "./styles.css";
 import {
-  ExcalidrawImperativeAPI,
   AppState,
   BinaryFiles,
+  ExcalidrawImperativeAPI,
+  ExcalidrawInitialDataState,
 } from "@excalidraw/excalidraw-next/types/types";
+import { vscode } from "./vscode";
 import { ExcalidrawElement } from "@excalidraw/excalidraw-next/types/element/types";
 
 function detectTheme() {
@@ -65,21 +63,19 @@ function useTheme(initialThemeConfig: string) {
 }
 
 export default function App(props: {
-  initialData: any;
-  vscode: any;
+  initialData: ExcalidrawInitialDataState;
   name: string;
-  contentType: string;
   theme: string;
   viewModeEnabled: boolean;
+  onChange: (
+    elements: readonly ExcalidrawElement[],
+    appState: AppState,
+    files: BinaryFiles
+  ) => void;
 }) {
   const excalidrawRef = useRef<ExcalidrawImperativeAPI>(null);
-  const sceneVersionRef = useRef(
-    getSceneVersion(props.initialData.elements || [])
-  );
   const libraryItemsRef = useRef(props.initialData.libraryItems || []);
-
   const { theme, setThemeConfig } = useTheme(props.theme);
-  const textEncoder = new TextEncoder();
 
   useEffect(() => {
     const listener = async (e: any) => {
@@ -114,7 +110,7 @@ export default function App(props: {
           }
         }
       } catch (e) {
-        props.vscode.postMessage({
+        vscode.postMessage({
           type: "error",
           content: (e as Error).message,
         });
@@ -126,63 +122,6 @@ export default function App(props: {
       window.removeEventListener("message", listener);
     };
   }, []);
-
-  async function onChange(
-    elements: readonly ExcalidrawElement[],
-    appState: AppState,
-    files: BinaryFiles
-  ) {
-    if (sceneVersionRef.current === getSceneVersion(elements)) {
-      return;
-    }
-    sceneVersionRef.current = getSceneVersion(elements);
-    if (props.contentType == "application/json") {
-      props.vscode.postMessage({
-        type: "change",
-        content: Array.from(
-          textEncoder.encode(
-            serializeAsJSON(elements, appState, files, "local")
-          )
-        ),
-      });
-    } else if (props.contentType == "image/svg+xml") {
-      const svg = await exportToSvg({
-        elements,
-        appState: {
-          ...appState,
-          exportBackground: true,
-          exportEmbedScene: true,
-        },
-        files,
-      });
-      props.vscode.postMessage({
-        type: "change",
-        content: Array.from(textEncoder.encode(svg.outerHTML)),
-      });
-    } else if (props.contentType == "image/png") {
-      const blob = await exportToBlob({
-        elements,
-        appState: {
-          ...appState,
-          exportBackground: true,
-          exportEmbedScene: true,
-        },
-        files,
-      });
-      if (!blob) {
-        props.vscode.postMessage({
-          type: "error",
-          content: "Failed to export",
-        });
-        return;
-      }
-      const arrayBuffer = await blob.arrayBuffer();
-      props.vscode.postMessage({
-        type: "change",
-        content: Array.from(new Uint8Array(arrayBuffer)),
-      });
-    }
-  }
 
   return (
     <div className="excalidraw-wrapper">
@@ -202,9 +141,9 @@ export default function App(props: {
           scrollToContent: true,
         }}
         libraryReturnUrl={"vscode://pomdtr.excalidraw-editor/importLib"}
-        onChange={debounce(onChange, 250)}
+        onChange={props.onChange}
         onLinkOpen={(element, event) => {
-          props.vscode.postMessage({
+          vscode.postMessage({
             type: "link-open",
             url: element.link,
           });
@@ -217,12 +156,8 @@ export default function App(props: {
           ) {
             return;
           }
-          props.vscode.postMessage({
-            type: "error",
-            new: libraryItems,
-          });
           libraryItemsRef.current = libraryItems;
-          props.vscode.postMessage({
+          vscode.postMessage({
             type: "library-change",
             library: serializeLibraryAsJSON(libraryItems),
           });
@@ -230,18 +165,4 @@ export default function App(props: {
       />
     </div>
   );
-}
-
-export function debounce<T extends unknown[], U>(
-  callback: (...args: T) => PromiseLike<U> | U,
-  wait: number
-) {
-  let timer: NodeJS.Timeout;
-
-  return (...args: T): Promise<U> => {
-    clearTimeout(timer);
-    return new Promise((resolve) => {
-      timer = setTimeout(() => resolve(callback(...args)), wait);
-    });
-  };
 }

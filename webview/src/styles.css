@@ -11,3 +11,7 @@ body {
 kbd {
   color: var(--text-primary-color);
 }
+
+.excalidraw .App-menu_top .Stack_vertical .Island {
+  min-width: 204px;
+}

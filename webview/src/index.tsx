@@ -1,17 +1,17 @@
-import { loadFromBlob, loadLibraryFromBlob } from "@excalidraw/excalidraw-next";
+import {
+  getSceneVersion,
+  loadFromBlob,
+  loadLibraryFromBlob,
+} from "@excalidraw/excalidraw-next";
 import React from "react";
 import ReactDOM from "react-dom";
 import { Base64 } from "js-base64";
 
 import App from "./App";
-
-declare global {
-  interface Window {
-    acquireVsCodeApi(): any;
-  }
-}
-
-const vscode = window.acquireVsCodeApi();
+import { sendChangesToVSCode, vscode } from "./vscode";
+import { AppState, BinaryFiles } from "@excalidraw/excalidraw-next/types/types";
+import { ExcalidrawElement } from "@excalidraw/excalidraw-next/types/element/types";
+import _ from "lodash-es";
 
 async function getInitialData(content: Uint8Array, contentType: string) {
   const initialData = await loadFromBlob(
@@ -38,6 +38,7 @@ function getExcalidrawConfig(rootElement: HTMLElement) {
   const strConfig = Base64.decode(b64Config);
   return JSON.parse(strConfig);
 }
+
 async function getLibraryItems(libraryString: string) {
   try {
     return await loadLibraryFromBlob(
@@ -68,6 +69,31 @@ async function main() {
           )
         : null;
 
+    const sendChanges = sendChangesToVSCode(config.contentType);
+    if (!initialData) {
+      sendChanges([], { gridSize: null, viewBackgroundColor: "#ffffff" }, {});
+    }
+
+    const onChange = (() => {
+      let previousVersion = initialData?.elements
+        ? getSceneVersion(initialData.elements)
+        : 0;
+      return _.debounce(
+        (
+          elements: readonly ExcalidrawElement[],
+          appState: AppState,
+          files: BinaryFiles
+        ) => {
+          const currentVersion = getSceneVersion(elements);
+          if (currentVersion !== previousVersion) {
+            previousVersion = currentVersion;
+            sendChanges(elements, appState, files);
+          }
+        },
+        250
+      );
+    })();
+
     const libraryItems = config.library
       ? await getLibraryItems(config.library)
       : [];
@@ -76,11 +102,10 @@ async function main() {
       <React.StrictMode>
         <App
           initialData={{ libraryItems, ...initialData }}
-          vscode={vscode}
           name={config.name}
-          contentType={config.contentType}
           viewModeEnabled={config.viewModeEnabled}
           theme={config.theme}
+          onChange={onChange}
         />
       </React.StrictMode>,
       rootElement
