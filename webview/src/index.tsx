@@ -9,25 +9,48 @@ import { Base64 } from "js-base64";
 
 import App from "./App";
 import { sendChangesToVSCode, vscode } from "./vscode";
-import { AppState, BinaryFiles } from "@excalidraw/excalidraw-next/types/types";
+import {
+  AppState,
+  BinaryFiles,
+  ExcalidrawInitialDataState,
+} from "@excalidraw/excalidraw-next/types/types";
 import { ExcalidrawElement } from "@excalidraw/excalidraw-next/types/element/types";
 import _ from "lodash-es";
 
-async function getInitialData(content: Uint8Array, contentType: string) {
-  const initialData = await loadFromBlob(
-    new Blob(
-      [
-        contentType == "image/png"
-          ? content
-          : new TextDecoder().decode(content),
-      ],
-      { type: contentType }
-    ),
-    null,
-    null
-  );
+const mimeTypeFallbacks = {
+  "application/json": ["image/png", "image/svg+xml"],
+  "image/svg+xml": ["application/json", "image/png"],
+  "image/png": ["application/json", "image/svg+xml"],
+};
 
-  return { ...initialData };
+async function getInitialData(
+  content: Uint8Array,
+  contentType: string
+): Promise<[ExcalidrawInitialDataState, string]> {
+  const potentialContentTypes = [
+    contentType,
+    ...mimeTypeFallbacks[contentType as keyof typeof mimeTypeFallbacks],
+  ];
+  for (const contentType of potentialContentTypes) {
+    try {
+      const initialData = await loadFromBlob(
+        new Blob(
+          [
+            contentType == "image/png"
+              ? content
+              : new TextDecoder().decode(content),
+          ],
+          { type: contentType }
+        ),
+        null,
+        null
+      );
+
+      return [{ ...initialData }, contentType];
+    } catch (_) {}
+  }
+
+  throw new Error("Unable to load initial data");
 }
 
 function getExcalidrawConfig(rootElement: HTMLElement) {
@@ -61,17 +84,23 @@ async function main() {
     }
     const config = await getExcalidrawConfig(rootElement);
 
-    const initialData =
+    const [initialData, initialContentType] =
       config.content.length > 0
         ? await getInitialData(
             new Uint8Array(config.content),
             config.contentType
           )
-        : null;
+        : [{}, undefined];
 
     const sendChanges = sendChangesToVSCode(config.contentType);
     if (!initialData) {
       sendChanges([], { gridSize: null, viewBackgroundColor: "#ffffff" }, {});
+    } else if (config.contentType != initialContentType) {
+      sendChanges(
+        initialData.elements,
+        initialData.appState,
+        initialData.files
+      );
     }
 
     const onChange = (() => {

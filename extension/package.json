@@ -187,6 +187,9 @@
                         "filenamePattern": "*.excalidraw"
                     },
                     {
+                        "filenamePattern": "*.excalidraw.json"
+                    },
+                    {
                         "filenamePattern": "*.excalidraw.svg"
                     },
                     {

@@ -12,14 +12,12 @@ export class ExcalidrawDocument implements vscode.CustomDocument {
 
   getContentType(): string {
     switch (path.parse(this.uri.fsPath).ext) {
-      case ".excalidraw":
-        return "application/json";
       case ".svg":
         return "image/svg+xml";
       case ".png":
         return "image/png";
       default:
-        throw new Error("Unknown file type");
+        return "application/json";
     }
   }
 
