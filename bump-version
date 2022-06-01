@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+SCRIPT_DIR="$(cd -P -- "$(dirname -- "$(command -v -- "$0")")" && pwd -P)"
+
+cd "$SCRIPT_DIR/extension" || exit 1
+npm version "${1:-minor}" | xargs -I% sh -c 'git commit package.json package-lock.json -m "bump version to %" && git tag "%" -m "release %"'
