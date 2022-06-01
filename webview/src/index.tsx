@@ -90,7 +90,7 @@ async function main() {
             new Uint8Array(config.content),
             config.contentType
           )
-        : [{}, undefined];
+        : [{}, config.contentType];
 
     const sendChanges = sendChangesToVSCode(config.contentType);
     if (!initialData) {
