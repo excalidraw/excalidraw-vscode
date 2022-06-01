@@ -1,11 +1,19 @@
 # Changelog
 
-## 2.1.0
+## 3.0.0
 
-<!-- - sync changes from document to webview -->
+### Added
+
 - allow to open and edit png with embedded scene
 - deprecate `excalidraw.syncTheme` preference in favour of `excalidraw.theme`
-- add the ability to store the library in an `excalidrawlib` file using the `excalidraw.libraryPath` pref.
+- sync the user library between devices
+- add the ability to store the library in an `excalidrawlib` file using the `excalidraw.workspaceLibraryPath` pref.
+- allow to convert between json, svg and png representations by switching the file extension
+
+### Fixed
+
+- Sync library between opened editors
+- Fix `cmd+c` and `cmd+v` shortcuts on macOS
 
 ## 2.0.16
 
