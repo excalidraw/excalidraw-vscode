@@ -121,8 +121,7 @@ export class ExcalidrawEditor {
   // Allows to pass events between editors
   private static onDidChangeLibrary = new vscode.EventEmitter<string>();
   private static onLibraryImport = new vscode.EventEmitter<{
-    libraryUrl: string;
-    csrfToken: string;
+    library: string;
   }>();
   private textDecoder = new TextDecoder();
 
@@ -200,15 +199,16 @@ export class ExcalidrawEditor {
         this.webview.postMessage({
           type: "library-change",
           library,
+          merge: false,
         });
       });
 
     const onLibraryImport = ExcalidrawEditor.onLibraryImport.event(
-      async ({ csrfToken, libraryUrl }) => {
+      async ({ library }) => {
         this.webview.postMessage({
-          type: "import-library",
-          libraryUrl,
-          csrfToken,
+          type: "library-change",
+          library,
+          merge: true,
         });
       }
     );
@@ -218,6 +218,7 @@ export class ExcalidrawEditor {
         this.webview.postMessage({
           type: "library-change",
           library,
+          merge: true,
         });
       }
     );
@@ -271,8 +272,8 @@ export class ExcalidrawEditor {
     return vscode.Uri.joinPath(fileWorkspace.uri, libraryPath);
   }
 
-  public static importLibrary(libraryUrl: string, csrfToken: string) {
-    this.onLibraryImport.fire({ libraryUrl, csrfToken });
+  public static importLibrary(library: string) {
+    this.onLibraryImport.fire({library});
   }
 
   public async loadLibrary(libraryUri?: vscode.Uri) {

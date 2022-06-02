@@ -82,13 +82,6 @@ export default function App(props: {
       try {
         const message = e.data;
         switch (message.type) {
-          case "import-library": {
-            excalidrawRef.current!.importLibrary(
-              message.libraryUrl,
-              message.csrfToken
-            );
-            break;
-          }
           case "library-change": {
             const blob = new Blob([message.library], {
               type: "application/json",
@@ -101,7 +94,11 @@ export default function App(props: {
               return;
             }
             libraryItemsRef.current = libraryItems;
-            excalidrawRef.current!.updateScene({ libraryItems });
+            excalidrawRef.current!.updateLibrary({
+              libraryItems,
+              merge: message.merge,
+              openLibraryMenu: !message.merge,
+            });
             break;
           }
           case "theme-change": {

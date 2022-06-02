@@ -5,20 +5,17 @@ To use it, create an empty file with a `.excalidraw`, `.excalidraw.json`, `.exca
 
 Try the web version at : <https://excalidraw.com/>
 
-![](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/screenshot.png)
+![screenshot](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/screenshot.png)
 
 ## Configuration
 
 ### Switch Excalidraw Theme
 
-
-![](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/change-theme.gif)
-
-
+![theme switching](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/change-theme.gif)
 
 ### Import Public Library
 
-![](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/import-library.gif)
+![library import](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/import-library.gif)
 
 ### Switch between multiple file formats
 
