@@ -1,8 +1,8 @@
-.vscode
-.vscode-test-web
-node_modules
-out/
-src/
-tsconfig.json
-webpack.config.js
-gulpfile.js
+**
+!public/**
+!dist/**
+!assets/**
+!README.md
+!CHANGELOG.md
+!package.json
+!LICENSE
