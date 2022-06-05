@@ -23,7 +23,7 @@
         "url": "https://github.com/pomdtr"
     },
     "activationEvents": [
-        "workspaceContains:**/*.{excalidraw,excalidraw.svg}",
+        "workspaceContains:**/*.{excalidraw,excalidraw.svg,excalidraw.png}",
         "onCustomEditor:editor.excalidraw"
     ],
     "repository": {
