@@ -1,13 +1,12 @@
 on:
-  workflow_dispatch:
-    inputs:
-      preRelease:
-        default: false
-        required: false
-        description: "Publish the extension as a pre-release"
-        type: boolean
+  push:
+    branches:
+      - master
+    tags:
+      - "v*"
 
-name: Deploy Extension
+name: release
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -24,7 +23,6 @@ jobs:
         uses: HaaLeo/publish-vscode-extension@v1
         id: publishToOpenVSX
         with:
-          preRelease: ${{ github.event.inputs.preRelease }}
           packagePath: ./extension
           pat: ${{ secrets.OPEN_VSX_TOKEN }}
       - name: Publish to Visual Studio Marketplace
@@ -32,5 +30,4 @@ jobs:
         with:
           pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
           registryUrl: https://marketplace.visualstudio.com
-          preRelease: ${{ github.event.inputs.preRelease }}
           extensionFile: ${{ steps.publishToOpenVSX.outputs.vsixPath }}
