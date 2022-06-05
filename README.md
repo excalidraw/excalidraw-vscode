@@ -26,3 +26,11 @@ vsce package # from the extension directory
 ```
 
 The vsix archive can then be installed using the `Extensions: Install from VSIX...` command
+
+### Releasing the extension
+
+```console
+./release-extension.sh (major|minor|patch) # update manifest, creates commit and tag
+```
+
+The extension will be published to the vscode and open-vsx marketplaces using github actions on push.
