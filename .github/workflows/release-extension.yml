@@ -1,31 +1,18 @@
-on:
-  workflow_dispatch:
-    inputs:
-      release:
-        description: "Release version"
-        type: choice
-        required: true
-        options:
-          - patch
-          - minor
-          - major
+name: Release Extension
 
-name: release
+on:
+  push:
+    tags:
+      - v*.*.*
 
 jobs:
-  deploy:
+  release-extension:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: extension
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-      - run: npm version ${{ inputs.release }}
       - run: npm ci
-      - uses: stefanzweifel/git-auto-commit-action@v4
       - name: Publish to Open VSX Registry
         uses: HaaLeo/publish-vscode-extension@v1
         id: publishToOpenVSX
@@ -38,3 +25,7 @@ jobs:
           pat: ${{ secrets.VS_MARKETPLACE_TOKEN }}
           registryUrl: https://marketplace.visualstudio.com
           extensionFile: ${{ steps.publishToOpenVSX.outputs.vsixPath }}
+      - name: Create Github Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ steps.publishToOpenVSX.outputs.vsixPath }}

@@ -1,0 +1,32 @@
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: "Release version"
+        type: choice
+        required: true
+        options:
+          - patch
+          - minor
+          - major
+
+name: Bump Version
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: extension
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - id: bump-version
+        run: |
+          npm version ${{ inputs.release }} | xargs -I% echo "::set-output name=version::%"
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          message: release ${{ steps.bump-version.outputs.version }}
+          tag: ${{ steps.bump-version.outputs.version }}
