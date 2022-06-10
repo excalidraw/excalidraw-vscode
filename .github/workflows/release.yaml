@@ -1,14 +1,7 @@
 on:
-  workflow_dispatch:
-    inputs:
-      release:
-        description: "Release version"
-        type: choice
-        required: true
-        options:
-          - patch
-          - minor
-          - major
+  push:
+    tags:
+      - v*.*.*
 
 name: Release Extension
 
@@ -19,18 +12,7 @@ jobs:
       run:
         working-directory: extension
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
       - run: npm ci
-      - id: bump-version
-        run: |
-          npm version ${{ inputs.release }} | xargs -I% echo "::set-output name=version::%"
-      - uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: release ${{ steps.bump-version.outputs.version }}
-          tagging_message: ${{ steps.bump-version.outputs.version }}
       - name: Publish to Open VSX Registry
         uses: HaaLeo/publish-vscode-extension@v1
         id: publishToOpenVSX
