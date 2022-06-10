@@ -10,10 +10,10 @@ on:
           - minor
           - major
 
-name: Bump Version
+name: Release Extension
 
 jobs:
-  deploy:
+  release:
     runs-on: ubuntu-latest
     defaults:
       run:
