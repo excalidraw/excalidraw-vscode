@@ -210,6 +210,12 @@
                 "key": "ctrl+y",
                 "mac": "cmd+shift+z",
                 "when": "activeCustomEditorId == 'editor.excalidraw'"
+            },
+            {
+                "command": "workbench.action.files.save",
+                "mac": "cmd+s",
+                "key": "ctrl+s",
+                "when": "activeCustomEditorId == 'editor.excalidraw'"
             }
         ]
     },
