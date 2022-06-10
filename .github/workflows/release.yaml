@@ -3,6 +3,7 @@ on:
     inputs:
       release:
         description: "Release version"
+        type: choice
         required: true
         options:
           - patch
