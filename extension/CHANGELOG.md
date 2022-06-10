@@ -1,11 +1,5 @@
 # Changelog
 
-## 3.0.1
-
-### Fixed
-
-- fix browser dialog shown on save in github.dev
-
 ## 3.0.0
 
 ### Added
