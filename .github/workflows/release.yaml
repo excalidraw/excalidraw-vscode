@@ -1,4 +1,13 @@
 on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: "Release version"
+        required: true
+        options:
+          - patch
+          - minor
+          - major
   push:
     tags:
       - "v*"
@@ -16,7 +25,9 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
+      - run: npm version ${{ inputs.release }}
       - run: npm ci
+      - uses: stefanzweifel/git-auto-commit-action@v4
       - name: Publish to Open VSX Registry
         uses: HaaLeo/publish-vscode-extension@v1
         id: publishToOpenVSX
