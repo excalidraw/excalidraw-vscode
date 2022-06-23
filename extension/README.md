@@ -5,7 +5,7 @@ To use it, create an empty file with a `.excalidraw`, `.excalidraw.json`, `.exca
 
 Try the web version at : <https://excalidraw.com/>
 
-![screenshot](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/screenshot.png)
+![demo](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/screenshot.png)
 
 ## Configuration
 
