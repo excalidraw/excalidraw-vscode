@@ -4,7 +4,7 @@
     {
       "type": "npm",
       "script": "build",
-      "options": { "cwd": "./extension" },
+      "options": { "cwd": "${workspaceFolder}/extension" },
       "label": "build",
       "problemMatcher": []
     },
@@ -12,7 +12,7 @@
       "type": "shell",
       "command": "npm",
       "args": ["install"],
-      "options": { "cwd": "./extension" },
+      "options": { "cwd": "${workspaceFolder}/extension" },
       "runOptions": { "runOn": "folderOpen" },
       "label": "install",
       "problemMatcher": []
