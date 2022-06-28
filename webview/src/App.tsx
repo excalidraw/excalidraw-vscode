@@ -90,7 +90,7 @@ export default function App(props: {
     } else {
       props.onChange(
         [],
-        { gridSize: null, viewBackgroundColor: "#ffffff" } as AppState,
+        { gridSize: null, viewBackgroundColor: "#ffffff" },
         {}
       );
     }
