@@ -90,27 +90,15 @@ async function main() {
             new Uint8Array(config.content),
             config.contentType
           )
-        : [{}, config.contentType];
+        : [undefined, config.contentType];
 
-    const sendChanges = sendChangesToVSCode(config.contentType);
-    if (!initialData) {
-      sendChanges([], { gridSize: null, viewBackgroundColor: "#ffffff" }, {});
-    } else if (config.contentType != initialContentType) {
-      sendChanges(
-        initialData.elements,
-        initialData.appState,
-        initialData.files
-      );
-    }
-
-    const onChange = (() => {
-      let previousVersion = initialData?.elements
-        ? getSceneVersion(initialData.elements)
-        : 0;
+    const debouncedOnChange = (initialVersion: number, contentType: string) => {
+      const sendChanges = sendChangesToVSCode(contentType);
+      let previousVersion = initialVersion;
       return _.debounce(
         (
           elements: readonly ExcalidrawElement[],
-          appState: AppState,
+          appState: Partial<AppState>,
           files: BinaryFiles
         ) => {
           const currentVersion = getSceneVersion(elements);
@@ -121,20 +109,24 @@ async function main() {
         },
         250
       );
-    })();
+    };
 
-    const libraryItems = config.library
-      ? await getLibraryItems(config.library)
-      : [];
-
+    const isDirty = !initialData || config.contentType != initialContentType;
     ReactDOM.render(
       <React.StrictMode>
         <App
-          initialData={{ libraryItems, ...initialData }}
+          initialData={initialData}
+          libraryItems={
+            config.library ? await getLibraryItems(config.library) : []
+          }
           name={config.name}
           viewModeEnabled={config.viewModeEnabled}
           theme={config.theme}
-          onChange={onChange}
+          onChange={debouncedOnChange(
+            isDirty ? -1 : getSceneVersion(initialData.elements),
+            config.contentType
+          )}
+          dirty={isDirty}
         />
       </React.StrictMode>,
       rootElement

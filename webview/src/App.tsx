@@ -12,6 +12,7 @@ import {
   BinaryFiles,
   ExcalidrawImperativeAPI,
   ExcalidrawInitialDataState,
+  LibraryItems,
 } from "@excalidraw/excalidraw-next/types/types";
 import { vscode } from "./vscode";
 import { ExcalidrawElement } from "@excalidraw/excalidraw-next/types/element/types";
@@ -63,19 +64,37 @@ function useTheme(initialThemeConfig: string) {
 }
 
 export default function App(props: {
-  initialData: ExcalidrawInitialDataState;
+  initialData?: ExcalidrawInitialDataState;
   name: string;
   theme: string;
   viewModeEnabled: boolean;
+  libraryItems?: LibraryItems;
+  dirty: boolean;
   onChange: (
     elements: readonly ExcalidrawElement[],
-    appState: AppState,
+    appState: Partial<AppState>,
     files: BinaryFiles
   ) => void;
 }) {
   const excalidrawRef = useRef<ExcalidrawImperativeAPI>(null);
-  const libraryItemsRef = useRef(props.initialData.libraryItems || []);
+  const libraryItemsRef = useRef(props.libraryItems);
   const { theme, setThemeConfig } = useTheme(props.theme);
+
+  useEffect(() => {
+    if (!props.dirty) {
+      return;
+    }
+    if (props.initialData) {
+      const { elements, appState, files } = props.initialData;
+      props.onChange(elements, appState, files);
+    } else {
+      props.onChange(
+        [],
+        { gridSize: null, viewBackgroundColor: "#ffffff" } as AppState,
+        {}
+      );
+    }
+  }, []);
 
   useEffect(() => {
     const listener = async (e: any) => {
@@ -135,6 +154,7 @@ export default function App(props: {
         viewModeEnabled={props.viewModeEnabled}
         initialData={{
           ...props.initialData,
+          libraryItems: props.libraryItems,
           scrollToContent: true,
         }}
         libraryReturnUrl={"vscode://pomdtr.excalidraw-editor/importLib"}
