@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.2.0
+
+### Fixed
+
+- Fix font rendering on first export of png files
+- Fix library item not deleted when two diagrams are open
+- Fix font in exported svg files
+
 ## 3.0.0
 
 ### Added
