@@ -119,10 +119,12 @@ export class ExcalidrawEditorProvider
 
 export class ExcalidrawEditor {
   // Allows to pass events between editors
-  private static onDidChangeLibrary = new vscode.EventEmitter<string>();
-  private static onLibraryImport = new vscode.EventEmitter<{
+  private static _onDidChangeLibrary = new vscode.EventEmitter<string>();
+  private static onDidChangeLibrary = ExcalidrawEditor._onDidChangeLibrary.event;
+  private static _onLibraryImport = new vscode.EventEmitter<{
     library: string;
   }>();
+  private static onLibraryImport = ExcalidrawEditor._onLibraryImport.event;
   private textDecoder = new TextDecoder();
 
   constructor(
@@ -164,7 +166,7 @@ export class ExcalidrawEditor {
           case "library-change":
             const library = msg.library;
             await this.saveLibrary(library, libraryUri);
-            ExcalidrawEditor.onDidChangeLibrary.fire(library);
+            ExcalidrawEditor._onDidChangeLibrary.fire(library);
             break;
           case "change":
             await this.document.update(new Uint8Array(msg.content));
@@ -203,7 +205,7 @@ export class ExcalidrawEditor {
         });
       });
 
-    const onLibraryImport = ExcalidrawEditor.onLibraryImport.event(
+    const onLibraryImport = ExcalidrawEditor.onLibraryImport(
       async ({ library }) => {
         this.webview.postMessage({
           type: "library-change",
@@ -213,12 +215,12 @@ export class ExcalidrawEditor {
       }
     );
 
-    const onDidChangeLibrary = ExcalidrawEditor.onDidChangeLibrary.event(
+    const onDidChangeLibrary = ExcalidrawEditor.onDidChangeLibrary(
       (library) => {
         this.webview.postMessage({
           type: "library-change",
           library,
-          merge: true,
+          merge: false,
         });
       }
     );
@@ -273,7 +275,7 @@ export class ExcalidrawEditor {
   }
 
   public static importLibrary(library: string) {
-    this.onLibraryImport.fire({library});
+    this._onLibraryImport.fire({ library });
   }
 
   public async loadLibrary(libraryUri?: vscode.Uri) {
