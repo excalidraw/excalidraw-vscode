@@ -16,6 +16,14 @@
       "runOptions": { "runOn": "folderOpen" },
       "label": "install",
       "problemMatcher": []
+    },
+    {
+      "type": "process",
+      "command": "vsce",
+      "args": ["package", "--out=${workspaceFolder}"],
+      "options": { "cwd": "${workspaceFolder}/extension" },
+      "label": "package",
+      "problemMatcher": []
     }
   ]
 }
