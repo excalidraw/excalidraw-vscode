@@ -2,7 +2,7 @@ import {
   getSceneVersion,
   loadFromBlob,
   loadLibraryFromBlob,
-} from "@excalidraw/excalidraw-next";
+} from "@excalidraw/excalidraw";
 import React from "react";
 import ReactDOM from "react-dom";
 import { Base64 } from "js-base64";
@@ -13,8 +13,8 @@ import {
   AppState,
   BinaryFiles,
   ExcalidrawInitialDataState,
-} from "@excalidraw/excalidraw-next/types/types";
-import { ExcalidrawElement } from "@excalidraw/excalidraw-next/types/element/types";
+} from "@excalidraw/excalidraw/types/types";
+import { ExcalidrawElement } from "@excalidraw/excalidraw/types/element/types";
 import _ from "lodash-es";
 
 const mimeTypeFallbacks = {
@@ -92,23 +92,24 @@ async function main() {
           )
         : [undefined, config.contentType];
 
-    const debouncedOnChange = (initialVersion: number, contentType: string) => {
-      const sendChanges = sendChangesToVSCode(contentType);
+    const sendChanges = sendChangesToVSCode(config.contentType);
+    const debouncedOnChange = (
+      onChange: (
+        elements: readonly ExcalidrawElement[],
+        appState: Partial<AppState>,
+        files: BinaryFiles
+      ) => void,
+      initialVersion: number
+    ) => {
       let previousVersion = initialVersion;
-      return _.debounce(
-        (
-          elements: readonly ExcalidrawElement[],
-          appState: Partial<AppState>,
-          files: BinaryFiles
-        ) => {
-          const currentVersion = getSceneVersion(elements);
-          if (currentVersion !== previousVersion) {
-            previousVersion = currentVersion;
-            sendChanges(elements, appState, files);
-          }
-        },
-        250
-      );
+
+      return _.debounce((elements, appState, files) => {
+        const currentVersion = getSceneVersion(elements);
+        if (currentVersion !== previousVersion) {
+          previousVersion = currentVersion;
+          onChange(elements, appState, files);
+        }
+      }, 250);
     };
 
     const isDirty = !initialData || config.contentType != initialContentType;
@@ -123,9 +124,10 @@ async function main() {
           viewModeEnabled={config.viewModeEnabled}
           theme={config.theme}
           onChange={debouncedOnChange(
-            isDirty ? -1 : getSceneVersion(initialData.elements),
-            config.contentType
+            sendChanges,
+            isDirty ? -1 : getSceneVersion(initialData.elements)
           )}
+          imageParams={config.imageParams}
           dirty={isDirty}
         />
       </React.StrictMode>,

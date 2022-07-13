@@ -2,9 +2,9 @@ import {
   serializeAsJSON,
   exportToSvg,
   exportToBlob,
-} from "@excalidraw/excalidraw-next";
-import { ExcalidrawElement } from "@excalidraw/excalidraw-next/types/element/types";
-import { AppState, BinaryFiles } from "@excalidraw/excalidraw-next/types/types";
+} from "@excalidraw/excalidraw";
+import { ExcalidrawElement } from "@excalidraw/excalidraw/types/element/types";
+import { AppState, BinaryFiles } from "@excalidraw/excalidraw/types/types";
 
 declare global {
   interface Window {
@@ -23,11 +23,7 @@ const svg2VSCode = async (
 ) => {
   const svg = await exportToSvg({
     elements,
-    appState: {
-      ...appState,
-      exportBackground: true,
-      exportEmbedScene: true,
-    },
+    appState,
     files,
   });
   vscode.postMessage({
@@ -43,12 +39,16 @@ const png2VSCode = async (
 ) => {
   const blob = await exportToBlob({
     elements,
-    appState: {
-      ...appState,
-      exportBackground: true,
-      exportEmbedScene: true,
-    },
+    appState,
     files,
+    getDimensions(width, height) {
+      const scale = appState.exportScale || 2;
+      return {
+        width: width * scale,
+        height: height * scale,
+        scale,
+      };
+    },
   });
   if (!blob) {
     vscode.postMessage({

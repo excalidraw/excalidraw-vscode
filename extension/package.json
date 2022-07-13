@@ -92,7 +92,6 @@
                 "title": "Excalidraw",
                 "properties": {
                     "excalidraw.theme": {
-                        "scope": "resource",
                         "description": "Excalidraw theme. Use auto to sync theme with VSCode color theme.",
                         "type": "string",
                         "default": "light",
@@ -103,9 +102,40 @@
                         ]
                     },
                     "excalidraw.workspaceLibraryPath": {
-                        "scope": "resource",
+                        "scope": "window",
                         "description": "Path to the file used to store the excalidraw library (relative to workspace root). If not set, the library will be persisted in the user storage.",
                         "type": "string"
+                    },
+                    "excalidraw.image": {
+                        "description": "Settings specifics to image with embed scene.",
+                        "type": "object",
+                        "properties": {
+                            "exportScale": {
+                                "description": "Scale of the exported drawings. Higher values will result in higher quality images.",
+                                "type": "number",
+                                "default": 1,
+                                "enum": [
+                                    1,
+                                    2,
+                                    3
+                                ]
+                            },
+                            "exportWithBackground": {
+                                "description": "Indicates whether background should be exported",
+                                "type": "boolean",
+                                "default": true
+                            },
+                            "exportWithDarkMode": {
+                                "description": "Indicates whether to export with dark mode",
+                                "type": "boolean",
+                                "default": false
+                            }
+                        },
+                        "default": {
+                            "exportScale": 1,
+                            "exportWithBackground": true,
+                            "exportWithDarkMode": false
+                        }
                     }
                 }
             }

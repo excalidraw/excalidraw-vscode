@@ -4,7 +4,7 @@ import {
   loadLibraryFromBlob,
   serializeLibraryAsJSON,
   THEME,
-} from "@excalidraw/excalidraw-next";
+} from "@excalidraw/excalidraw";
 
 import "./styles.css";
 import {
@@ -13,9 +13,9 @@ import {
   ExcalidrawImperativeAPI,
   ExcalidrawInitialDataState,
   LibraryItems,
-} from "@excalidraw/excalidraw-next/types/types";
+} from "@excalidraw/excalidraw/types/types";
 import { vscode } from "./vscode";
-import { ExcalidrawElement } from "@excalidraw/excalidraw-next/types/element/types";
+import { ExcalidrawElement } from "@excalidraw/excalidraw/types/element/types";
 
 function detectTheme() {
   switch (document.body.className) {
@@ -69,6 +69,11 @@ export default function App(props: {
   theme: string;
   viewModeEnabled: boolean;
   libraryItems?: LibraryItems;
+  imageParams: {
+    exportBackground: boolean;
+    exportWithDarkMode: boolean;
+    exportScale: 1 | 2 | 3;
+  };
   dirty: boolean;
   onChange: (
     elements: readonly ExcalidrawElement[],
@@ -79,6 +84,7 @@ export default function App(props: {
   const excalidrawRef = useRef<ExcalidrawImperativeAPI>(null);
   const libraryItemsRef = useRef(props.libraryItems);
   const { theme, setThemeConfig } = useTheme(props.theme);
+  const [imageParams, setImageParams] = useState(props.imageParams);
 
   useEffect(() => {
     if (!props.dirty) {
@@ -124,6 +130,9 @@ export default function App(props: {
             setThemeConfig(message.theme);
             break;
           }
+          case "image-params-change": {
+            setImageParams(message.imageParams);
+          }
         }
       } catch (e) {
         vscode.postMessage({
@@ -158,7 +167,13 @@ export default function App(props: {
           scrollToContent: true,
         }}
         libraryReturnUrl={"vscode://pomdtr.excalidraw-editor/importLib"}
-        onChange={props.onChange}
+        onChange={(elements, appState, files) =>
+          props.onChange(
+            elements,
+            { ...appState, ...imageParams, exportEmbedScene: true },
+            files
+          )
+        }
         onLinkOpen={(element, event) => {
           vscode.postMessage({
             type: "link-open",

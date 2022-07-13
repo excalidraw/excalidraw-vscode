@@ -120,7 +120,8 @@ export class ExcalidrawEditorProvider
 export class ExcalidrawEditor {
   // Allows to pass events between editors
   private static _onDidChangeLibrary = new vscode.EventEmitter<string>();
-  private static onDidChangeLibrary = ExcalidrawEditor._onDidChangeLibrary.event;
+  private static onDidChangeLibrary =
+    ExcalidrawEditor._onDidChangeLibrary.event;
   private static _onLibraryImport = new vscode.EventEmitter<{
     library: string;
   }>();
@@ -149,17 +150,6 @@ export class ExcalidrawEditor {
 
     let libraryUri = await this.getLibraryUri();
 
-    const onDidChangeThemeConfiguration =
-      vscode.workspace.onDidChangeConfiguration((e) => {
-        if (!e.affectsConfiguration("excalidraw.theme", this.document.uri)) {
-          return;
-        }
-        this.webview.postMessage({
-          type: "theme-change",
-          theme: this.getTheme(),
-        });
-      }, this);
-
     const onDidReceiveMessage = this.webview.onDidReceiveMessage(
       async (msg) => {
         switch (msg.type) {
@@ -184,6 +174,28 @@ export class ExcalidrawEditor {
       },
       this
     );
+
+    const onDidChangeThemeConfiguration =
+      vscode.workspace.onDidChangeConfiguration((e) => {
+        if (!e.affectsConfiguration("excalidraw.theme", this.document.uri)) {
+          return;
+        }
+        this.webview.postMessage({
+          type: "theme-change",
+          theme: this.getTheme(),
+        });
+      }, this);
+
+    const onDidChangeEmbedConfiguration =
+      vscode.workspace.onDidChangeConfiguration((e) => {
+        if (!e.affectsConfiguration("excalidraw.image", this.document.uri)) {
+          return;
+        }
+        this.webview.postMessage({
+          type: "image-params-change",
+          imageParams: this.getImageParams(),
+        });
+      }, this);
 
     const onDidChangeLibraryConfiguration =
       vscode.workspace.onDidChangeConfiguration(async (e) => {
@@ -231,6 +243,7 @@ export class ExcalidrawEditor {
       library: await this.loadLibrary(libraryUri),
       viewModeEnabled: this.isViewOnly() || undefined,
       theme: this.getTheme(),
+      imageParams: this.getImageParams(),
       name: this.extractName(this.document.uri),
     });
 
@@ -240,7 +253,12 @@ export class ExcalidrawEditor {
       onLibraryImport.dispose();
       onDidChangeLibraryConfiguration.dispose();
       onDidChangeLibrary.dispose();
+      onDidChangeEmbedConfiguration.dispose();
     });
+  }
+
+  private getImageParams() {
+    return vscode.workspace.getConfiguration("excalidraw").get("image");
   }
 
   private getTheme() {
