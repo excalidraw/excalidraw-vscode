@@ -73,7 +73,7 @@ You won't be able to edit arbitrary SVG files though - only those that have been
 
 ### Sharing your Library
 
-If you want to use a workspace specific library (and share it with other contributors), modify the in your vscode workspace settings file (`.vscode/settings.json`):
+If you want to use a workspace specific library (and share it with other contributors), set the `excalidraw.workspaceLibraryPath` in your vscode workspace settings file (`.vscode/settings.json`):
 
 ```json
 {
