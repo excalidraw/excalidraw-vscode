@@ -7,6 +7,17 @@ Try the web version at : <https://excalidraw.com/>
 
 ![demo](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/screenshot.png)
 
+- [Features](#features)
+  - [Direct Image Editing](#direct-image-editing)
+  - [Edit diagrams from your browser](#edit-diagrams-from-your-browser)
+  - [Switch Theme](#switch-theme)
+  - [Import Public Library](#import-public-library)
+  - [View Source](#view-source)
+  - [Associate Additional Extensions With the Excalidraw Editor](#associate-additional-extensions-with-the-excalidraw-editor)
+  - [Sharing your Library](#sharing-your-library)
+- [Contact](#contact)
+- [Note for Contributors](#note-for-contributors)
+
 ## Features
 
 ### Direct Image Editing

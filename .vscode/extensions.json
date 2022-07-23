@@ -1,5 +1,6 @@
 {
     "recommendations": [
-        "valentjn.vscode-ltex"
+        "valentjn.vscode-ltex",
+        "yzhang.markdown-all-in-one"
     ]
 }
