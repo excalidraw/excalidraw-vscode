@@ -14,7 +14,7 @@ Try the web version at : <https://excalidraw.com/>
 The source of the drawing can be embedded directly in a PNG or SVG image. Just create a new `.excalidraw.png` or `excalidraw.png` file.
 You can also switch between text and image format by updating the file extension (ex: rename a `.excalidraw` file to `.excalidraw.png`).
 
-![Image can be edited directly](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/medias/edit_image.gif)
+![Image can be edited directly](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/edit_image.gif)
 
 You can control the default export options using the `excalidraw.image` setting:
 
@@ -53,7 +53,7 @@ Check out the available libraries at [libraries.excalidraw.com](https://librarie
 
 You can switch between the Excalidraw editor and the source (text or image) using the editor toolbar.
 
-![Use the dedicated toolbar button to view the diagram source](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/medias/view_source.gif)
+![Use the dedicated toolbar button to view the diagram source](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/view_source.gif)
 
 ### Associate Additional Extensions With the Excalidraw Editor
 
