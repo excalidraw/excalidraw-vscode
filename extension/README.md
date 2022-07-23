@@ -8,19 +8,23 @@ Try the web version at : <https://excalidraw.com/>
 ![demo](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/screenshot.png)
 
 - [Features](#features)
-  - [Direct Image Editing](#direct-image-editing)
-  - [Edit diagrams from your browser](#edit-diagrams-from-your-browser)
-  - [Switch Theme](#switch-theme)
+  - [Edit Images](#edit-images)
+  - [Draw from your browser](#draw-from-your-browser)
+  - [Switch Editor Theme](#switch-editor-theme)
   - [Import Public Library](#import-public-library)
-  - [View Source](#view-source)
-  - [Associate Additional Extensions With the Excalidraw Editor](#associate-additional-extensions-with-the-excalidraw-editor)
+  - [View Drawing Source](#view-drawing-source)
+  - [Associate Additional Extensions with the Excalidraw Editor](#associate-additional-extensions-with-the-excalidraw-editor)
+  - [Sharing your Library](#sharing-your-library)
+- [Contact](#contact)
+- [Note for Contributors](#note-for-contributors)
+    [Associate Additional Extensions with the Excalidraw Editor](#associate-additional-extensions-with-the-excalidraw-editor)
   - [Sharing your Library](#sharing-your-library)
 - [Contact](#contact)
 - [Note for Contributors](#note-for-contributors)
 
 ## Features
 
-### Direct Image Editing
+### Edit Images
 
 The source of the drawing can be embedded directly in a PNG or SVG image. Just create a new `.excalidraw.png` or `excalidraw.png` file.
 You can also switch between text and image format by updating the file extension (ex: rename a `.excalidraw` file to `.excalidraw.png`).
@@ -39,12 +43,12 @@ You can control the default export options using the `excalidraw.image` setting:
 }
 ```
 
-### Edit diagrams from your browser
+### Draw from your browser
 
 You can install this extension in [`github.dev`](https://github.dev) or [`vscode.dev`](https://vscode.dev).
 Editing an Excalidraw schema stored in a GitHub repository has never been easier !
 
-### Switch Theme
+### Switch Editor Theme
 
 The extension support three theme options:
 
@@ -60,13 +64,13 @@ Check out the available libraries at [libraries.excalidraw.com](https://librarie
 
 ![Public libraries can be imported from the browser](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/import-library.gif)
 
-### View Source
+### View Drawing Source
 
 You can switch between the Excalidraw editor and the source (text or image) using the editor toolbar.
 
 ![Use the dedicated toolbar button to view the diagram source](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/view_source.gif)
 
-### Associate Additional Extensions With the Excalidraw Editor
+### Associate Additional Extensions with the Excalidraw Editor
 
 By default, this extension only handles `*.excalidraw`, `*.excalidraw.svg` and `*.excalidraw.png` files.
 
