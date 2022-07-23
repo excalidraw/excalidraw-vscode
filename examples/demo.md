@@ -1,9 +1,5 @@
-# Markdown Demo
+# Excalidraw Demo
 
-## SVG
+The image below embed the drawing source. You can edit it directly in Visual Studio Code.
 
-![](test.excalidraw.svg)
-
-## PNG
-
-![](test.excalidraw.png)
+![demo](./test.excalidraw.png)

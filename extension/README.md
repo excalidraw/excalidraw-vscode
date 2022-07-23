@@ -1,31 +1,65 @@
 # Excalidraw
 
 This extension integrates Excalidraw into VS Code.
-To use it, create an empty file with a `.excalidraw`, `.excalidraw.json`, `.excalidraw.svg` or `excalidraw.png` extension and open it in VSCode.
+To use it, create an empty file with a `.excalidraw`, `.excalidraw.json`, `.excalidraw.svg` or `excalidraw.png` extension and open it in Visual Studio Code.
 
 Try the web version at : <https://excalidraw.com/>
 
 ![demo](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/screenshot.png)
 
-## Configuration
+## Features
 
-### Switch Excalidraw Theme
+### Direct Image Editing
+
+The source of the drawing can be embedded directly in a PNG or SVG image. Just create a new `.excalidraw.png` or `excalidraw.png` file.
+You can also switch between text and image format by updating the file extension (ex: rename a `.excalidraw` file to `.excalidraw.png`).
+
+![Image can be edited directly](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/medias/edit_image.gif)
+
+You can control the default export options using the `excalidraw.image` setting:
+
+```json
+{
+  "excalidraw.image": {
+    "exportScale": 1,
+    "exportWithBackground": true,
+    "exportWithDarkMode": false
+  }
+}
+```
+
+### Edit diagrams from your browser
+
+You can install this extension in [`github.dev`](https://github.dev) or [`vscode.dev`](https://vscode.dev).
+Editing an Excalidraw schema stored in a GitHub repository has never been easier !
+
+### Switch Theme
+
+The extension support three theme options:
+
+- light (default)
+- dark
+- auto (sync with VS Code Theme)
 
 ![theme switching](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/change-theme.gif)
 
 ### Import Public Library
 
-![library import](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/import-library.gif)
+Check out the available libraries at [libraries.excalidraw.com](https://libraries.excalidraw.com), and don't hesitate to contribute your own !
 
-### Switch between multiple file formats
+![Public libraries can be imported from the browser](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/import-library.gif)
 
-Update the document extension to the desired format. For example, `document.excalidraw` -> `document.excalidraw.png`.
+### View Source
+
+You can switch between the Excalidraw editor and the source (text or image) using the editor toolbar.
+
+![Use the dedicated toolbar button to view the diagram source](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/medias/view_source.gif)
 
 ### Associate Additional Extensions With the Excalidraw Editor
 
 By default, this extension only handles `*.excalidraw`, `*.excalidraw.svg` and `*.excalidraw.png` files.
 
-Add this to your VS Code settings.json file if you want to associate it with additional file extensions (ex: SVG):
+Add this to your VS Code `settings.json` file if you want to associate it with additional file extensions (ex: SVG):
 
 ```json
 {
@@ -39,7 +73,7 @@ You won't be able to edit arbitrary SVG files though - only those that have been
 
 ### Sharing your Library
 
-If you want to use a workspace specific library (and share it with other contributors), add this to your vscode workspace settings file (`.vscode/settings.json`):
+If you want to use a workspace specific library (and share it with other contributors), set the `excalidraw.workspaceLibraryPath` in your Visual Studio Code workspace settings file (`.vscode/settings.json`):
 
 ```json
 {
@@ -47,4 +81,16 @@ If you want to use a workspace specific library (and share it with other contrib
 }
 ```
 
-The workspaceLibraryPath path is relative to your workspace root.
+The `workspaceLibraryPath` path is relative to your workspace root. Absolute path are also supported, but it will be specific to your device.
+
+## Contact
+
+Only bug reports / feature requests specifics to the VS Code integration should go to the extension repository. If it is not the case, please report your issue directly to the Excalidraw project.
+
+## Note for Contributors
+
+Thank you for considering contributing to the extension :sparkling_heart: !
+
+This extension only goal is to integrate Excalidraw to the Visual Studio Code ecosystem. Users should be able to use both the website and the extension with a minimal amount of friction. As such, we will not accept any contribution that significantly modify the user experience compared to the Excalidraw website.
+
+There are exceptions to this rule (for example, the switch theme icon was deported to Visual Studio Code editor toolbar to allow a better integration). In case of uncertainty, create a thread in the project [Discussion Page](https://github.com/excalidraw/excalidraw-vscode/discussions).
