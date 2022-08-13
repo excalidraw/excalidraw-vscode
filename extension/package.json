@@ -15,7 +15,8 @@
         "draw",
         "schemas",
         "graphics",
-        "paint"
+        "paint",
+        "excalidraw"
     ],
     "author": {
         "name": "pomdtr",
