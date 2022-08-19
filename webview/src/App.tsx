@@ -67,6 +67,7 @@ export default function App(props: {
   initialData?: ExcalidrawInitialDataState;
   name: string;
   theme: string;
+  langCode: string;
   viewModeEnabled: boolean;
   libraryItems?: LibraryItems;
   imageParams: {
@@ -158,6 +159,7 @@ export default function App(props: {
             saveToActiveFile: false,
           },
         }}
+        langCode={props.langCode}
         name={props.name}
         theme={theme}
         viewModeEnabled={props.viewModeEnabled}

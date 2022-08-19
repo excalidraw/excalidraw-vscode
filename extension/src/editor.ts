@@ -3,6 +3,7 @@ import * as path from "path";
 import { Base64 } from "js-base64";
 
 import { ExcalidrawDocument } from "./document";
+import { languageMap } from "./lang";
 
 export class ExcalidrawEditorProvider
   implements vscode.CustomEditorProvider<ExcalidrawDocument>
@@ -244,6 +245,7 @@ export class ExcalidrawEditor {
       viewModeEnabled: this.isViewOnly() || undefined,
       theme: this.getTheme(),
       imageParams: this.getImageParams(),
+      langCode: this.getLanguage(),
       name: this.extractName(this.document.uri),
     });
 
@@ -259,6 +261,15 @@ export class ExcalidrawEditor {
 
   private getImageParams() {
     return vscode.workspace.getConfiguration("excalidraw").get("image");
+  }
+
+  private getLanguage() {
+    return vscode.workspace
+      .getConfiguration("excalidraw")
+      .get(
+        "language",
+        languageMap[vscode.env.language as keyof typeof languageMap]
+      );
   }
 
   private getTheme() {
