@@ -4,10 +4,16 @@
 
 ### Added
 
+- Add Custom Language Support
+
+## 3.2.0
+
+### Added
+
 - Upgrade excalidraw package to 1.2.0
 - Add the ability to configure the export options for `excalidraw.png` and `excalidraw.svg` files using the `excalidraw.image` setting.
 
-## 3.2.0
+## 3.1.0
 
 ### Fixed
 

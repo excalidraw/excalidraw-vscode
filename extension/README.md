@@ -15,9 +15,10 @@ Try the web version at : <https://excalidraw.com/>
   - [View Drawing Source](#view-drawing-source)
   - [Associate Additional Extensions with the Excalidraw Editor](#associate-additional-extensions-with-the-excalidraw-editor)
   - [Sharing your Library](#sharing-your-library)
+  - [Configure Language](#configure-language)
 - [Contact](#contact)
 - [Note for Contributors](#note-for-contributors)
-    [Associate Additional Extensions with the Excalidraw Editor](#associate-additional-extensions-with-the-excalidraw-editor)
+  [Associate Additional Extensions with the Excalidraw Editor](#associate-additional-extensions-with-the-excalidraw-editor)
   - [Sharing your Library](#sharing-your-library)
 - [Contact](#contact)
 - [Note for Contributors](#note-for-contributors)
@@ -97,6 +98,16 @@ If you want to use a workspace specific library (and share it with other contrib
 ```
 
 The `workspaceLibraryPath` path is relative to your workspace root. Absolute path are also supported, but it will be specific to your device.
+
+### Configure Language
+
+By default, the extension will use the [Visual Studio Code Display Language](https://code.visualstudio.com/docs/getstarted/locales) to determine the language to use. You can overwrite it using the `excalidraw.language` setting:
+
+```json
+{
+  "excalidraw.language": "fr-FR" // Use the French language
+}
+```
 
 ## Contact
 
