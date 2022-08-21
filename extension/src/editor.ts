@@ -187,6 +187,16 @@ export class ExcalidrawEditor {
         });
       }, this);
 
+    vscode.workspace.onDidChangeConfiguration((e) => {
+      if (!e.affectsConfiguration("excalidraw.language", this.document.uri)) {
+        return;
+      }
+      this.webview.postMessage({
+        type: "language-change",
+        langCode: this.getLanguage(),
+      });
+    }, this);
+
     const onDidChangeEmbedConfiguration =
       vscode.workspace.onDidChangeConfiguration((e) => {
         if (!e.affectsConfiguration("excalidraw.image", this.document.uri)) {

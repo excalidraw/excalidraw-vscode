@@ -86,6 +86,7 @@ export default function App(props: {
   const libraryItemsRef = useRef(props.libraryItems);
   const { theme, setThemeConfig } = useTheme(props.theme);
   const [imageParams, setImageParams] = useState(props.imageParams);
+  const [langCode, setLangCode] = useState(props.langCode);
 
   useEffect(() => {
     if (!props.dirty) {
@@ -131,6 +132,10 @@ export default function App(props: {
             setThemeConfig(message.theme);
             break;
           }
+          case "language-change": {
+            setLangCode(message.langCode);
+            break;
+          }
           case "image-params-change": {
             setImageParams(message.imageParams);
           }
@@ -159,7 +164,7 @@ export default function App(props: {
             saveToActiveFile: false,
           },
         }}
-        langCode={props.langCode}
+        langCode={langCode}
         name={props.name}
         theme={theme}
         viewModeEnabled={props.viewModeEnabled}
