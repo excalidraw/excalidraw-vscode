@@ -274,12 +274,10 @@ export class ExcalidrawEditor {
   }
 
   private getLanguage() {
-    return vscode.workspace
-      .getConfiguration("excalidraw")
-      .get(
-        "language",
-        languageMap[vscode.env.language as keyof typeof languageMap]
-      );
+    return (
+      vscode.workspace.getConfiguration("excalidraw").get("language") ||
+      languageMap[vscode.env.language as keyof typeof languageMap]
+    );
   }
 
   private getTheme() {

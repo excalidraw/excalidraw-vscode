@@ -103,7 +103,6 @@
                         ]
                     },
                     "excalidraw.language": {
-                        "scope": "machine",
                         "type": "string",
                         "description": "Language of the Excalidraw Editor. Defauts to the VS Code display language.",
                         "enum": [

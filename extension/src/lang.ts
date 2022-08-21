@@ -1,5 +1,3 @@
-import * as vscode from "vscode";
-
 export const languageMap = {
   en: "en",
   "zh-cn": "zh-CN",
