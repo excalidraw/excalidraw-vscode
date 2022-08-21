@@ -128,6 +128,7 @@ async function main() {
             isDirty ? -1 : getSceneVersion(initialData.elements)
           )}
           imageParams={config.imageParams}
+          langCode={config.langCode}
           dirty={isDirty}
         />
       </React.StrictMode>,
