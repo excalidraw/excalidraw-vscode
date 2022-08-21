@@ -105,7 +105,7 @@ By default, the extension will use the [Visual Studio Code Display Language](htt
 
 ```json
 {
-  "excalidraw.language": "fr-FR" // Use the French language
+  "excalidraw.language": "fr-FR"
 }
 ```
 
