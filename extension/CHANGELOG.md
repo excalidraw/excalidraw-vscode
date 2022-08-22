@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.3.1
+
+### Fixed
+
+- Editor crashing in line editor
+
 ## 3.3.0
 
 ### Added
