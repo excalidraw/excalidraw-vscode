@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.3.2
+
+- Upgrade Dependencies
+
 ## 3.3.1
 
 ### Fixed
