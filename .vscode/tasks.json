@@ -4,24 +4,34 @@
     {
       "type": "npm",
       "script": "build",
-      "options": { "cwd": "${workspaceFolder}/extension" },
+      "options": {
+        "cwd": "${workspaceFolder}/extension"
+      },
       "label": "build",
       "problemMatcher": []
     },
     {
       "type": "shell",
       "command": "npm",
-      "args": ["install"],
-      "options": { "cwd": "${workspaceFolder}/extension" },
-      "runOptions": { "runOn": "folderOpen" },
+      "args": [
+        "install"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/extension"
+      },
       "label": "install",
       "problemMatcher": []
     },
     {
       "type": "process",
       "command": "vsce",
-      "args": ["package", "--out=${workspaceFolder}"],
-      "options": { "cwd": "${workspaceFolder}/extension" },
+      "args": [
+        "package",
+        "--out=${workspaceFolder}"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/extension"
+      },
       "label": "package",
       "problemMatcher": []
     }
