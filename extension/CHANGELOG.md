@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.4.1
+
+- Update excalidraw package to 0.14.2
+
 ## 3.4.0
 
 - Update excalidraw package to 0.14.1
