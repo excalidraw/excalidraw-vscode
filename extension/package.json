@@ -86,6 +86,16 @@
                 "category": "Excalidraw",
                 "title": "Open Image to the Side",
                 "icon": "$(go-to-file)"
+            },
+            {
+                "command": "excalidraw.createPngImage",
+                "title": "Cretae Excalidraw PNG Image",
+                "category": "Excalidraw"
+            },
+            {
+                "command": "excalidraw.createSvgImage",
+                "title": "Cretae Excalidraw SVG Image",
+                "category": "Excalidraw"
             }
         ],
         "configuration": [
@@ -299,6 +309,20 @@
                     "command": "excalidraw.updateTheme",
                     "when": "activeCustomEditorId == 'editor.excalidraw'",
                     "group": "navigation"
+                }
+            ],
+            "explorer/context": [
+                {
+                    "when": "explorerViewletFocus",
+                    "command": "excalidraw.createPngImage",
+                    "alt": "",
+                    "group": "navigation@99"
+                },
+                {
+                    "when": "explorerViewletFocus",
+                    "command": "excalidraw.createSvgImage",
+                    "alt": "",
+                    "group": "navigation@99"
                 }
             ]
         },

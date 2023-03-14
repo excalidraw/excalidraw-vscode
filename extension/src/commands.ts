@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import * as path from "path";
 
 function getConfigurationScope(
   config: vscode.WorkspaceConfiguration,
@@ -89,6 +90,43 @@ function showImage(uri: vscode.Uri, viewColumn?: vscode.ViewColumn) {
   );
 }
 
+async function createExcalidrawImage(uri: vscode.Uri, type: "png" | "svg") {
+  const { path: folderPath } = uri;
+  const isFolder =
+    (await vscode.workspace.fs.stat(vscode.Uri.file(folderPath))).type ===
+    vscode.FileType.Directory;
+
+  if (!isFolder) {
+    vscode.window.showWarningMessage(
+      "You should create excalidraw file in folder"
+    );
+    return;
+  }
+
+  const fileName = await vscode.window.showInputBox({
+    placeHolder: "Please input filename",
+  });
+  if (!fileName) {
+    return;
+  }
+  // final file name
+  const FILE_NAME = `${fileName}.excalidraw.${type}`;
+  // check the file has exist
+  const fileIndex = (await vscode.workspace.fs.readDirectory(uri)).findIndex(
+    (ele) => ele[0] === FILE_NAME
+  );
+  if (fileIndex !== -1) {
+    vscode.window.showWarningMessage(
+      `${FILE_NAME} already exists, please recreate the file `
+    );
+    return;
+  }
+  await vscode.workspace.fs.writeFile(
+    vscode.Uri.file(path.resolve(folderPath, `./${FILE_NAME}`)),
+    new Uint8Array()
+  );
+}
+
 export function registerCommands(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("excalidraw.updateTheme", updateTheme)
@@ -119,5 +157,16 @@ export function registerCommands(context: vscode.ExtensionContext) {
   );
   context.subscriptions.push(
     vscode.commands.registerCommand("excalidraw.preventDefault", () => {})
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("excalidraw.createPngImage", (uri) => {
+      createExcalidrawImage(uri, "png");
+    })
+  );
+  context.subscriptions.push(
+    vscode.commands.registerCommand("excalidraw.createSvgImage", (uri) => {
+      createExcalidrawImage(uri, "svg");
+    })
   );
 }
