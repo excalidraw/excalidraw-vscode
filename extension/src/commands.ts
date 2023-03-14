@@ -91,16 +91,18 @@ function showImage(uri: vscode.Uri, viewColumn?: vscode.ViewColumn) {
 }
 
 async function createExcalidrawImage(uri: vscode.Uri, type: "png" | "svg") {
-  const { path: folderPath } = uri;
+  const { path: workspacePath } = uri;
+
   const isFolder =
-    (await vscode.workspace.fs.stat(vscode.Uri.file(folderPath))).type ===
+    (await vscode.workspace.fs.stat(vscode.Uri.file(workspacePath))).type ===
     vscode.FileType.Directory;
 
+  let folderPath = workspacePath;
   if (!isFolder) {
-    vscode.window.showWarningMessage(
-      "You should create excalidraw file in folder"
+    folderPath = workspacePath.substring(
+      0,
+      workspacePath.lastIndexOf(path.sep)
     );
-    return;
   }
 
   const fileName = await vscode.window.showInputBox({
@@ -112,9 +114,9 @@ async function createExcalidrawImage(uri: vscode.Uri, type: "png" | "svg") {
   // final file name
   const FILE_NAME = `${fileName}.excalidraw.${type}`;
   // check the file has exist
-  const fileIndex = (await vscode.workspace.fs.readDirectory(uri)).findIndex(
-    (ele) => ele[0] === FILE_NAME
-  );
+  const fileIndex = (
+    await vscode.workspace.fs.readDirectory(vscode.Uri.file(folderPath))
+  ).findIndex((ele) => ele[0] === FILE_NAME);
   if (fileIndex !== -1) {
     vscode.window.showWarningMessage(
       `${FILE_NAME} already exists, please recreate the file `
