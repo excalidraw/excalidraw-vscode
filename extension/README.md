@@ -1,7 +1,7 @@
 # Excalidraw
 
 This extension integrates Excalidraw into VS Code.
-To use it, create an empty file with a `.excalidraw`, `.excalidraw.json`, `.excalidraw.svg` or `excalidraw.png` extension and open it in Visual Studio Code.
+To use it, create an empty file with a `.excalidraw`, `.excalidraw.json`, `.excalidraw.svg` or `.excalidraw.png` extension and open it in Visual Studio Code.
 
 Try the web version at : <https://excalidraw.com/>
 
