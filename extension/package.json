@@ -25,7 +25,9 @@
     },
     "activationEvents": [
         "workspaceContains:**/*.{excalidraw,excalidraw.svg,excalidraw.png}",
-        "onCustomEditor:editor.excalidraw"
+        "onCustomEditor:editor.excalidraw",
+        "onCommand:excalidraw.createPngImage",
+        "onCommand:excalidraw.createSvgImage"
     ],
     "repository": {
         "type": "git",
