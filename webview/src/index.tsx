@@ -125,7 +125,7 @@ async function main() {
           theme={config.theme}
           onChange={debouncedOnChange(
             sendChanges,
-            isDirty ? -1 : getSceneVersion(initialData.elements)
+            isDirty ? -1 : getSceneVersion(initialData.elements || [])
           )}
           imageParams={config.imageParams}
           langCode={config.langCode}
