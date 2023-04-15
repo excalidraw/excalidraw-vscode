@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.5.0
+
+- Fix font missing when using the extension offline
+
 ## 3.4.1
 
 - Update excalidraw package to 0.14.2
