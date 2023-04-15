@@ -1,4 +1,5 @@
-node_modules
-dist
-build
+node_modules/
+dist/
+build/
+public/excalidraw-assets/
 .eslintcache

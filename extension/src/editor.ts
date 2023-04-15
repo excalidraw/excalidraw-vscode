@@ -354,6 +354,11 @@ export class ExcalidrawEditor {
       Base64.encode(JSON.stringify(config))
     );
 
+    html = html.replace(
+      "{{excalidraw-asset-path}}",
+      `${this.webview.asWebviewUri(publicUri).toString()}/`
+    );
+
     return this.fixLinks(html, publicUri);
   }
   private fixLinks(document: string, documentUri: vscode.Uri): string {

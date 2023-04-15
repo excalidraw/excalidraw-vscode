@@ -13,7 +13,8 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "refresh-assets": "rm -rf public/excalidraw-assets && cp -r node_modules/@excalidraw/excalidraw/dist/excalidraw-assets public/excalidraw-assets",
+    "build": "npm run refresh-assets && react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "lint": "eslint --ext .tsx src/"
