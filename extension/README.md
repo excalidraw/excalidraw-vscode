@@ -18,10 +18,6 @@ Try the web version at : <https://excalidraw.com/>
   - [Configure Language](#configure-language)
 - [Contact](#contact)
 - [Note for Contributors](#note-for-contributors)
-  [Associate Additional Extensions with the Excalidraw Editor](#associate-additional-extensions-with-the-excalidraw-editor)
-  - [Sharing your Library](#sharing-your-library)
-- [Contact](#contact)
-- [Note for Contributors](#note-for-contributors)
 
 ## Features
 
