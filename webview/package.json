@@ -5,7 +5,7 @@
   "keywords": [],
   "main": "src/index.js",
   "dependencies": {
-    "@excalidraw/excalidraw": "^0.15.2-a89952e",
+    "@excalidraw/excalidraw": "^0.15.2-bb985eb",
     "js-base64": "^3.7.2",
     "lodash-es": "^4.17.21",
     "react": "^17.0.2",
