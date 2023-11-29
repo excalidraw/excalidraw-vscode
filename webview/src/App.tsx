@@ -82,7 +82,7 @@ export default function App(props: {
     files?: BinaryFiles
   ) => void;
 }) {
-  const excalidrawRef = useRef<ExcalidrawImperativeAPI>(null);
+  const [excalidrawAPI, setExcalidrawAPI] = useState<ExcalidrawImperativeAPI>();
   const libraryItemsRef = useRef(props.libraryItems);
   const { theme, setThemeConfig } = useTheme(props.theme);
   const [imageParams, setImageParams] = useState(props.imageParams);
@@ -121,7 +121,7 @@ export default function App(props: {
               return;
             }
             libraryItemsRef.current = libraryItems;
-            excalidrawRef.current!.updateLibrary({
+            excalidrawAPI?.updateLibrary({
               libraryItems,
               merge: message.merge,
               openLibraryMenu: !message.merge,
@@ -157,7 +157,7 @@ export default function App(props: {
   return (
     <div className="excalidraw-wrapper">
       <Excalidraw
-        ref={excalidrawRef}
+        excalidrawAPI={(api) => setExcalidrawAPI(api)}
         UIOptions={{
           canvasActions: {
             loadScene: false,
