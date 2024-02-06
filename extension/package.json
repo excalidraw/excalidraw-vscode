@@ -235,12 +235,15 @@
                 }
             }
         ],
-        "configurationDefaults": {
-            "files.associations": {
-                "*.excalidraw": "json",
-                "*.excalidrawlib": "json"
+        "languages": [
+            {
+                "id": "json",
+                "extensions": [
+                    ".excalidraw",
+                    ".excalidrawlib"
+                ]
             }
-        },
+        ],
         "menus": {
             "commandPalette": [
                 {
