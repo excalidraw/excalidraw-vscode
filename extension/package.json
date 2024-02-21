@@ -95,7 +95,7 @@
                     "excalidraw.theme": {
                         "description": "Excalidraw theme. Use auto to sync theme with VSCode color theme.",
                         "type": "string",
-                        "default": "light",
+                        "default": "auto",
                         "enum": [
                             "auto",
                             "light",
