@@ -142,6 +142,10 @@ export class ExcalidrawEditor {
     );
   }
 
+  private isLocalLink(link: string) {
+    return link.match(/^\.\.?\//);
+  }
+
   public async setupWebview() {
     // Setup initial content for the webview
     // Receive message from the webview.
@@ -163,7 +167,7 @@ export class ExcalidrawEditor {
             await this.document.update(new Uint8Array(msg.content));
             break;
           case "link-open":
-            vscode.env.openExternal(vscode.Uri.parse(msg.url));
+            await this.handleLinkOpen(msg.url);
             break;
           case "error":
             vscode.window.showErrorMessage(msg.content);
@@ -339,6 +343,27 @@ export class ExcalidrawEditor {
       );
     } catch (e) {
       await vscode.window.showErrorMessage(`Failed to save library: ${e}`);
+    }
+  }
+
+  private async handleLinkOpen(url: string) {
+    if (this.isLocalLink(url)) {
+      const targetPath = path.join(path.dirname(this.document.uri.fsPath), url);
+      const targetUri = vscode.Uri.file(targetPath);
+
+      if (url.match(/\.excalidraw$/)) {
+        vscode.commands.executeCommand(
+          "vscode.openWith",
+          targetUri,
+          "editor.excalidraw"
+        );
+      } else {
+        await vscode.window.showTextDocument(targetUri, {
+          preview: true,
+        });
+      }
+    } else {
+      await vscode.env.openExternal(vscode.Uri.parse(url));
     }
   }
 
