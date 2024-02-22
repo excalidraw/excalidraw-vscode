@@ -5,6 +5,9 @@ import { Base64 } from "js-base64";
 import { ExcalidrawDocument } from "./document";
 import { languageMap } from "./lang";
 
+const urlRegex = /^(http[s]?:\/\/)?(www\.)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,5}\.?/;
+//^ Replace with URL.canParse once it becomes available in VSCode
+
 export class ExcalidrawEditorProvider
   implements vscode.CustomEditorProvider<ExcalidrawDocument>
 {
@@ -140,10 +143,6 @@ export class ExcalidrawEditor {
       this.document.uri.scheme === "git" ||
       this.document.uri.scheme === "conflictResolution"
     );
-  }
-
-  private isLocalLink(link: string) {
-    return link.match(/^\.\.?\//);
   }
 
   public async setupWebview() {
@@ -347,24 +346,28 @@ export class ExcalidrawEditor {
   }
 
   private async handleLinkOpen(url: string) {
-    if (this.isLocalLink(url)) {
-      const targetPath = path.join(path.dirname(this.document.uri.fsPath), url);
-      const targetUri = vscode.Uri.file(targetPath);
-
-      if (url.match(/\.excalidraw$/)) {
-        vscode.commands.executeCommand(
-          "vscode.openWith",
-          targetUri,
-          "editor.excalidraw"
-        );
-      } else {
-        await vscode.window.showTextDocument(targetUri, {
-          preview: true,
-        });
-      }
-    } else {
+    if (url.match(urlRegex)) {
       await vscode.env.openExternal(vscode.Uri.parse(url));
+      return;
     }
+    const targetPath = path.resolve(
+      path.dirname(this.document.uri.fsPath),
+      url
+    );
+    const targetUri = vscode.Uri.file(targetPath);
+
+    if (url.match(/\.excalidraw(\.|$)/)) {
+      await vscode.commands.executeCommand(
+        "vscode.openWith",
+        targetUri,
+        "editor.excalidraw"
+      );
+      return;
+    }
+
+    await vscode.window.showTextDocument(targetUri, {
+      preview: true,
+    });
   }
 
   private async buildHtmlForWebview(config: any): Promise<string> {
