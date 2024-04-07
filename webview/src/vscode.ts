@@ -6,6 +6,7 @@ import {
 import { ExcalidrawElement } from "@excalidraw/excalidraw/types/element/types";
 import { AppState, BinaryFiles } from "@excalidraw/excalidraw/types/types";
 
+// @ts-ignore
 export const vscode = acquireVsCodeApi();
 
 const textEncoder = new TextEncoder();
