@@ -15,9 +15,9 @@ npm install # from the extension directory
 
 ### Run the extension
 
-Use the `Debug: Start Debugging Command` to launch the extension in a new vscode window.
+Use the `Debug: Start Debugging` command to launch the extension in a new vscode window.
 
-To inspect/debug the webview, use the `Developer: Open Webview Developer tools command`.
+To inspect/debug the webview, use the `Developer: Open Webview Developer Tools` command.
 
 ### Package the extension to a vsix archive
 
