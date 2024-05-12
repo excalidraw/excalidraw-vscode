@@ -23,7 +23,7 @@ Try the web version at : <https://excalidraw.com/>
 
 ### Edit Images
 
-The source of the drawing can be embedded directly in a PNG or SVG image. Just create a new `.excalidraw.png` or `excalidraw.png` file.
+The source of the drawing can be embedded directly in a PNG or SVG image. Just create a new `.excalidraw.png` or `.excalidraw.svg` file.
 You can also switch between text and image format by updating the file extension (ex: rename a `.excalidraw` file to `.excalidraw.png`).
 
 ![Image can be edited directly](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/edit_image.gif)
