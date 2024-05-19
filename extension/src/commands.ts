@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { ExcalidrawDocument } from './document'
 
 function getConfigurationScope(
   config: vscode.WorkspaceConfiguration,
@@ -89,6 +90,26 @@ function showImage(uri: vscode.Uri, viewColumn?: vscode.ViewColumn) {
   );
 }
 
+async function showSaveDialog() {
+  const targetUri = await vscode.window.showSaveDialog({
+    saveLabel: 'Create',
+    filters: {
+      Diagrams: ['excalidraw']
+    }
+  })
+  if (!targetUri) {
+    return
+  }
+  try {
+    const doc = new ExcalidrawDocument(targetUri, new Uint8Array())
+    await doc.saveAs(targetUri);
+    showEditor(targetUri, vscode.ViewColumn.Active);
+  } catch (e) {
+    console.error('Cannot create or open file', e);
+    await vscode.window.showErrorMessage(`Cannot create or open file "${targetUri.toString()}"!`);
+  }
+}
+
 export function registerCommands(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("excalidraw.updateTheme", updateTheme)
@@ -119,5 +140,8 @@ export function registerCommands(context: vscode.ExtensionContext) {
   );
   context.subscriptions.push(
     vscode.commands.registerCommand("excalidraw.preventDefault", () => {})
+  );
+  context.subscriptions.push(
+    vscode.commands.registerCommand('excalidraw.newDiagram', () => showSaveDialog())
   );
 }
