@@ -19,7 +19,6 @@ export class ExcalidrawEditorProvider
         webviewOptions: { retainContextWhenHidden: true },
       }
     );
-    context.globalState.setKeysForSync(["library"]);
 
     ExcalidrawEditorProvider.migrateLegacyLibraryItems(context);
 
