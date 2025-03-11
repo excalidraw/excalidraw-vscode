@@ -1,41 +1,33 @@
 {
-  "name": "excalidraw",
-  "version": "1.0.0",
-  "description": "",
-  "keywords": [],
-  "main": "src/index.js",
-  "dependencies": {
-    "@excalidraw/excalidraw": "^0.17.6",
-    "js-base64": "^3.7.2",
-    "lodash-es": "^4.17.21",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2"
-  },
+  "name": "webview",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "start": "react-scripts start",
-    "refresh-assets": "shx rm -rf public/excalidraw-assets && shx cp -r node_modules/@excalidraw/excalidraw/dist/excalidraw-assets public/excalidraw-assets",
-    "build": "npm run refresh-assets && react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject",
-    "lint": "eslint --ext .tsx src/"
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
   },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ],
+  "dependencies": {
+    "@excalidraw/excalidraw": "^0.18.0",
+    "js-base64": "^3.7.7",
+    "lodash-es": "^4.17.21",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
   "devDependencies": {
-    "@excalidraw/eslint-config": "^1.0.3",
-    "@types/lodash-es": "^4.17.6",
-    "@types/mousetrap": "^1.6.9",
-    "@types/react": "^18.0.21",
-    "@types/react-dom": "^18.0.6",
-    "@types/vscode-webview": "^1.57.5",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-prettier": "^4.2.1",
-    "prettier": "^2.7.1",
-    "react-scripts": "5.0.1",
-    "shx": "^0.3.4"
+    "@eslint/js": "^9.21.0",
+    "@types/lodash-es": "^4.17.12",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.21.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^15.15.0",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.24.1",
+    "vite": "^6.2.0"
   }
 }

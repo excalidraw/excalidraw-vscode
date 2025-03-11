@@ -3,8 +3,7 @@ import {
   exportToSvg,
   exportToBlob,
 } from "@excalidraw/excalidraw";
-import { ExcalidrawElement } from "@excalidraw/excalidraw/types/element/types";
-import { AppState, BinaryFiles } from "@excalidraw/excalidraw/types/types";
+import { AppState, BinaryFiles } from "@excalidraw/excalidraw/types";
 
 // @ts-ignore
 export const vscode = acquireVsCodeApi();
@@ -12,7 +11,7 @@ export const vscode = acquireVsCodeApi();
 const textEncoder = new TextEncoder();
 
 const svg2VSCode = async (
-  elements: readonly ExcalidrawElement[],
+  elements: readonly any[],
   appState: Partial<AppState>,
   files: BinaryFiles
 ) => {
@@ -28,7 +27,7 @@ const svg2VSCode = async (
 };
 
 const png2VSCode = async (
-  elements: readonly ExcalidrawElement[],
+  elements: readonly any[],
   appState: Partial<AppState>,
   files: BinaryFiles
 ) => {
@@ -36,7 +35,7 @@ const png2VSCode = async (
     elements,
     appState,
     files,
-    getDimensions(width, height) {
+    getDimensions(width: number, height: number) {
       const scale = appState.exportScale || 2;
       return {
         width: width * scale,
@@ -60,7 +59,7 @@ const png2VSCode = async (
 };
 
 const json2VSCode = (
-  elements: readonly ExcalidrawElement[],
+  elements: readonly any[],
   appState: Partial<AppState>,
   files: BinaryFiles
 ) => {

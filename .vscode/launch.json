@@ -9,11 +9,13 @@
       "type": "extensionHost",
       "request": "launch",
       "args": [
-        "--extensionDevelopmentPath=${workspaceFolder}/extension",
+        "--extensionDevelopmentPath=${workspaceFolder}",
         "--extensionDevelopmentKind=web",
         "${workspaceFolder}/examples"
       ],
-      "outFiles": ["${workspaceFolder}/extension/dist/**/*.js"],
+      "outFiles": [
+        "${workspaceFolder}/dist/**/*.js"
+      ],
       "debugWebWorkerHost": true,
       "preLaunchTask": "build"
     }

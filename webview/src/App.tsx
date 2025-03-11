@@ -1,10 +1,12 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   Excalidraw,
   loadLibraryFromBlob,
   serializeLibraryAsJSON,
   THEME,
 } from "@excalidraw/excalidraw";
+
+import "../node_modules/@excalidraw/excalidraw/dist/prod/index.css";
 
 import "./styles.css";
 import {
@@ -13,9 +15,8 @@ import {
   ExcalidrawImperativeAPI,
   ExcalidrawInitialDataState,
   LibraryItems,
-} from "@excalidraw/excalidraw/types/types";
-import { vscode } from "./vscode";
-import { ExcalidrawElement } from "@excalidraw/excalidraw/types/element/types";
+} from "@excalidraw/excalidraw/types"
+import { vscode } from "./vscode.ts";
 
 function detectTheme() {
   switch (document.body.className) {
@@ -77,7 +78,7 @@ export default function App(props: {
   };
   dirty: boolean;
   onChange: (
-    elements: readonly ExcalidrawElement[],
+    elements: readonly any[],
     appState: Partial<AppState>,
     files?: BinaryFiles
   ) => void;
@@ -98,7 +99,7 @@ export default function App(props: {
     } else {
       props.onChange(
         [],
-        { gridSize: null, viewBackgroundColor: "#ffffff" },
+        { viewBackgroundColor: "#ffffff" },
         {}
       );
     }

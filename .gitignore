@@ -1,1 +1,8 @@
+node_modules
+out
+**/.eslintcache
 **/*.vsix
+public
+demo
+dist
+.vscode-test-web

@@ -8,14 +8,13 @@ import ReactDOM from "react-dom";
 import { Base64 } from "js-base64";
 
 import App from "./App";
-import { sendChangesToVSCode, vscode } from "./vscode";
+import { sendChangesToVSCode, vscode } from "./vscode.ts";
 import {
   AppState,
   BinaryFiles,
   ExcalidrawInitialDataState,
-} from "@excalidraw/excalidraw/types/types";
-import { ExcalidrawElement } from "@excalidraw/excalidraw/types/element/types";
-import _ from "lodash-es";
+} from "@excalidraw/excalidraw/types";
+import * as _ from "lodash-es";
 
 const mimeTypeFallbacks = {
   "application/json": ["image/png", "image/svg+xml"],
@@ -47,7 +46,7 @@ async function getInitialData(
       );
 
       return [{ ...initialData }, contentType];
-    } catch (_) {}
+    } catch (_) { }
   }
 
   throw new Error("Unable to load initial data");
@@ -87,15 +86,15 @@ async function main() {
     const [initialData, initialContentType] =
       config.content.length > 0
         ? await getInitialData(
-            new Uint8Array(config.content),
-            config.contentType
-          )
+          new Uint8Array(config.content),
+          config.contentType
+        )
         : [undefined, config.contentType];
 
     const sendChanges = sendChangesToVSCode(config.contentType);
     const debouncedOnChange = (
       onChange: (
-        elements: readonly ExcalidrawElement[],
+        elements: readonly any[],
         appState: Partial<AppState>,
         files: BinaryFiles
       ) => void,

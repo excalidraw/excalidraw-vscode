@@ -4,9 +4,6 @@
     {
       "type": "npm",
       "script": "build",
-      "options": {
-        "cwd": "${workspaceFolder}/extension"
-      },
       "label": "build",
       "problemMatcher": []
     },
@@ -16,9 +13,6 @@
       "args": [
         "install"
       ],
-      "options": {
-        "cwd": "${workspaceFolder}/extension"
-      },
       "label": "install",
       "problemMatcher": []
     },
@@ -29,9 +23,6 @@
         "package",
         "--out=${workspaceFolder}"
       ],
-      "options": {
-        "cwd": "${workspaceFolder}/extension"
-      },
       "label": "package",
       "problemMatcher": []
     }

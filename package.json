@@ -1,9 +1,9 @@
 {
     "name": "excalidraw-editor",
-    "icon": "assets/images/logo.png",
+    "icon": "assets/logo.png",
     "displayName": "Excalidraw",
     "description": "Draw schemas in VS Code using Excalidraw",
-    "version": "3.7.4",
+    "version": "3.8.0",
     "publisher": "pomdtr",
     "engines": {
         "vscode": "^1.63.0"
@@ -24,8 +24,7 @@
         "url": "https://github.com/pomdtr"
     },
     "activationEvents": [
-        "workspaceContains:**/*.{excalidraw,excalidraw.svg,excalidraw.png}",
-        "onCustomEditor:editor.excalidraw"
+        "workspaceContains:**/*.{excalidraw,excalidraw.svg,excalidraw.png}"
     ],
     "repository": {
         "type": "git",
@@ -56,8 +55,8 @@
                 "category": "Excalidraw",
                 "title": "Open Excalidraw",
                 "icon": {
-                    "dark": "./assets/images/menu-icon-dark.png",
-                    "light": "./assets/images/menu-icon-light.png"
+                    "dark": "./assets/menu-icon-dark.png",
+                    "light": "./assets/menu-icon-light.png"
                 }
             },
             {
@@ -342,14 +341,12 @@
         ]
     },
     "scripts": {
-        "install": "cd ../webview && npm install",
+        "install": "cd webview && npm install",
+        "build-webview": "cd webview && npm run build",
+        "build": "npm run build-webview && webpack --mode development",
+        "package": "npm run build-webview && webpack --mode production --devtool hidden-source-map",
         "vscode:prepublish": "npm run package",
-        "package": "npm run build-webview && npm run copy-webview && webpack --mode production --devtool hidden-source-map",
-        "build": "npm run build-webview && npm run copy-webview && webpack --mode development",
-        "copy-webview": "shx rm -rf public && shx cp -r ../webview/build public",
         "lint": "eslint --ext .ts src",
-        "build-webview": "cd ../webview && npm run build",
-        "start-webview": "cd ../webview && npm run start",
         "open-in-browser": "vscode-test-web --extensionDevelopmentPath=. ../examples"
     },
     "capabilities": {
