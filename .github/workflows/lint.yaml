@@ -12,10 +12,8 @@ jobs:
         with:
           node-version: 16
       - run: npm ci
-        working-directory: extension
       - run: npm run lint
         name: Lint Extension
-        working-directory: extension
       - run: npm run lint
         name: Lint Webview
         working-directory: webview
