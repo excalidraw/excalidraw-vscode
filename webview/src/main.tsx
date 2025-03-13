@@ -1,5 +1,5 @@
 import {
-  getSceneVersion,
+  hashElementsVersion,
   loadFromBlob,
   loadLibraryFromBlob,
 } from "@excalidraw/excalidraw";
@@ -103,7 +103,7 @@ async function main() {
       let previousVersion = initialVersion;
 
       return _.debounce((elements, appState, files) => {
-        const currentVersion = getSceneVersion(elements);
+        const currentVersion = hashElementsVersion(elements);
         if (currentVersion !== previousVersion) {
           previousVersion = currentVersion;
           onChange(elements, appState, files);
@@ -124,7 +124,7 @@ async function main() {
           theme={config.theme}
           onChange={debouncedOnChange(
             sendChanges,
-            isDirty ? -1 : getSceneVersion(initialData.elements || [])
+            isDirty ? -1 : hashElementsVersion(initialData.elements || [])
           )}
           imageParams={config.imageParams}
           langCode={config.langCode}

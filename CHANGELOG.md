@@ -1,5 +1,14 @@
 # Changelog
 
+## 3.8.1
+
+- fix readme images in the marketplace
+
+## 3.8.0
+
+- upgrade excalidraw version to 0.18.0
+- deactivate syncing of excalidraw libs between devices
+
 ## 3.5.0
 
 - Fix font missing when using the extension offline

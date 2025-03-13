@@ -6,7 +6,7 @@ import {
   THEME,
 } from "@excalidraw/excalidraw";
 
-import "../node_modules/@excalidraw/excalidraw/dist/prod/index.css";
+import "@excalidraw/excalidraw/index.css";
 
 import "./styles.css";
 import {

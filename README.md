@@ -5,7 +5,7 @@ To use it, create an empty file with a `.excalidraw`, `.excalidraw.json`, `.exca
 
 Try the web version at : <https://excalidraw.com/>
 
-![demo](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/screenshot.png)
+![demo](./medias/screenshot.png)
 
 - [Features](#features)
   - [Edit Images](#edit-images)
@@ -26,7 +26,7 @@ Try the web version at : <https://excalidraw.com/>
 The source of the drawing can be embedded directly in a PNG or SVG image. Just create a new `.excalidraw.png` or `.excalidraw.svg` file.
 You can also switch between text and image format by updating the file extension (ex: rename a `.excalidraw` file to `.excalidraw.png`).
 
-![Image can be edited directly](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/edit_image.gif)
+![Image can be edited directly](./medias/edit_image.gif)
 
 You can control the default export options using the `excalidraw.image` setting:
 
@@ -53,19 +53,19 @@ The extension support three theme options:
 - dark
 - auto (sync with VS Code Theme)
 
-![theme switching](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/change-theme.gif)
+![theme switching](./medias/change-theme.gif)
 
 ### Import Public Library
 
 Check out the available libraries at [libraries.excalidraw.com](https://libraries.excalidraw.com), and don't hesitate to contribute your own !
 
-![Public libraries can be imported from the browser](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/import-library.gif)
+![Public libraries can be imported from the browser](./medias/import-library.gif)
 
 ### View Drawing Source
 
 You can switch between the Excalidraw editor and the source (text or image) using the editor toolbar.
 
-![Use the dedicated toolbar button to view the diagram source](https://raw.githubusercontent.com/excalidraw/excalidraw-vscode/master/extension/medias/view_source.gif)
+![Use the dedicated toolbar button to view the diagram source](./medias/view_source.gif)
 
 ### Associate Additional Extensions with the Excalidraw Editor
 
