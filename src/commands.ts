@@ -92,7 +92,15 @@ function showImage(uri: vscode.Uri, viewColumn?: vscode.ViewColumn) {
 async function newFile() {
   const newFileUri = await vscode.window.showSaveDialog({
     filters: {
-      "Excalidraw": ["excalidraw"],
+      Excalidraw: [
+        "excalidraw",
+        "excalidraw.png",
+        "excalidraw.svg",
+        "excalidraw.json",
+      ],
+      "Excalidraw Png": ["excalidraw.png"],
+      "Excalidraw Svg": ["excalidraw.svg"],
+      "Excalidraw Json": ["excalidraw.json"],
     },
   });
 
