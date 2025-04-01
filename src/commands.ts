@@ -89,7 +89,35 @@ function showImage(uri: vscode.Uri, viewColumn?: vscode.ViewColumn) {
   );
 }
 
+async function newFile() {
+  const newFileUri = await vscode.window.showSaveDialog({
+    filters: {
+      "Excalidraw": ["excalidraw"],
+    },
+  });
+
+  if (!newFileUri) {
+    return;
+  }
+
+  try {
+    // create a new file with an empty content to avoid further issues with content detection
+    await vscode.workspace.fs.writeFile(newFileUri, new Uint8Array());
+
+    await vscode.commands.executeCommand(
+      "vscode.openWith",
+      newFileUri,
+      "editor.excalidraw"
+    );
+  } catch (error) {
+    vscode.window.showErrorMessage(`Failed to create new file: ${error}`);
+  }
+}
+
 export function registerCommands(context: vscode.ExtensionContext) {
+  context.subscriptions.push(
+    vscode.commands.registerCommand("excalidraw.newFile", newFile)
+  );
   context.subscriptions.push(
     vscode.commands.registerCommand("excalidraw.updateTheme", updateTheme)
   );
@@ -118,6 +146,6 @@ export function registerCommands(context: vscode.ExtensionContext) {
     )
   );
   context.subscriptions.push(
-    vscode.commands.registerCommand("excalidraw.preventDefault", () => {})
+    vscode.commands.registerCommand("excalidraw.preventDefault", () => { })
   );
 }
