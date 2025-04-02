@@ -42,6 +42,12 @@
             {
                 "command": "excalidraw.newFile",
                 "category": "Excalidraw",
+                "title": "Scene",
+                "icon": "$(color-mode)"
+            },
+            {
+                "command": "excalidraw.newSceneFile",
+                "category": "Excalidraw",
                 "title": "New File",
                 "icon": "$(color-mode)"
             },
@@ -252,6 +258,10 @@
         "menus": {
             "commandPalette": [
                 {
+                    "command": "excalidraw.newFile",
+                    "when": "false"
+                },
+                {
                     "command": "excalidraw.updateTheme",
                     "when": "activeCustomEditorId == 'editor.excalidraw'"
                 },
@@ -307,6 +317,11 @@
                     "command": "excalidraw.updateTheme",
                     "when": "activeCustomEditorId == 'editor.excalidraw'",
                     "group": "navigation"
+                }
+            ],
+            "file/newFile": [
+                {
+                    "command": "excalidraw.newFile"
                 }
             ]
         },

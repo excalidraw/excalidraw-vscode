@@ -127,6 +127,9 @@ export function registerCommands(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand("excalidraw.newFile", newFile)
   );
   context.subscriptions.push(
+    vscode.commands.registerCommand("excalidraw.newSceneFile", newFile)
+  );
+  context.subscriptions.push(
     vscode.commands.registerCommand("excalidraw.updateTheme", updateTheme)
   );
   context.subscriptions.push(
