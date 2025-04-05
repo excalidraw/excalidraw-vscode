@@ -89,34 +89,23 @@ function showImage(uri: vscode.Uri, viewColumn?: vscode.ViewColumn) {
   );
 }
 
+let runningCounter = 0;
+
+async function newUntitledExcalidrawDocument() {
+  runningCounter += 1;
+  const uri = vscode.Uri.parse(
+    `untitled:Untitled-${runningCounter}.excalidraw`
+  );
+  await vscode.commands.executeCommand(
+    "vscode.openWith",
+    uri,
+    "editor.excalidraw"
+  );
+}
+
 async function newFile() {
-  const newFileUri = await vscode.window.showSaveDialog({
-    filters: {
-      Excalidraw: [
-        "excalidraw",
-        "excalidraw.png",
-        "excalidraw.svg",
-        "excalidraw.json",
-      ],
-      "Excalidraw Png": ["excalidraw.png"],
-      "Excalidraw Svg": ["excalidraw.svg"],
-      "Excalidraw Json": ["excalidraw.json"],
-    },
-  });
-
-  if (!newFileUri) {
-    return;
-  }
-
   try {
-    // create a new file with an empty content to avoid further issues with content detection
-    await vscode.workspace.fs.writeFile(newFileUri, new Uint8Array());
-
-    await vscode.commands.executeCommand(
-      "vscode.openWith",
-      newFileUri,
-      "editor.excalidraw"
-    );
+    await newUntitledExcalidrawDocument();
   } catch (error) {
     vscode.window.showErrorMessage(`Failed to create new file: ${error}`);
   }
