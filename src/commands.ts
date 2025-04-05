@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { newUntitledExcalidrawDocument } from "./utils";
 
 function getConfigurationScope(
   config: vscode.WorkspaceConfiguration,
@@ -86,20 +87,6 @@ function showImage(uri: vscode.Uri, viewColumn?: vscode.ViewColumn) {
     uri,
     "imagePreview.previewEditor",
     viewColumn
-  );
-}
-
-let runningCounter = 0;
-
-async function newUntitledExcalidrawDocument() {
-  runningCounter += 1;
-  const uri = vscode.Uri.parse(
-    `untitled:Untitled-${runningCounter}.excalidraw`
-  );
-  await vscode.commands.executeCommand(
-    "vscode.openWith",
-    uri,
-    "editor.excalidraw"
   );
 }
 
