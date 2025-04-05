@@ -1,0 +1,6 @@
+dist/*
+node_modules/*
+*.json
+*.code-snippets
+webview/dist/*
+webview/node_modules/*

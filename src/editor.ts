@@ -84,9 +84,16 @@ export class ExcalidrawEditorProvider
     uri: vscode.Uri,
     openContext: vscode.CustomDocumentOpenContext
   ): Promise<ExcalidrawDocument> {
-    const content = await vscode.workspace.fs.readFile(
-      openContext.backupId ? vscode.Uri.parse(openContext.backupId) : uri
-    );
+    let content: Uint8Array;
+    if (uri.scheme === "untitled") {
+      content = new TextEncoder().encode(
+        JSON.stringify({ type: "excalidraw", elements: [] })
+      );
+    } else {
+      content = await vscode.workspace.fs.readFile(
+        openContext.backupId ? vscode.Uri.parse(openContext.backupId) : uri
+      );
+    }
     const document = new ExcalidrawDocument(uri, content);
 
     const onDidDocumentChange = document.onDidContentChange(() => {

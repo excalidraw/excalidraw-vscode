@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { newUntitledExcalidrawDocument } from "./utils";
 
 function getConfigurationScope(
   config: vscode.WorkspaceConfiguration,
@@ -89,7 +90,21 @@ function showImage(uri: vscode.Uri, viewColumn?: vscode.ViewColumn) {
   );
 }
 
+async function newFile() {
+  try {
+    await newUntitledExcalidrawDocument();
+  } catch (error) {
+    vscode.window.showErrorMessage(`Failed to create new file: ${error}`);
+  }
+}
+
 export function registerCommands(context: vscode.ExtensionContext) {
+  context.subscriptions.push(
+    vscode.commands.registerCommand("excalidraw.newFile", newFile)
+  );
+  context.subscriptions.push(
+    vscode.commands.registerCommand("excalidraw.newSceneFile", newFile)
+  );
   context.subscriptions.push(
     vscode.commands.registerCommand("excalidraw.updateTheme", updateTheme)
   );
@@ -118,6 +133,6 @@ export function registerCommands(context: vscode.ExtensionContext) {
     )
   );
   context.subscriptions.push(
-    vscode.commands.registerCommand("excalidraw.preventDefault", () => {})
+    vscode.commands.registerCommand("excalidraw.preventDefault", () => { })
   );
 }
