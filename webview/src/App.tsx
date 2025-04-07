@@ -153,7 +153,7 @@ export default function App(props: {
     return () => {
       window.removeEventListener("message", listener);
     };
-  }, []);
+  }, [excalidrawAPI]);
 
   return (
     <div className="excalidraw-wrapper">
