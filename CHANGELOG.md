@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.8.3
+
+- fix library import
+
+## 3.8.2
+
+- add a command to create a new diagram
+
 ## 3.8.1
 
 - fix readme images in the marketplace
