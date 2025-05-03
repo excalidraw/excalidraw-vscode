@@ -49,6 +49,7 @@ function useTheme(initialThemeConfig: string) {
   useEffect(updateTheme, [themeConfig]);
 
   useEffect(() => {
+		if (themeConfig !== 'auto') return;
     const observer = new MutationObserver(() => {
       updateTheme();
     });
@@ -59,7 +60,7 @@ function useTheme(initialThemeConfig: string) {
     return () => {
       observer.disconnect();
     };
-  }, []);
+	}, [themeConfig]);
 
   return { theme, setThemeConfig };
 }
