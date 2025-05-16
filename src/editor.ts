@@ -4,6 +4,7 @@ import { Base64 } from "js-base64";
 
 import { ExcalidrawDocument } from "./document";
 import { languageMap } from "./lang";
+import { showEditor } from "./commands";
 
 export class ExcalidrawEditorProvider
   implements vscode.CustomEditorProvider<ExcalidrawDocument> {
@@ -168,7 +169,10 @@ export class ExcalidrawEditor {
             await this.document.update(new Uint8Array(msg.content));
             break;
           case "link-open":
-            vscode.env.openExternal(vscode.Uri.parse(msg.url));
+            await openLink(
+              vscode.Uri.parse(msg.url),
+              vscode.workspace.getWorkspaceFolder(this.document.uri)
+            );           
             break;
           case "error":
             vscode.window.showErrorMessage(msg.content);
@@ -398,5 +402,25 @@ function getFileWorkspaceFolder(
       return folder;
     }
     parts.pop();
+  }
+}
+
+async function openLink(
+  uri: vscode.Uri,
+  workspaceRoot: vscode.WorkspaceFolder | undefined
+): Promise<void> {
+  const targetPath = workspaceRoot
+    ? path.join(workspaceRoot.uri.fsPath, uri.fsPath)
+    : null;
+
+  vscode.window.showInformationMessage(`Opening Excalidraw link: ${targetPath}`);
+
+  // If the file exists and is under the workspace root
+  if (workspaceRoot && targetPath && targetPath.startsWith(workspaceRoot.uri.fsPath)) {
+    // Open it in the editor
+    await showEditor(vscode.Uri.parse(targetPath));
+  } else {
+    // Otherwise, use the default opener
+    vscode.env.openExternal(uri);
   }
 }
