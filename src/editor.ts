@@ -417,6 +417,13 @@ async function openLink(
 
   // First construct the full path to check existence
   const fullPath = path.join(workspaceRoot.uri.fsPath, uri.fsPath);
+  
+  // If the path is outside the workspace root, use external opener
+  if (!fullPath.startsWith(workspaceRoot.uri.fsPath)) {
+    await vscode.env.openExternal(uri);
+    return;
+  }
+
   try {
     // Check if file exists using VS Code's file system API
     await vscode.workspace.fs.stat(vscode.Uri.file(fullPath));
