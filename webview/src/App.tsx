@@ -15,7 +15,7 @@ import {
   ExcalidrawImperativeAPI,
   ExcalidrawInitialDataState,
   LibraryItems,
-} from "@excalidraw/excalidraw/types"
+} from "@excalidraw/excalidraw/types";
 import { vscode } from "./vscode.ts";
 
 function detectTheme() {
@@ -97,11 +97,7 @@ export default function App(props: {
       const { elements, appState, files } = props.initialData;
       props.onChange(elements || [], appState || {}, files);
     } else {
-      props.onChange(
-        [],
-        { viewBackgroundColor: "#ffffff" },
-        {}
-      );
+      props.onChange([], { viewBackgroundColor: "#ffffff" }, {});
     }
   }, []);
 
