@@ -6,7 +6,8 @@ import { ExcalidrawDocument } from "./document";
 import { languageMap } from "./lang";
 
 export class ExcalidrawEditorProvider
-  implements vscode.CustomEditorProvider<ExcalidrawDocument> {
+  implements vscode.CustomEditorProvider<ExcalidrawDocument>
+{
   public static async register(
     context: vscode.ExtensionContext
   ): Promise<vscode.Disposable> {
@@ -48,7 +49,7 @@ export class ExcalidrawEditorProvider
 
   private static readonly viewType = "editor.excalidraw";
 
-  constructor(private readonly context: vscode.ExtensionContext) { }
+  constructor(private readonly context: vscode.ExtensionContext) {}
 
   public async resolveCustomEditor(
     document: ExcalidrawDocument,
@@ -138,7 +139,7 @@ export class ExcalidrawEditor {
     readonly document: ExcalidrawDocument,
     readonly webview: vscode.Webview,
     readonly context: vscode.ExtensionContext
-  ) { }
+  ) {}
 
   isViewOnly() {
     return (
@@ -348,7 +349,11 @@ export class ExcalidrawEditor {
   }
 
   private async buildHtmlForWebview(config: any): Promise<string> {
-    const webviewUri = vscode.Uri.joinPath(this.context.extensionUri, "webview", "dist");
+    const webviewUri = vscode.Uri.joinPath(
+      this.context.extensionUri,
+      "webview",
+      "dist"
+    );
     const content = await vscode.workspace.fs.readFile(
       vscode.Uri.joinPath(webviewUri, "index.html")
     );

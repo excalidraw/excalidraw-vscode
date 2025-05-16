@@ -133,6 +133,6 @@ export function registerCommands(context: vscode.ExtensionContext) {
     )
   );
   context.subscriptions.push(
-    vscode.commands.registerCommand("excalidraw.preventDefault", () => { })
+    vscode.commands.registerCommand("excalidraw.preventDefault", () => {})
   );
 }
