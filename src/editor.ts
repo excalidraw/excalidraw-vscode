@@ -409,18 +409,27 @@ async function openLink(
   uri: vscode.Uri,
   workspaceRoot: vscode.WorkspaceFolder | undefined
 ): Promise<void> {
-  const targetPath = workspaceRoot
-    ? path.join(workspaceRoot.uri.fsPath, uri.fsPath)
-    : null;
+  if (!workspaceRoot) {
+    // If no workspace root, use external opener
+    await vscode.env.openExternal(uri);
+    return;
+  }
 
-  vscode.window.showInformationMessage(`Opening Excalidraw link: ${targetPath}`);
+  // First construct the full path to check existence
+  const fullPath = path.join(workspaceRoot.uri.fsPath, uri.fsPath);
+  try {
+    // Check if file exists using VS Code's file system API
+    await vscode.workspace.fs.stat(vscode.Uri.file(fullPath));
 
-  // If the file exists and is under the workspace root
-  if (workspaceRoot && targetPath && targetPath.startsWith(workspaceRoot.uri.fsPath)) {
-    // Open it in the editor
-    await showEditor(vscode.Uri.parse(targetPath));
-  } else {
-    // Otherwise, use the default opener
-    vscode.env.openExternal(uri);
+    // File exists, get path relative to workspace root and open with editor
+    const relativePath = path.relative(workspaceRoot.uri.fsPath, fullPath);
+    vscode.window.showInformationMessage(
+      `Opening workspace file: ${relativePath}`
+    );
+    await showEditor(vscode.Uri.joinPath(workspaceRoot.uri, relativePath));
+  } catch (e) {
+    vscode.window.showErrorMessage(`${e}`);
+    // File doesn't exist or other error, use external opener
+    await vscode.env.openExternal(uri);
   }
 }
