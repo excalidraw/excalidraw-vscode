@@ -72,7 +72,7 @@ function showSource(uri: vscode.Uri, viewColumn?: vscode.ViewColumn) {
   vscode.window.showTextDocument(uri, { viewColumn });
 }
 
-function showEditor(uri: vscode.Uri, viewColumn?: vscode.ViewColumn) {
+export function showEditor(uri: vscode.Uri, viewColumn?: vscode.ViewColumn) {
   vscode.commands.executeCommand(
     "vscode.openWith",
     uri,
