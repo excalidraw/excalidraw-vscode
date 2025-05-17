@@ -7,7 +7,8 @@ import { languageMap } from "./lang";
 import { showEditor } from "./commands";
 
 export class ExcalidrawEditorProvider
-  implements vscode.CustomEditorProvider<ExcalidrawDocument> {
+  implements vscode.CustomEditorProvider<ExcalidrawDocument>
+{
   public static async register(
     context: vscode.ExtensionContext
   ): Promise<vscode.Disposable> {
@@ -49,7 +50,7 @@ export class ExcalidrawEditorProvider
 
   private static readonly viewType = "editor.excalidraw";
 
-  constructor(private readonly context: vscode.ExtensionContext) { }
+  constructor(private readonly context: vscode.ExtensionContext) {}
 
   public async resolveCustomEditor(
     document: ExcalidrawDocument,
@@ -139,7 +140,7 @@ export class ExcalidrawEditor {
     readonly document: ExcalidrawDocument,
     readonly webview: vscode.Webview,
     readonly context: vscode.ExtensionContext
-  ) { }
+  ) {}
 
   isViewOnly() {
     return (
@@ -169,10 +170,7 @@ export class ExcalidrawEditor {
             await this.document.update(new Uint8Array(msg.content));
             break;
           case "link-open":
-            await openLink(
-              vscode.Uri.parse(msg.url),
-              vscode.workspace.getWorkspaceFolder(this.document.uri)
-            );           
+            await openLink(vscode.Uri.parse(msg.url), this.document.uri);
             break;
           case "error":
             vscode.window.showErrorMessage(msg.content);
@@ -352,7 +350,11 @@ export class ExcalidrawEditor {
   }
 
   private async buildHtmlForWebview(config: any): Promise<string> {
-    const webviewUri = vscode.Uri.joinPath(this.context.extensionUri, "webview", "dist");
+    const webviewUri = vscode.Uri.joinPath(
+      this.context.extensionUri,
+      "webview",
+      "dist"
+    );
     const content = await vscode.workspace.fs.readFile(
       vscode.Uri.joinPath(webviewUri, "index.html")
     );
@@ -405,38 +407,40 @@ function getFileWorkspaceFolder(
   }
 }
 
-async function openLink(
-  uri: vscode.Uri,
-  workspaceRoot: vscode.WorkspaceFolder | undefined
-): Promise<void> {
+async function openLink(uri: vscode.Uri, source: vscode.Uri): Promise<void> {
+  const workspaceRoot = vscode.workspace.getWorkspaceFolder(source);
   if (!workspaceRoot) {
-    // If no workspace root, use external opener
+    // If we have no workspace root, open the link externally
     await vscode.env.openExternal(uri);
     return;
   }
 
-  // First construct the full path to check existence
-  const fullPath = path.join(workspaceRoot.uri.fsPath, uri.fsPath);
-  
-  // If the path is outside the workspace root, use external opener
-  if (!fullPath.startsWith(workspaceRoot.uri.fsPath)) {
+  // Construct the full path to check existence
+  const fpath = vscode.Uri.file(
+    path.normalize(path.join(workspaceRoot.uri.fsPath, uri.fsPath))
+  );
+
+  // If the full path is not within the workspace root, open the link externally
+  if (!fpath.fsPath.startsWith(workspaceRoot.uri.fsPath)) {
     await vscode.env.openExternal(uri);
     return;
   }
 
   try {
-    // Check if file exists using VS Code's file system API
-    await vscode.workspace.fs.stat(vscode.Uri.file(fullPath));
-
-    // File exists, get path relative to workspace root and open with editor
-    const relativePath = path.relative(workspaceRoot.uri.fsPath, fullPath);
-    vscode.window.showInformationMessage(
-      `Opening workspace file: ${relativePath}`
-    );
-    await showEditor(vscode.Uri.joinPath(workspaceRoot.uri, relativePath));
+    // Ensure the resource exists and is a file
+    const stat = await vscode.workspace.fs.stat(fpath);
+    if (stat.type !== vscode.FileType.File) {
+      throw new Error(`${fpath} is not a file`);
+    }
   } catch (e) {
-    vscode.window.showErrorMessage(`${e}`);
-    // File doesn't exist or other error, use external opener
+    // Otherwise, open it externally
     await vscode.env.openExternal(uri);
+    return;
   }
+
+  // File exists in the workspace, open it in the editor
+  vscode.window.showInformationMessage(
+    `Opening workspace file: ${fpath.fsPath}`
+  );
+  await showEditor(fpath);
 }
