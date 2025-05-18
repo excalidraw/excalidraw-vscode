@@ -72,7 +72,10 @@ function showSource(uri: vscode.Uri, viewColumn?: vscode.ViewColumn) {
   vscode.window.showTextDocument(uri, { viewColumn });
 }
 
-export async function showEditor(uri: vscode.Uri, viewColumn?: vscode.ViewColumn) {
+export async function showEditor(
+  uri: vscode.Uri,
+  viewColumn?: vscode.ViewColumn
+) {
   await vscode.commands.executeCommand(
     "vscode.openWith",
     uri,
@@ -133,6 +136,6 @@ export function registerCommands(context: vscode.ExtensionContext) {
     )
   );
   context.subscriptions.push(
-    vscode.commands.registerCommand("excalidraw.preventDefault", () => { })
+    vscode.commands.registerCommand("excalidraw.preventDefault", () => {})
   );
 }

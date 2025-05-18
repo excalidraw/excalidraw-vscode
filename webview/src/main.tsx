@@ -46,7 +46,7 @@ async function getInitialData(
       );
 
       return [{ ...initialData }, contentType];
-    } catch (_) { }
+    } catch (_) {}
   }
 
   throw new Error("Unable to load initial data");
@@ -86,9 +86,9 @@ async function main() {
     const [initialData, initialContentType] =
       config.content.length > 0
         ? await getInitialData(
-          new Uint8Array(config.content),
-          config.contentType
-        )
+            new Uint8Array(config.content),
+            config.contentType
+          )
         : [undefined, config.contentType];
 
     const sendChanges = sendChangesToVSCode(config.contentType);

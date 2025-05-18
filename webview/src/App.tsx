@@ -15,7 +15,7 @@ import {
   ExcalidrawImperativeAPI,
   ExcalidrawInitialDataState,
   LibraryItems,
-} from "@excalidraw/excalidraw/types"
+} from "@excalidraw/excalidraw/types";
 import { vscode } from "./vscode.ts";
 
 function detectTheme() {
@@ -49,7 +49,7 @@ function useTheme(initialThemeConfig: string) {
   useEffect(updateTheme, [themeConfig]);
 
   useEffect(() => {
-		if (themeConfig !== 'auto') return;
+    if (themeConfig !== "auto") return;
     const observer = new MutationObserver(() => {
       updateTheme();
     });
@@ -60,7 +60,7 @@ function useTheme(initialThemeConfig: string) {
     return () => {
       observer.disconnect();
     };
-	}, [themeConfig]);
+  }, [themeConfig]);
 
   return { theme, setThemeConfig };
 }
@@ -98,11 +98,7 @@ export default function App(props: {
       const { elements, appState, files } = props.initialData;
       props.onChange(elements || [], appState || {}, files);
     } else {
-      props.onChange(
-        [],
-        { viewBackgroundColor: "#ffffff" },
-        {}
-      );
+      props.onChange([], { viewBackgroundColor: "#ffffff" }, {});
     }
   }, []);
 

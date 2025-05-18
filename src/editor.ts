@@ -7,7 +7,8 @@ import { languageMap } from "./lang";
 import { showEditor } from "./commands";
 
 export class ExcalidrawEditorProvider
-  implements vscode.CustomEditorProvider<ExcalidrawDocument> {
+  implements vscode.CustomEditorProvider<ExcalidrawDocument>
+{
   public static async register(
     context: vscode.ExtensionContext
   ): Promise<vscode.Disposable> {
@@ -49,7 +50,7 @@ export class ExcalidrawEditorProvider
 
   private static readonly viewType = "editor.excalidraw";
 
-  constructor(private readonly context: vscode.ExtensionContext) { }
+  constructor(private readonly context: vscode.ExtensionContext) {}
 
   public async resolveCustomEditor(
     document: ExcalidrawDocument,
@@ -139,7 +140,7 @@ export class ExcalidrawEditor {
     readonly document: ExcalidrawDocument,
     readonly webview: vscode.Webview,
     readonly context: vscode.ExtensionContext
-  ) { }
+  ) {}
 
   isViewOnly() {
     return (
@@ -412,8 +413,7 @@ async function openLink(uri: vscode.Uri, source: vscode.Uri): Promise<void> {
     return;
   }
 
-
-  const targetUri = vscode.Uri.joinPath(source, "..", uri.path)
+  const targetUri = vscode.Uri.joinPath(source, "..", uri.path);
   try {
     // Ensure the resource exists and is a file
     const stat = await vscode.workspace.fs.stat(targetUri);
@@ -426,7 +426,12 @@ async function openLink(uri: vscode.Uri, source: vscode.Uri): Promise<void> {
     return;
   }
 
-  const extensions = [".excalidraw", ".excalidraw.json", ".excalidraw.png", ".excalidraw.svg"];
+  const extensions = [
+    ".excalidraw",
+    ".excalidraw.json",
+    ".excalidraw.png",
+    ".excalidraw.svg",
+  ];
   for (const ext of extensions) {
     if (targetUri.fsPath.endsWith(ext)) {
       await showEditor(targetUri);
@@ -436,5 +441,5 @@ async function openLink(uri: vscode.Uri, source: vscode.Uri): Promise<void> {
 
   await vscode.window.showTextDocument(targetUri, {
     preview: true,
-  })
+  });
 }
