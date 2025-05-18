@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.9.0
+
+- add support for linking to local files
+- fix theme switching from dark mode to light mode when opening a context menu
+
 ## 3.8.3
 
 - fix library import
