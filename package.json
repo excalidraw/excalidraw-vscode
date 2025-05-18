@@ -370,7 +370,7 @@
         "lint": "eslint --ext .ts src",
         "prettier": "prettier --check .",
         "prettierfix": "prettier --write .",
-        "open-in-browser": "vscode-test-web --extensionDevelopmentPath=. ../examples"
+        "open-in-browser": "vscode-test-web --headless --extensionDevelopmentPath=. ./examples"
     },
     "capabilities": {
         "untrustedWorkspaces": {
