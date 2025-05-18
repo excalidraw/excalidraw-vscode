@@ -7,8 +7,7 @@ import { languageMap } from "./lang";
 import { showEditor } from "./commands";
 
 export class ExcalidrawEditorProvider
-  implements vscode.CustomEditorProvider<ExcalidrawDocument>
-{
+  implements vscode.CustomEditorProvider<ExcalidrawDocument> {
   public static async register(
     context: vscode.ExtensionContext
   ): Promise<vscode.Disposable> {
@@ -50,7 +49,7 @@ export class ExcalidrawEditorProvider
 
   private static readonly viewType = "editor.excalidraw";
 
-  constructor(private readonly context: vscode.ExtensionContext) {}
+  constructor(private readonly context: vscode.ExtensionContext) { }
 
   public async resolveCustomEditor(
     document: ExcalidrawDocument,
@@ -140,7 +139,7 @@ export class ExcalidrawEditor {
     readonly document: ExcalidrawDocument,
     readonly webview: vscode.Webview,
     readonly context: vscode.ExtensionContext
-  ) {}
+  ) { }
 
   isViewOnly() {
     return (
@@ -408,29 +407,18 @@ function getFileWorkspaceFolder(
 }
 
 async function openLink(uri: vscode.Uri, source: vscode.Uri): Promise<void> {
-  const workspaceRoot = vscode.workspace.getWorkspaceFolder(source);
-  if (!workspaceRoot) {
-    // If we have no workspace root, open the link externally
+  if (uri.scheme !== "file") {
     await vscode.env.openExternal(uri);
     return;
   }
 
-  // Construct the full path to check existence
-  const fpath = vscode.Uri.file(
-    path.normalize(path.join(workspaceRoot.uri.fsPath, uri.fsPath))
-  );
 
-  // If the full path is not within the workspace root, open the link externally
-  if (!fpath.fsPath.startsWith(workspaceRoot.uri.fsPath)) {
-    await vscode.env.openExternal(uri);
-    return;
-  }
-
+  const targetUri = vscode.Uri.joinPath(source, "..", uri.path)
   try {
     // Ensure the resource exists and is a file
-    const stat = await vscode.workspace.fs.stat(fpath);
+    const stat = await vscode.workspace.fs.stat(targetUri);
     if (stat.type !== vscode.FileType.File) {
-      throw new Error(`${fpath} is not a file`);
+      throw new Error(`${targetUri.fsPath} is not a file`);
     }
   } catch (e) {
     // Otherwise, open it externally
@@ -438,9 +426,15 @@ async function openLink(uri: vscode.Uri, source: vscode.Uri): Promise<void> {
     return;
   }
 
-  // File exists in the workspace, open it in the editor
-  vscode.window.showInformationMessage(
-    `Opening workspace file: ${fpath.fsPath}`
-  );
-  await showEditor(fpath);
+  const extensions = [".excalidraw", ".excalidraw.json", ".excalidraw.png", ".excalidraw.svg"];
+  for (const ext of extensions) {
+    if (targetUri.fsPath.endsWith(ext)) {
+      await showEditor(targetUri);
+      return;
+    }
+  }
+
+  await vscode.window.showTextDocument(targetUri, {
+    preview: true,
+  })
 }

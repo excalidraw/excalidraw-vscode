@@ -25,8 +25,8 @@
         "type": 3
       },
       "seed": 124747792,
-      "version": 75,
-      "versionNonce": 556868336,
+      "version": 76,
+      "versionNonce": 1924960585,
       "isDeleted": false,
       "boundElements": [
         {
@@ -34,8 +34,8 @@
           "id": "CY5YXeM7o407ZjFedVvJ0"
         }
       ],
-      "updated": 1747429712777,
-      "link": "examples/test.excalidraw",
+      "updated": 1747560936589,
+      "link": "./test.excalidraw",
       "locked": false
     },
     {
@@ -61,7 +61,7 @@
       "version": 48,
       "versionNonce": 643309296,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1747429704698,
       "link": null,
       "locked": false,
@@ -98,7 +98,7 @@
       "version": 221,
       "versionNonce": 928134160,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1747429695705,
       "link": null,
       "locked": false,

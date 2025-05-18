@@ -72,8 +72,8 @@ function showSource(uri: vscode.Uri, viewColumn?: vscode.ViewColumn) {
   vscode.window.showTextDocument(uri, { viewColumn });
 }
 
-export function showEditor(uri: vscode.Uri, viewColumn?: vscode.ViewColumn) {
-  vscode.commands.executeCommand(
+export async function showEditor(uri: vscode.Uri, viewColumn?: vscode.ViewColumn) {
+  await vscode.commands.executeCommand(
     "vscode.openWith",
     uri,
     "editor.excalidraw",
