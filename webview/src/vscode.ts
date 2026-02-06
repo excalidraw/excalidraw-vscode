@@ -15,8 +15,9 @@ const svg2VSCode = async (
   appState: Partial<AppState>,
   files: BinaryFiles
 ) => {
+  const nonDeletedElements = elements.filter((element: any) => !element.isDeleted);
   const svg = await exportToSvg({
-    elements,
+    elements: nonDeletedElements,
     appState,
     files,
   });
@@ -31,8 +32,9 @@ const png2VSCode = async (
   appState: Partial<AppState>,
   files: BinaryFiles
 ) => {
+  const nonDeletedElements = elements.filter((element: any) => !element.isDeleted);
   const blob = await exportToBlob({
-    elements,
+    elements: nonDeletedElements,
     appState,
     files,
     getDimensions(width: number, height: number) {
