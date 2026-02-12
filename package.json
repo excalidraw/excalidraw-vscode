@@ -3,7 +3,7 @@
     "icon": "assets/logo.png",
     "displayName": "Excalidraw",
     "description": "Draw schemas in VS Code using Excalidraw",
-    "version": "3.9.0",
+    "version": "3.9.1",
     "publisher": "pomdtr",
     "engines": {
         "vscode": "^1.63.0"
@@ -388,7 +388,6 @@
         "eslint-config-prettier": "^8.5.0",
         "eslint-plugin-prettier": "^4.2.1",
         "prettier": "^2.7.1",
-        "shx": "^0.3.4",
         "ts-loader": "^9.4.1",
         "typescript": "^4.8.4",
         "webpack": "^5.74.0",
