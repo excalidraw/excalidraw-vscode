@@ -255,6 +255,27 @@ export class ExcalidrawEditor {
       }
     );
 
+    const fileWatcher = vscode.workspace.createFileSystemWatcher(
+      new vscode.RelativePattern(
+        vscode.Uri.joinPath(this.document.uri, ".."),
+        path.basename(this.document.uri.fsPath)
+      )
+    );
+
+    const onDidFileChange = fileWatcher.onDidChange(async () => {
+      await this.document.handleExternalChange();
+    });
+
+    const onDidExternalChange = this.document.onDidExternalChange(
+      (newContent) => {
+        this.webview.postMessage({
+          type: "update-scene",
+          content: Array.from(newContent),
+          contentType: this.document.contentType,
+        });
+      }
+    );
+
     this.webview.html = await this.buildHtmlForWebview({
       content: Array.from(this.document.content),
       contentType: this.document.contentType,
@@ -273,6 +294,9 @@ export class ExcalidrawEditor {
       onDidChangeLibraryConfiguration.dispose();
       onDidChangeLibrary.dispose();
       onDidChangeEmbedConfiguration.dispose();
+      fileWatcher.dispose();
+      onDidFileChange.dispose();
+      onDidExternalChange.dispose();
     });
   }
 

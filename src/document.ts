@@ -8,6 +8,11 @@ export class ExcalidrawDocument implements vscode.CustomDocument {
   private _onDidContentChange = new vscode.EventEmitter<void>();
   public onDidContentChange = this._onDidContentChange.event;
 
+  private _onDidExternalChange = new vscode.EventEmitter<Uint8Array>();
+  public onDidExternalChange = this._onDidExternalChange.event;
+
+  private _isSaving = false;
+
   public readonly contentType;
 
   getContentType(): string {
@@ -45,12 +50,29 @@ export class ExcalidrawDocument implements vscode.CustomDocument {
   }
 
   async save() {
-    this.saveAs(this.uri);
+    this._isSaving = true;
+    await this.saveAs(this.uri);
+    // Delay clearing the flag to avoid racing with the file watcher
+    setTimeout(() => { this._isSaving = false; }, 500);
   }
 
   async update(content: Uint8Array) {
+    this._isSaving = true;
     this.content = content;
     this._onDidContentChange.fire();
+    setTimeout(() => { this._isSaving = false; }, 500);
+  }
+
+  async handleExternalChange() {
+    if (this._isSaving) {
+      return;
+    }
+    const newContent = await vscode.workspace.fs.readFile(this.uri);
+    if (Buffer.from(newContent).equals(Buffer.from(this.content))) {
+      return;
+    }
+    this.content = newContent;
+    this._onDidExternalChange.fire(newContent);
   }
 
   async saveAs(destination: vscode.Uri) {
@@ -66,5 +88,6 @@ export class ExcalidrawDocument implements vscode.CustomDocument {
   dispose(): void {
     this._onDidDispose.fire();
     this._onDidContentChange.dispose();
+    this._onDidExternalChange.dispose();
   }
 }

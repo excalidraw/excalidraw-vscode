@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import {
   Excalidraw,
+  loadFromBlob,
   loadLibraryFromBlob,
   serializeLibraryAsJSON,
   THEME,
@@ -136,6 +137,28 @@ export default function App(props: {
           }
           case "image-params-change": {
             setImageParams(message.imageParams);
+            break;
+          }
+          case "update-scene": {
+            const blob = new Blob(
+              [
+                message.contentType === "image/png"
+                  ? new Uint8Array(message.content)
+                  : new TextDecoder().decode(new Uint8Array(message.content)),
+              ],
+              { type: message.contentType }
+            );
+            const data = await loadFromBlob(blob, null, null);
+            excalidrawAPI?.updateScene({
+              elements: data.elements,
+              appState: data.appState,
+            });
+            if (data.files) {
+              excalidrawAPI?.addFiles(
+                Object.values(data.files)
+              );
+            }
+            break;
           }
         }
       } catch (e) {
